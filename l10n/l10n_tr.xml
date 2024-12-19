@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<l10n>
+	<texts>
+		<!-- Keys -->
+		<text name = "input_MENU_EXTRA_3" text = "Better Contracts: Detayları aç/kapat"/>
+		<text name = "input_BC_MTOGGLE" text = "BC: Aktif kontrat gösterimini aç/kapat "/>
+		<text name = "bc_actionFerment" text = "Balya fermente et"/>
+		<!-- Gui Buttons -->
+		<text name="bc_hidden" text="Gizli: %d" />
+		<text name="bc_other" text="Diğer" />
+		<text name="bc_new_contracts" text="Yeni" />
+		<text name="bc_clear_contracts" text="Temizle" />
+		<text name="bc_detailsOff" text="BC kapalı" />
+		<text name="bc_detailsOn" text="BC açık" />
+
+		<!-- Display texts -->
+		<text name="bc_mowed" text="Biçilen:" />
+		<text name="bc_tomow" text="Biçilecek:" />
+		<text name="bc_chaff" text="Kıyılmış %s" />
+		<text name="bc_jobType_chaff" text="Yem Hasadı" />
+		<text name="bc_harvest" text="%s Hasadı" />
+		<text name="bc_leased" text="/ Kiralanmış" />
+		<text name="bc_enoughMissions" text="Çiftliğiniz zaten maksimum kontrat sayısına ulaşmış durumda." />
+		<text name="bc_jobsCompleted" text="Tamamlanan işler: %d" />
+		<text name="bc_monthlyLimit" text="Çiftliğiniz bu ay için maksimum kontrat sayısına ulaştı." />
+
+		<!-- Hard mode -->
+		<text name="bc_penalty" text="Ceza" />
+		<text name="bc_warnTimeout" text="Ceza yaptırımını önlemek için lütfen %d sözleşme(ler)inizi gece yarısından önce tamamlayın." />
+		<text name="bc_warnCancel" text=" Ceza en az şu kadar olacaktır " />
+		<text name="bc_leaseNotEnough" text="Ekipman ödünç alabilmeniz için önce kendi ekipmanınızla %s adına %d adet daha kontrat tamamlamanız gerekir." />
+
+		<!-- discount mode -->
+		<text name="bc_maxJobs" text="%s için azami indirim yüzdesine ulaştınız." />
+		<text name="bc_discount" text=" (%d%% indirim)" />
+		<text name="bc_discValue" text="%s, size gelecekteki arazi satın alımlarınız için %d %% indirim sağlayacak." />
+		<text name="bc_owner" text="Mülk sahibi:" />
+
+		<!-- npc details box -->
+		<text name="SC_widhei" text="Maks. en/ boy:" />
+		<text name="SC_worktim" text="Tahmini süre:" />
+		<text name="SC_price" text="Ücret:" />
+		<text name="SC_profpmin" text="Kâr/dk:" />
+		<text name="SC_sort" text="Sırala" />
+
+		<text name="SC_field" text="Tarla %d / %s" />
+		<text name="SC_fillType" text="Ürün tipleri:" />
+		<text name="SC_worked" text="Çalışılan alan:" />
+		<text name="SC_delivered" text="Teslim edilen:" />
+		<text name="SC_deliver" text="Teslim edilmesi gereken:" />
+		<text name="SC_keep" text="Saklanabilir miktar:" />
+		<text name="SC_profit" text="Hasat kazancı:" />
+		<text name="SC_profitSupply" text="Kazanç:" />
+		<text name="SC_usage" text="Sarfiyat:" />
+		<text name="SC_cost" text="Malzeme maliyeti:" />
+		<text name="SC_togo" text="To go:" />
+		<text name="SC_timeleft" text="Kalan zaman:" />
+
+		<!-- progress bars -->
+		<text name="bc_progField" text="Tarla işi ilerlemesi" />
+		<text name="bc_progDeliver" text="Teslimat ilerlemesi" />
+
+		<!-- Sort button help text -->
+		<text name="SC_sortCat" text="çalışma türü" />
+		<text name="SC_sortRev" text="gelir" />
+		<text name="SC_sortNpc" text="çiftçi" />
+		<text name="SC_sortProf" text="net kâr" />
+		<text name="SC_sortpMin" text="kâr/dk" />
+
+		<!-- Settings Page -->
+		<text name="bc_settingsPage_title" text="Kontrat Ayarları" />
+
+		<text name="bc_baseSettings" text="Temel Ayarlar" />
+		<text name="bc_rewardMultiplier" text="Ödül" />
+		<text name="bc_rewardMultiplier_tooltip" text="Kontratlar için teklif edilen ödeme miktarı." />
+		<text name="bc_rewardMultiplierMow" text="Biçme ve balyalama ödülü" />
+		<text name="bc_rewardMultiplierMow_tooltip" text="Biçme ve balyalama kontratları için teklif edilen ödeme miktarı." />
+		<text name="bc_leaseMultiplier" text="Kiralama bedeli" />
+		<text name="bc_leaseMultiplier_tooltip" text="Kontratlar için ekipman kiralama bedelleri." />
+		<text name="bc_maxActive" text="Eşzamanlı aktif kontratlar" />
+		<text name="bc_maxActive_tooltip" text="Aynı anda aktif olabilecek maksimum kontrat sayısı." />
+		<text name="bc_toDeliver" text="Hasat kontratları için teslimat yüzdesi" />
+		<text name="bc_toDeliverBale" text="Balyalama kontratları için teslimat yüzdesi" />
+		<text name="bc_toDeliver_tooltip" text="Bir hasat kontratını tamamlamak için teslim etmeniz gereken yaklaşık rekolte yüzdesi." />
+		<text name="bc_fieldCompletion" text="Tarla çalışması tamamlandı" />
+		<text name="bc_fieldCompletion_tooltip" text="Tarla çalışmasının tamamlanmış sayılması için işlenmesi gereken minimum tarla yüzdesi." />
+		<text name="bc_refreshMP" text="Kontrat listesi yetkilendirmesi" />
+		<text name="bc_refreshMP_tooltip" text="Çok oyunculu bir oyunda kontratları kimlerin silip veya yenileyebileceği." />
+		<text name="bc_ferment" text="Hızlı Fermantasyon" />
+		<text name="bc_ferment_tooltip" text="Oyuncunun F1 menüsünden sarılmış çim balyasını anında fermente etmesine olanak sağlar." />
+		<text name="bc_forcePlow" text="Kök mahsulü sürme" />
+		<text name="bc_forcePlow_tooltip" text="Her mısır/patates/şeker pancarı hasadından sonra toprağın sürülmesi gerekir." />
+		<text name="bc_debug" text="Hata Ayıklama Modu" />
+		<text name="bc_debug_tooltip" text="Etkinse bilgi mesajlarını günlüğe yazdırır. Hataları bulmaya yardımcı olabilir." />
+
+		<text name="bc_lazyNPC" text="Tembel Çiftçiler" />
+
+		<text name="bc_mainSwitch" text="Etkinleştir" />
+		<text name="bc_active" text="Etkin" />
+		<text name="bc_lazyNPC_tooltip" text="Etkinleştirildiğinde, NPC çiftçiler tarlalarındaki işleri daha sık aksatırlar. Böylece daha fazla kontrat sunarlar." />
+		<text name="bc_lazyNPCHarvest_tooltip" text="Etkinleştirildiğinde, NPC çiftçiler hiç hasat yapmaz. Bu durum, sizin için daha çok iş anlamına gelir." />
+		<text name="bc_lazyNPCSow_tooltip" text="Etkinleştirildiğinde, NPC çiftçiler ekim işlerini daha seyrek yaparlar ve bunun yerine kontrat sunarlar." />
+		<text name="bc_lazyNPCPlow" text="Sürme ve toprağı işleme" />
+		<text name="bc_lazyNPCPlow_tooltip" text="Etkinleştirildiğinde, NPC çiftçiler kendi topraklarında daha az sıklıkta işleme ve sürme işi yapar." />
+		<text name="bc_lazyNPCFertilize_tooltip" text="Etkinleştirildiğinde, NPC çiftçiler gübreleme işini daha nadir yapar, bunun yerine kontrat olarak sunar." />
+		<text name="bc_lazyNPCWeed_tooltip" text="Etkinleştirildiğinde, NPC çiftçiler tarlalarındaki yabani otlarla daha nadir ilgilenir, bunun yerine ilaçlama ve yabani ot temizleme kontratları sunar." />
+
+		<text name="bc_hardMode" text="Zorlayıcı mod" />
+		<text name="bc_hardMode_tooltip" text="Eğer etkinse, tüm aktif kontratlar ay sonuna kadar tamamlanmak zorundadır. Bir sözleşme iptal edildiğinde ceza ücreti uygulanır. Ekipman kiralama özelliği belirli sayıda iş tamamladıktan sonra açılır." />
+		<text name="bc_hardPenalty" text="Ceza" />
+		<text name="bc_hardPenalty_tooltip" text="İptal edilen kontrat için ceza tutarı (kontrat ödülünün %'si olarak)." />
+		<text name="bc_hardLease" text="Ekipman kiralama kilidi açma" />
+		<text name="bc_hardLease_tooltip" text="Bir NPC çiftçinin ekipmanını kiralamadan önce tamamlanması gereken iş sayısı." />
+		<text name="bc_hardExpire" text="Zaman sınırı" />
+		<text name="bc_hardExpire_tooltip" text="Hangi dönemin sonunda tüm aktif kontratlar tamamlanmalı?" />
+		<text name="bc_hardLimit" text="Ay başına sözleşme sayısı" />
+		<text name="bc_hardLimit_tooltip" text="Bir ay içinde kabul edilebilecek maksimum kontrat sayısı. (-1: sınırsız, 0: hiç)" />
+
+		<text name="bc_discountMode" text="Arazi satın alma indirimi" />
+		<text name="bc_discountMode_tooltip" text="Eğer etkinse, NPC çiftçiler arazi satın alımlarında indirim sunarlar. İndirim miktarı ilgili çiftçi için tamamlanan kontrat sayısıyla orantılıdır." />
+		<text name="bc_discPerJob" text="Tamamlanan kontrat başına indirim" />
+		<text name="bc_discPerJob_tooltip" text="NPC çiftçiler, tamamlanan her kontrat için indirim yüzdesini bu miktar kadar artırır. Maksimum indirim %50'yi geçemez." />
+		<text name="bc_discMaxJobs" text="İndirime etkisi olan iş sayısı" />
+		<text name="bc_discMaxJobs_tooltip" text="Maksimum indirimi azaltabilir, örneğin kontrat başına indirim %11, etkili iş sayısı 3 ise -> maksimum indirim %33 olur. Dikkat: Bir  arazi satın alımında mevcuttaki tamamlanan kontrat sayısı bu değer kadar azalacaktır." />
+				
+		<text name="bc_missionGeneration" text="Kontrat oluşturma" />
+		<text name="bc_generationInterval" text="Oluşturma sıklığı" />
+		<text name="bc_generationInterval_tooltip" text="Yeni kontrat oluşturulmadan önce geçmesi gereken oyun içi saat miktarı." />
+		<text name="bc_missionGenPercentage" text="Oluşturma oranı" />
+		<text name="bc_missionGenPercentage_tooltip" text="Her seferinde maksimum kontrat sayısının belirli yüzdesi oluşturulucak." />
+	</texts>
+</l10n>
