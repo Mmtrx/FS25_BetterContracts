@@ -24,8 +24,8 @@
 		<text name="bc_discValue" text="%s vám poskytne %d %% slevu na budoucí nákupy polí." />
 
 		<!-- Display texts -->
-		<text name="bc_mowed" text="Mowed:" />
-		<text name="bc_tomow" text="To mow:" />
+		<text name="bc_mowed" text="Posekáno:" />
+		<text name="bc_tomow" text="K posekání:" />
 		<text name="bc_chaff" text="Řezání %s" />
 		<text name="bc_jobType_chaff" text="Řezanka" />
 		<text name="bc_harvest" text="Skliz. %s" />
@@ -121,8 +121,8 @@
 		<text name="bc_toDeliver" text="Procenta doručení ze sklizně" />
 		<text name="bc_toDeliverBale" text="Doručení pro zakázky na balíkování" />
 		<text name="bc_toDeliver_tooltip" text="Procento odhadovaného celkového výnosu, které musíte dodat, abyste dokončili smlouvu o sklizni." />
-		<text name="bc_fieldCompletion" text="Fieldwork complete" />
-		<text name="bc_fieldCompletion_tooltip" text="Min percentage of field area worked, to count as fieldwork complete." />
+		<text name="bc_fieldCompletion" text="Dokončení práce v terén" />
+		<text name="bc_fieldCompletion_tooltip" text="Min. procento obdělané plochy, které se započítává jako dokončená práce v terénu." />
 		
 		<text name="bc_missionGeneration" text="Generování zakázek" />
 		<text name="bc_generationInterval" text="Interval generování" />
