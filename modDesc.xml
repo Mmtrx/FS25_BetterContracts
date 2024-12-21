@@ -1,9 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="93">
     <author>Mmtrx</author>
     <version>1.0.1.1</version>
     <title>
         <en>Better Contracts</en>
+		<cz>Vylepšené zakázky</cz>
     </title>
     <description>
         <en>
@@ -52,6 +53,26 @@ Première version pour FS25, qui ne contient que les fonctions de base :
 - N'importe quel nombre de contrats actives (vous pouvez modifier le nombre maximum dans le fichier FS25_BetterContracts.xml dans le répertoire de savegame correspondant, paramètre «maxActive». Le fichier est créé lors de la sauvegarde du jeu si ce mod est actif).    
 ]]>
         </fr>
+		<cz>
+            <![CDATA[
+První verze pro FS25. Obsahuje pouze základní funkce
+
+- přehledný seznam dostupných smluv
+
+- generování nových smluv
+
+- neomezený počet aktivních smluv (limit lze nastavit úpravou souboru FS25_BetterContracts.xml v příslušném adresáři savegame, změnou parametru "maxActive". Soubor se zapíše při ukládání hry s tímto modem.)
+
+V příštích verzích modifikace plánuji implementovat další funkce.
+
+Seznam změn v1.0.1.1:
+- oprava tlačítka Podrobnosti
+- zvětšen seznam podrobností o smlouvě
+- nová ikona (s laskavým svolením DrDrulia)
+
+GitHub link: https://github.com/Mmtrx/FS25_BetterContracts
+]]>
+        </cz>
     </description>
     <iconFilename>icon_BetterContracts.dds</iconFilename>
     <multiplayer supported="true" />
