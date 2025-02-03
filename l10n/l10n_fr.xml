@@ -3,8 +3,8 @@
 	<texts>
 		<!-- Keys -->
 		<text name = "input_MENU_EXTRA_3" text = "Better Contracts: Sans/avec détails"/>
-		<text name = "input_BC_MTOGGLE" text = "BC: Toggle display of active farm contracts"/>
-		<text name = "bc_actionFerment" text = "Ferment Bale"/>
+		<text name = "input_BC_MTOGGLE" text = "BC: Bascule l'affichage des contrats actifs. "/>
+		<text name = "bc_actionFerment" text = "Fermenter la botte"/>
 		<!-- Gui Buttons -->
 		<text name="bc_hidden" text="Caché: %d" />
 		<text name="bc_other" text="L'autre" />
@@ -14,17 +14,17 @@
 		<text name="bc_detailsOn" text="Avec BC" />
 
 		<!-- Hard mode -->
-		<text name="bc_penalty" text="Penalty" />
-		<text name="bc_warnTimeout" text="Please complete your %d contract(s) within next hour, to prevent contract penalties." />
-		<text name="bc_warnCancel" text=" Contract penalty will be at least " />
-		<text name="bc_leaseNotEnough" text="You need to complete %d more jobs for %s with own equipment, before you can borrow machines." />
+		<text name="bc_penalty" text="Pénalité" />
+		<text name="bc_warnTimeout" text="Veuillez complété votre contract(s) %d dans l'heure suivante, pour éviter les pénalités de contrat." />
+		<text name="bc_warnCancel" text=" La pénalité de contrat sera de " />
+		<text name="bc_leaseNotEnough" text="Vous devez compléter %d plus de contrats pour %s avec son propre équipement, avant de pouvoir emprunter des machines." />
 
 		<!-- discount mode -->
-		<text name="bc_maxJobs" text="You have reached the maximum discount for %s." />
-		<text name="bc_discount" text="discount" />
-		<text name="bc_discValue" text="%s grants you %d %% discount for future field purchases." />
-		<text name="bc_jobsCompleted" text="Jobs completed: %d" />
-		<text name="bc_owner" text="Owner:" />
+		<text name="bc_maxJobs" text="Vous avez atteint la réduction maximale de %s." />
+		<text name="bc_discount" text="réduction" />
+		<text name="bc_discValue" text="%s vous accorde %d %% de réduction pour les futurs achats de ces terrains" />
+		<text name="bc_jobsCompleted" text="Contrat terminé: %d" />
+		<text name="bc_owner" text="Propriétaire:" />
 
 		<!-- Display texts -->
 		<text name="bc_name" text="Better Contracts" />
@@ -32,10 +32,10 @@
 		<text name="bc_tomow" text="To mow:" />
 		<text name="bc_chaff" text="Hachez %s" />
 		<text name="bc_jobType_chaff" text="Hacheuse" />
-		<text name="bc_harvest" text="Réco. %s" />
-		<text name="bc_leased" text="/ Leased " />
-		<text name="bc_enoughMissions" text="Votre ferme a déjà maximum des contrats actifs." />
-		<text name="bc_monthlyLimit" text="Your farm has reached the maximum number of contracts for this month." />
+		<text name="bc_harvest" text="Récolté à %s" />
+		<text name="bc_leased" text="/ Loué " />
+		<text name="bc_enoughMissions" text="Votre ferme a déjà le maximum de contrats actifs." />
+		<text name="bc_monthlyLimit" text="Votre ferme a atteint le nombre maximum de contrats pour ce mois." />
 
 		<text name="SC_widhei" text="Largeur,Longueur (max):" />
 		<text name="SC_worktim" text="Temps estimé:" />
@@ -59,13 +59,13 @@
 		<!-- Sort button help text -->
 		<text name="SC_sortCat" text="Type / champ" />
 		<text name="SC_sortRev" text="revenue" />
-		<text name="SC_sortNpc" text="farmer" />
+		<text name="SC_sortNpc" text="fermier" />
 		<text name="SC_sortProf" text="Profit net" />
 		<text name="SC_sortpMin" text="Profit par minute" />
 
 		<!-- progress bars -->
-		<text name="bc_progField" text="Field progress" />
-		<text name="bc_progDeliver" text="Delivery progress" />
+		<text name="bc_progField" text="Progression du champ" />
+		<text name="bc_progDeliver" text="Progression de la livraison" />
 
 		<!-- Settings Page -->
 		<text name="bc_rewardMultiplier" text="Récompense" />
@@ -76,54 +76,54 @@
 		<text name="bc_leaseMultiplier_tooltip" text="Ajuster le coût d'emprunt du matériel pour les contrats." />
 		<text name="bc_maxActive" text="Contrats actifs simultanément" />
 		<text name="bc_maxActive_tooltip" text="Nombre maximum de contrats actifs simultanément." />
-		<text name="bc_toDeliver" text="Delivery on harvest contracts" />
-		<text name="bc_toDeliver_tooltip" text="Percentage of the estimated total yield you must deliver to complete a harvest contract." />
-		<text name="bc_toDeliverBale" text="Delivery for baling contracts" />
-		<text name="bc_toDeliverBale_tooltip" text="Percentage of the estimated total yield you must deliver to complete a harvest contract." />
-		<text name="bc_fieldCompletion" text="Fieldwork complete" />
-		<text name="bc_fieldCompletion_tooltip" text="Min percentage of field area worked, to count as fieldwork complete." />
+		<text name="bc_toDeliver" text="Livraison sur les contrats de récolte" />
+		<text name="bc_toDeliver_tooltip" text="Pourcentage du rendement total estimé que vous devez livrer pour terminer un contrat de récolte." />
+		<text name="bc_toDeliverBale" text="Livraison pour les contrats de bottes" />
+		<text name="bc_toDeliverBale_tooltip" text="Pourcentage du rendement total estimé que vous devez livrer pour terminer un contrat de bottes." />
+		<text name="bc_fieldCompletion" text="Travail du champ complété" />
+		<text name="bc_fieldCompletion_tooltip" text="Pourcentage minimum du champ à travailler pour complété le contrat." />
 		<text name="bc_refreshMP" text="Permission contracts list" />
-		<text name="bc_refreshMP_tooltip" text="Who can delete / refresh contracts in an MP game." />
-		<text name="bc_ferment" text="Insta-Fermenting" />
-		<text name="bc_ferment_tooltip" text="Allows player to insta-ferment a wrapped grass bale from the F1 menu." />
+		<text name="bc_refreshMP_tooltip" text="Qui peut supprimer/actualiser les contrats dans le jeu." />
+		<text name="bc_ferment" text="Fermentation instentané" />
+		<text name="bc_ferment_tooltip" text="Peret au joueurs de fermenté instentanément une bale enrubanné depuis le menu F1." />
 		<text name="bc_forcePlow" text="Root Crop Plowing" />
-		<text name="bc_forcePlow_tooltip" text="Every harvest of corn/ potato/ sugarbeet requires subsequent plowing." />
-		<text name="bc_debug" text="Debug Modus" />
-		<text name="bc_debug_tooltip" text="Prints info messages to the log if active. Can help to find bugs." />
+		<text name="bc_forcePlow_tooltip" text="Chaque récolte de maïs / pomme de terre / betterave à sucre nécessite un labour ultérieur." />
+		<text name="bc_debug" text="Debug Mode" />
+		<text name="bc_debug_tooltip" text="Imprime les messages d'informations dans le log si actif. Peut aider à trouver des bugs." />
 
-		<text name="bc_lazyNPCTitle" text="Lazy Farmers" />
-		<text name="bc_lazyNPC" text="Activated" />
-		<text name="bc_lazyNPC_tooltip" text="If active, NPC farmers more often skip work on their fields. So more contracts can be offered." />
-		<text name="bc_npcHarvest_tooltip" text="If active, NPC farmers do not harvest at all. Could result in a lot of work for you." />
-		<text name="bc_npcSow_tooltip" text="If active, NPC farmers perform sowing work more rarely and offer it as contracts instead." />
-		<text name="bc_npcPlowCultivate" text="Plow and Cultivate" />
+		<text name="bc_lazyNPCTitle" text="Agriculteurs paresseux" />
+		<text name="bc_lazyNPC" text="Activé" />
+		<text name="bc_lazyNPC_tooltip" text="Si actif, les PNJ agriculteurs sauterons le travail dans leurs champs plus souvent. Plus de contrats seront disponibles." />
+		<text name="bc_npcHarvest_tooltip" text="Si actif, les PNJ agriculteurs ne récolteront pas tout. Vous pourriez avoir plus de contrats." />
+		<text name="bc_npcSow_tooltip" text="Si actif, les PNJ agriculteurs effectuent des travaux de semis plus rarement et le proposent à la place comme contrats." />
+		<text name="bc_npcPlowCultivate" text="Labourer et cultiver" />
 		<text name="bc_npcPlowCultivate_tooltip" text="If active, NPC farmers less often plow or cultivate on their own." />
-		<text name="bc_npcFertilize_tooltip" text="If active, NPC farmer perform fertilizing work more rarely and offer it as contracts instead." />
-		<text name="bc_npcWeed_tooltip" text="If active, NPC farmers fight weeds on thier fields more rarely, and instead offer spray and weeding contracts." />
+		<text name="bc_npcFertilize_tooltip" text="Si actif, les PNJ agriculteurs effectuent des travaux fertilisants plus rarement et le proposent à la place comme contrats." />
+		<text name="bc_npcWeed_tooltip" text="Si actif, les PNJ agriculteurs combattent les mauvaises herbes sur leurs champs plus rarement et offrent plutôt des contrats de pulvérisation et de désherbage." />
 
-		<text name="bc_hardModeTitle" text="Higher difficulty" />
-		<text name="bc_hardMode" text="Activated" />
-		<text name="bc_hardMode_tooltip" text="If active, all active contracts must be completed by end of month at the latest. Cancelling a contract will cost a penalty. Borrowing contract equipment is only unlocked after completing some jobs." />
-		<text name="bc_hardPenalty" text="Penalty" />
-		<text name="bc_hardPenalty_tooltip" text="Penalty amount for cancelled contract (in % of contract reward)." />
-		<text name="bc_hardLease" text="Unlock borrowing equipment" />
-		<text name="bc_hardLease_tooltip" text="Number of successful jobs for an NPC farmer, before they lend you their equipment." />
+		<text name="bc_hardModeTitle" text="Difficulté plus élevée" />
+		<text name="bc_hardMode" text="Activé" />
+		<text name="bc_hardMode_tooltip" text="Si actif, Tous les contrats actifs doivent être achevés d'ici la fin du mois au plus tard. L'annulation d'un contrat coûtera une pénalité. L'emprunt de l'équipement contractuel n'est débloqué qu'après avoir terminé certains emplois." />
+		<text name="bc_hardPenalty" text="Penalité" />
+		<text name="bc_hardPenalty_tooltip" text="Montant de pénalité pour un contrat annulé (en % de la récompense du contrat)." />
+		<text name="bc_hardLease" text="Dévérouiller l'emprunt d'équipements" />
+		<text name="bc_hardLease_tooltip" text="Nombre de contrats réussis pour un agriculteur PNJ, avant de vous prêter leur équipement. " />
 		<text name="bc_hardExpire" text="Deadline" />
-		<text name="bc_hardExpire_tooltip" text="At the end of what time period all active contracts must be completed." />
+		<text name="bc_hardExpire_tooltip" text="À la fin de la période, tous les contrats actifs doivent être terminés." />
 
-		<text name="bc_discountModeTitle" text="Field purchase discount" />
-		<text name="bc_discountMode" text="Activated" />
-		<text name="bc_discountMode_tooltip" text="If active, an NPC farmer give a discount on farmland purchases. Discount increases with the number of competed jobs for this farmer." />
-		<text name="bc_discPerJob" text="Discount per completed contract" />
-		<text name="bc_discPerJob_tooltip" text="An NPC farmer increases their discount by this amount per job completed. Maximum discount cannot rise above 50%." />
-		<text name="bc_discMaxJobs" text="Number of discount-effective jobs" />
-		<text name="bc_discMaxJobs_tooltip" text="Can reduce the max discount, e.g. discount per contract = 11%, number of jobs = 3 -> max discount = 33%. Caution: Current number of jobs complete will decrease by this value on a farmland purchase." />
+		<text name="bc_discountModeTitle" text="Remise d'achat sur le terrain" />
+		<text name="bc_discountMode" text="Activé" />
+		<text name="bc_discountMode_tooltip" text="Si actif, les PNJ agriculteurs donnent une réduction sur les achats de terres agricoles. La remise augmente avec le nombre de contrats terminé pour cet agriculteur." />
+		<text name="bc_discPerJob" text="Réduction par contrat complété" />
+		<text name="bc_discPerJob_tooltip" text="Un agriculteur PNJ augmente le montant de cet réduction par contrat terminé. La remise maximale ne peut pas dépasser 50%." />
+		<text name="bc_discMaxJobs" text="Nombre de réduction de contrat maximum" />
+		<text name="bc_discMaxJobs_tooltip" text="Peut réduire la remise maximale, par exemple Remise par contrat = 11%, nombre de contrats = 3 -> Remise maximale = 33%. ATTENTION: Le nombre actuel de contrat complète diminuera de cette valeur sur un achat de terres agricoles. " />
 		
 		
-		<text name="bc_missionGeneration" text="Contract generation" />
-		<text name="bc_generationInterval" text="Generation Interval" />
-		<text name="bc_generationInterval_tooltip" text="Amount of in-game hours to wait before generating new contracts." />
-		<text name="bc_missionGenPercentage" text="Generation percentage" />
-		<text name="bc_missionGenPercentage_tooltip" text="Percentage of max contracts to be generated each time." />
+		<text name="bc_missionGeneration" text="Génération de contrats" />
+		<text name="bc_generationInterval" text="Interval de génération" />
+		<text name="bc_generationInterval_tooltip" text="Nombre d'heures dans le jeu à attendre avant de générer de nouveaux contrats." />
+		<text name="bc_missionGenPercentage" text="Pourcentage de génération" />
+		<text name="bc_missionGenPercentage_tooltip" text="Pourcentage de contrats maximum à générer à chaque fois." />
 	</texts>
 </l10n>
