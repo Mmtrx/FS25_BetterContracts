@@ -26,10 +26,22 @@ ControlProperties = {
     { name = "ferment", autoBind = true },
     { name = "forcePlow", autoBind = true },
     { name = "debug", autoBind = true },
+
 	{title = "bc_discountModeTitle"},
     { name = "discountMode", autoBind = true },
     { name = "discPerJob", min= .01, max= .14, step= .01, unit= "%", autoBind = true },  --
     { name = "discMaxJobs", min= 1, max= 20, step= 1, autoBind = true },
+
+	{title = "bc_missionGeneration"},
+    { name = "generationInterval", min =1, max =18, step =1, autoBind = true },
+    { name = "genGrain", autoBind = true },
+    { name = "genRoot", autoBind = true },  		-- potato, sugarbeet
+    { name = "genVegetable", autoBind = true },  	-- parsnip, carrot
+    { name = "genGreen", autoBind = true },  		-- peas, spinach, beans
+    { name = "genTree", autoBind = true }, 			-- tree transport
+    { name = "genDead", autoBind = true },
+    { name = "genRock", autoBind = true },
+
 	{title = "bc_hardModeTitle"},
     { name = "hardMode", autoBind = true },
     { name = "hardPenalty", min= .0, max= .7, step= .1, unit= "%", autoBind = true },

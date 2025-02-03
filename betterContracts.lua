@@ -10,6 +10,9 @@
 --  v1.0.1.0    10.12.2024  some details, sort list
 --  v1.0.1.1    20.12.2024  fix details button, enlarge contract details list
 --  v1.1.0.0    08.01.2025  UI settings page, discount mode
+--  v1.1.1.0    03.02.2025  fix npc jobs for cancelled mission (#17), compat lime, boost
+--							stay on NEW contracts list when accepting a contract
+--							only show on hud active cntr with completion > 0
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -81,14 +84,10 @@ BetterContracts = RoyalMod.new(true, true)     --params bool debug, bool sync
 
 function checkOtherMods(self)
 	local mods = {	
-		FS22_RefreshContracts = "needsRefreshContractsConflictsPrevention",
-		FS22_Contracts_Plus = "preventContractsPlus",
-		FS22_SupplyTransportContracts = "supplyTransport",
-		FS22_DynamicMissionVehicles = "dynamicVehicles",
-		FS22_TransportMissions = "transportMission",
-		FS22_LimeMission = "limeMission",
-		FS22_MaizePlus = "maizePlus",
-		FS22_KommunalServices = "kommunal",
+		FS25_ContractBoost = "contractBoost",
+		FS25_LimeMission = "limeMission",
+		--FS22_MaizePlus = "maizePlus",
+		--FS22_KommunalServices = "kommunal",
 		}
 	for mod, switch in pairs(mods) do
 		if g_modIsLoaded[mod] then
@@ -134,7 +133,13 @@ function registerXML(self)
 
 	local key = self.baseXmlKey..".generation"
 	self.xmlSchema:register(XMLValueType.INT, 	key.."#interval")
-	self.xmlSchema:register(XMLValueType.FLOAT, key.."#percentage")
+	self.xmlSchema:register(XMLValueType.BOOL, key.."#genGrain")
+	self.xmlSchema:register(XMLValueType.BOOL, key.."#genGreen")
+	self.xmlSchema:register(XMLValueType.BOOL, key.."#genVegetable")
+	self.xmlSchema:register(XMLValueType.BOOL, key.."#genRoot")
+	self.xmlSchema:register(XMLValueType.BOOL, key.."#genTree")
+	self.xmlSchema:register(XMLValueType.BOOL, key.."#genDead")
+	self.xmlSchema:register(XMLValueType.BOOL, key.."#genRock")
 end
 function readconfig(self)
 	if g_currentMission.missionInfo.savegameDirectory == nil then return end
@@ -182,7 +187,13 @@ function readconfig(self)
 		end
 		key = self.baseXmlKey..".generation"
 		self.config.generationInterval = xmlFile:getValue(key.."#interval", 1)
-		--self.config.missionGenPercentage = xmlFile:getValue(key.."#percentage", 0.2)
+		self.config.genGrain = xmlFile:getValue(key.."#genGrain", true)
+		self.config.genRoot = xmlFile:getValue(key.."#genRoot", true)
+		self.config.genVegetable = xmlFile:getValue(key.."#genVegetable", true)
+		self.config.genGreen = xmlFile:getValue(key.."#genGreen", true)
+		self.config.genTree = xmlFile:getValue(key.."#genTree", true)
+		self.config.genDead = xmlFile:getValue(key.."#genDead", true)
+		self.config.genRock = xmlFile:getValue(key.."#genRock", true)
 		xmlFile:delete()
 	else
 		debugPrint("[%s] config file %s not found, using default settings",self.name,self.configFile)
@@ -268,11 +279,8 @@ function hookFunctions(self)
 	Utility.overwrittenFunction(FarmlandManager, "saveToXMLFile", farmlandManagerSaveToXMLFile)
 	-- to display discount if farmland selected / on buy dialog
 	Utility.appendedFunction(InGameMenuMapUtil, "showContextBox", showContextBox)
-	--Utility.appendedFunction(InGameMenuMapFrame, "onClickMap", onClickFarmland)
-	--Utility.overwrittenFunction(InGameMenuMapFrame, "onClickBuy", onClickBuyFarmland)
 
 	-- to handle disct price on farmland buy
-	--g_farmlandManager:addStateChangeListener(self)
 	g_messageCenter:subscribe(MessageType.FARMLAND_OWNER_CHANGED, self.onFarmlandStateChanged, self)
 
 	-- to adjust contracts field compl / reward / vehicle lease values:
@@ -310,12 +318,14 @@ function hookFunctions(self)
 	Utility.overwrittenFunction(InGameMenuContractsFrame, "sortList", sortList)
 	Utility.overwrittenFunction(InGameMenuContractsFrame, "startContract", startContract)
 	Utility.appendedFunction(InGameMenuContractsFrame, "updateFarmersBox", updateFarmersBox)
+	--Utility.overwrittenFunction(InGameMenuContractsFrame, "updateList", updateList)
+	Utility.overwrittenFunction(InGameMenuContractsFrame, "onMissionStarted", onMissionStarted)
 	
 	-- who can clear / generate contracts
 	Utility.appendedFunction(InGameMenu, "updateButtonsPanel", updateButtonsPanel)
-	--[[
-	Utility.overwrittenFunction(InGameMenuContractsFrame, "updateList", updateList)
-	]]
+
+	-- to hide 0% missions from hud
+	Utility.overwrittenFunction(AbstractMission,"update",missionUpdate)
 end
 function BetterContracts:initialize()
 	debugPrint("[%s] initialize(): %s", self.name,self.initialized)
@@ -333,7 +343,13 @@ function BetterContracts:initialize()
 		toDeliverBale = 0.90,		-- BaleMission.FILL_SUCCESS_FACTOR
 		fieldCompletion = 0.95,		-- AbstractMission.SUCCESS_FACTOR
 		generationInterval = 1, 	-- MissionManager.MISSION_GENERATION_INTERVAL
-		--missionGenPercentage = 0.2, -- percent of missions to be generated (default: 20%)
+			genGrain = true,  		-- grain harvest missions allowed
+			genRoot = true,  		-- 
+			genVegetable = true,  	-- 
+			genGreen = true,  		-- 
+			genTree = true,  		-- 
+			genDead = true,  		-- 
+			genRock = true,  		-- 
 		refreshMP = SC.ADMIN, 		-- necessary permission to refresh contract list (MP)
 		lazyNPC = false, 			-- adjust NPC field work activity
 			npcHarvest = false,
@@ -386,30 +402,68 @@ function BetterContracts:initialize()
 		weed = 0.9,
 		lime = 0.9
 	}
-	--checkOtherMods(self)
+	self.noContracts = {}  		-- avoid generation if noContracts[type] is true
+	self.canHarvest = {			-- allow generation if canHarvest[variant] is true
+		GRAIN = true,
+		ROOTCROP = true,
+		VEGETABLES = true,
+		GREEN = true,
+	}  		
+	checkOtherMods(self)
 	registerXML(self) 			-- register xml: self.xmlSchema
 	hookFunctions(self) 		-- appends / overwrites to basegame functions
 end
+function BetterContracts:allowHarvest()
+	-- check if fruit on current field is exluded from harvest contracts
+	local variantToType = {
+		MAIZE = "GRAIN",
+		SUGARBEET = "ROOTCROP",
+		POTATO = "ROOTCROP",
+		COTTON = "GRAIN",
+		SUGARCANE = "GRAIN",
+		PEA = "GREEN",
+		SPINACH = "GREEN",
+		GREENBEAN = "GREEN",
+		VEGETABLES ="VEGETABLES",
+		GRAIN = "GRAIN"
+	}
+	local field = g_fieldManager:getFieldForMission()
+	if field == nil then 
+		debugPrint("* getFieldForMission() returns nil *") 
+		return false
+	end
+	local fruitTypeIndex = field:getFieldState().fruitTypeIndex
+	local variant = HarvestMission.getVehicleVariant({fruitTypeIndex= fruitTypeIndex})
+	local type = variantToType[variant]
+	return self.canHarvest[type]  or false
+end
 function generateMission(self, superf)
 	-- overwritten, to not finish after 1st mission generated
+	local bc = BetterContracts
    	local missionType = self.missionTypes[self.currentMissionTypeIndex]
+   	local increment = true 
+   	--debugPrint("* try %s", missionType.name)
    	if missionType == nil then
 	  self:finishMissionGeneration()
 	  return
    	end
-   	if  missionType.classObject.tryGenerateMission ~= nil then
-	  mission = missionType.classObject.tryGenerateMission()
+   	if not bc.noContracts[self.currentMissionTypeIndex] and
+   			(missionType.name ~= "harvestMission" or bc:allowHarvest()) and
+   			missionType.classObject.tryGenerateMission ~= nil then
+  		mission = missionType.classObject.tryGenerateMission()
 		if mission ~= nil then
 		 self:registerMission(mission, missionType)
-	  	else 
-		 self.currentMissionTypeIndex = self.currentMissionTypeIndex +1
-		 if self.currentMissionTypeIndex > #self.missionTypes then
-			self.currentMissionTypeIndex = 1
-		 end
-		 if self.currentMissionTypeIndex == self.startMissionTypeIndex then
-			self:finishMissionGeneration()
-		 end
-	  	end
+		 increment = false
+		end 
+   end
+   if increment then 
+	 self.currentMissionTypeIndex = self.currentMissionTypeIndex +1
+	 if self.currentMissionTypeIndex > #self.missionTypes then
+		self.currentMissionTypeIndex = 1
+	 end
+	 if self.currentMissionTypeIndex == self.startMissionTypeIndex then
+		self:finishMissionGeneration()
+	 end
    end
 end
 function onSavegameLoaded(self)
@@ -459,16 +513,22 @@ function addMission(self, mission)
 		info.usage = 0
 
 		-- consumables cost estimate
-		if mission.type.name == "fertilizeMission" then
-			info.usage = size * bc.sprUse[SC.FERTILIZER] *36000
-			info.profit = -info.usage * bc.prices[SC.FERTILIZER] /1000 
-		elseif mission.type.name == "herbicideMission" then
-			info.usage = size * bc.sprUse[SC.HERBICIDE] *36000
-			info.profit = -info.usage * bc.prices[SC.HERBICIDE] /1000
-		elseif mission.type.name == "sowMission" then
-			info.usage = size *g_fruitTypeManager:getFruitTypeByIndex(mission.fruitTypeIndex).seedUsagePerSqm *10000
-			info.profit = -info.usage * bc.prices[SC.SEEDS] /1000
-		elseif mission.type.name == "harvestMission" then
+		if not bc.contractBoost or not g_currentMission.contractBoostSettings.enableFieldworkToolFillItems then
+			if mission.type.name == "fertilizeMission" then
+				info.usage = size * bc.sprUse[SC.FERTILIZER] *36000
+				info.profit = -info.usage * bc.prices[SC.FERTILIZER] /1000 
+			elseif mission.type.name == "herbicideMission" then
+				info.usage = size * bc.sprUse[SC.HERBICIDE] *36000
+				info.profit = -info.usage * bc.prices[SC.HERBICIDE] /1000
+			elseif mission.type.name == "limeMission" then
+				info.usage = size * bc.sprUse[SC.LIME] *36000
+				info.profit = -info.usage * bc.prices[SC.LIME] /1000
+			elseif mission.type.name == "sowMission" then
+				info.usage = size *g_fruitTypeManager:getFruitTypeByIndex(mission.fruitTypeIndex).seedUsagePerSqm *10000
+				info.profit = -info.usage * bc.prices[SC.SEEDS] /1000
+			end
+		end
+		if mission.type.name == "harvestMission" then
 			if mission.expectedLiters == nil then
 				Logging.warning("[%s]:addMission(): contract '%s %s on field %s' has no expectedLiters.", 
 					bc.name, mission.type.name, bc.ft[mission.fillType].title, mission.field:getName())
@@ -509,7 +569,7 @@ function fieldGetDetails(self, superf)
 		title = g_i18n:getText("SC_profpmin"),
 		value = g_i18n:formatMoney(self.info.perMin)
 	})
-	if TableUtility.contains({"fertilizeMission","herbicideMission","sowMission"}, self.type.name) then
+	if self.info.usage > 0 then
 		table.insert(list, {
 			title = g_i18n:getText("SC_usage"),
 			value = g_i18n:formatVolume(self.info.usage)
@@ -634,7 +694,7 @@ function BetterContracts:onPostLoadMap(mapNode, mapFile)
 		SPRAY = g_missionManager:getMissionType("HERBICIDEMISSION").typeId,
 	}
 	if self.limeMission then 
-		self.mtype.LIME = g_missionManager:getMissionType("lime").typeId
+		self.mtype.LIME = g_missionManager:getMissionType("limeMission").typeId
 	end
 	self.gameMenu = g_inGameMenu
 	self.frCon = self.gameMenu.pageContracts
@@ -647,8 +707,8 @@ function BetterContracts:onPostLoadMap(mapNode, mapFile)
 end
 
 function BetterContracts:updateGenerationInterval()
-	-- init Mission generation rate (std is 1 hour)
-	MissionManager.MISSION_GENERATION_INTERVAL = self.config.generationInterval * 3600000
+	-- set Mission generation rate (std is 6 min)
+	MissionManager.MISSION_GENERATION_INTERVAL = self.config.generationInterval * 360000
 end
 function BetterContracts:updateGenerationSettings()
 	self:updateGenerationInterval()
@@ -706,6 +766,13 @@ function BetterContracts:onPostSaveSavegame(saveDir, savegameIndex)
 	end
 	key = self.baseXmlKey .. ".generation"
 	xmlFile:setInt	( key.."#interval",   conf.generationInterval)
+		xmlFile:setBool (key.."#genGrain", 		conf.genGrain)
+		xmlFile:setBool (key.."#genRoot", 		conf.genRoot)
+		xmlFile:setBool (key.."#genGreen", 		conf.genGreen)
+		xmlFile:setBool (key.."#genVegetable", 	conf.genVegetable)
+		xmlFile:setBool (key.."#genTree", 		conf.genTree)
+		xmlFile:setBool (key.."#genDead", 		conf.genDead)
+		xmlFile:setBool (key.."#genRock", 		conf.genRock)
 	xmlFile:save()
 	xmlFile:delete()
 end
@@ -781,10 +848,6 @@ function hasFarmReachedMissionLimit(self,superf,farmId)
 
 	MissionManager.MAX_MISSIONS_PER_FARM = maxActive
 	return superf(self, farmId)
-end
-function adminMP(self)
-	-- appended to InGameMenuMultiplayerUsersFrame:onAdminLoginSuccess()
-	BetterContracts.gameMenu:updatePages()
 end
 function baleMissionNew(isServer, superf, isClient, customMt )
 	-- allow forage wagons to collect grass/ hay, for baling/wrapping at stationary baler

@@ -257,18 +257,37 @@ function onFrameClose()
 		}) do
 		button:setVisible(false)
 	end
+	--g_messageCenter:unsubscribe(MissionStartedEvent, bc)
 end
-function onChangeSubCategory(self,element)
+function onMissionStarted(self,superf,state,lease)
+	-- overwritten to InGameMenuContractsFrame:onMissionStarted()
+	if state == MissionStartState.OK then
+		if lease then
+			InfoDialog.show(g_i18n:getText("contract_vehiclesAtShop"), nil, nil, DialogElement.TYPE_INFO)
+		else
+			InfoDialog.show(g_i18n:getText("contract_started"), nil, nil, DialogElement.TYPE_INFO)
+		end
+	else
+		superf(self,state,lease)
+	end
+end
+function debugState(self)
+	-- body
+	local s,i = self.contractsList:getSelectedPath()
+	debugPrint("* selected: %d, %d. state: %s",s,i,self.subCategorySelector:getState())
+end
+function onChangeSubCategory(self)
 	-- overwritten to InGameMenuContractsFrame:onChangeSubCategory()
 	-- switch visibility of our menu buttons
 	local bc = BetterContracts
  	local newContracts = self.subCategorySelector.state == 1
- 	debugPrint("** onChangeSubCategory, newContracts %s", newContracts)
+ 	debugPrint("** onChangeSubCategory **")
+	debugState(self) 				-- selected 2,2. State = 2!
 	bc.newButton:setVisible(newContracts)
 	bc.clearButton:setVisible(newContracts and 
 	  self.sectionContracts[1][1]) -- at least 1 section in new contracts
 
-	g_inGameMenu.pageContracts:onChangeSubCategory(element)
+	self:onChangeSubCategory()
 end
 function setButtonsForState(self,state)
 	-- appended to InGameMenuContractsFrame:setButtonsForState(state)
@@ -508,6 +527,41 @@ function sortList(self, superfunc)
 		end
 	end
 end
+function updateList(self)
+	-- overwrites InGameMenuContractsFrame:updateList()
+	local missions = g_missionManager:getMissionsByFarmId(g_currentMission:getFarmId())
+	local hasMissions = #missions ~= 0
+	self.contractsListBox:setVisible(hasMissions)
+	self.detailsList:setVisible(hasMissions)
+	local contract = self:getSelectedContract()
+	if contract == nil then
+		self.storedSelected = nil
+	else
+		self.storedSelected = contract.mission.generationTime
+	end
+	self.contracts = {}
+	for _, contract in ipairs(missions) do
+		local active = contract.status == MissionStatus.RUNNING and true or contract.status == MissionStatus.PREPARING
+		local finished = contract.status == MissionStatus.FINISHED
+		local possible = contract.status == MissionStatus.CREATED
+		table.insert(self.contracts, {
+			["mission"] = contract,
+			["active"] = active,
+			["finished"] = finished,
+			["possible"] = possible
+		})
+
+	end
+	debugPrint("** updateList:")
+	debugState(self)
+	self:sortList()
+	debugState(self)
+	-- if just started a cont, don't switch to ACTIVE 
+	self.contractsList:reloadData()
+	debugState(self)
+
+	self.contentContainer:setVisible(self.contractsList:getItemCount() > 0)
+end
 function updateFarmersBox(self, field, npc)
 	local bc = BetterContracts
 	-- hide farmerBox when our mapTable is shown:
@@ -613,6 +667,18 @@ function onRemoveSortButton(frCon, button)
 		self.my.helpsort:setText("")
 	else
 		self.my.helpsort:setText(self.buttons[self.sort][2])
+	end
+end
+function missionUpdate(self, superf)
+	-- overwrites AbstractMission:update()
+	if (self.status == MissionStatus.RUNNING or self.status == MissionStatus.FINISHED) 
+		and (g_localPlayer ~= nil and g_localPlayer.farmId == self.farmId) and
+		self.completion == 0 then
+			self.farmId = nil 	-- prevent superf from adding a progress bar
+			superf(self)
+			self.farmId = g_localPlayer.farmId
+	else 
+		superf(self)
 	end
 end
 -------------------------------------------- vehicle box -------------------------------

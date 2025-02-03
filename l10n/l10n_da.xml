@@ -123,8 +123,21 @@
 			
 		<text name="bc_missionGeneration" text="Kontrakt generering" />
 		<text name="bc_generationInterval" text="Generation Interval" />
-		<text name="bc_generationInterval_tooltip" text="Antal af in-game timer at vente før generering af nye kontrakter." />
-		<text name="bc_missionGenPercentage" text="Generation procent" />
-		<text name="bc_missionGenPercentage_tooltip" text="Procent af max kontrakter der genereres hver gang." />
+		<text name="bc_generationInterval_tooltip" text="Amount of in-game 6-minute intervals to wait before generating new contracts." />
+
+		<text name="bc_genGrain" text="Grain harvest" />
+		<text name="bc_genGrain_tooltip" text="Generate grain harvest contracts (possibly including maize, cotton)" />
+		<text name="bc_genVegetable" text="Vegetable harvest" />
+		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, and parsnip" />
+		<text name="bc_genGreen" text="Green crop harvest" />
+		<text name="bc_genGreen_tooltip" text="Generate harvest contracts for peas, beans, and spinach" />
+		<text name="bc_genRoot" text="Root crop harvest" />
+		<text name="bc_genRoot_tooltip" text="Generate harvest contracts for potatoes, sugarbeet" />
+		<text name="bc_genTree" text="Tree transport contracts" />
+		<text name="bc_genTree_tooltip" text="Generate tree transport contracts" />
+		<text name="bc_genDead" text="Deadwood contracts" />
+		<text name="bc_genDead_tooltip" text="Generate deadwood contracts" />
+		<text name="bc_genRock" text="Rock destruction contracts" />
+		<text name="bc_genRock_tooltip" text="Generate rock destruction contracts" />
 	</texts>
 </l10n>

@@ -119,11 +119,23 @@
 		<text name="bc_discMaxJobs" text="Nombre de réduction de contrat maximum" />
 		<text name="bc_discMaxJobs_tooltip" text="Peut réduire la remise maximale, par exemple Remise par contrat = 11%, nombre de contrats = 3 -> Remise maximale = 33%. ATTENTION: Le nombre actuel de contrat complète diminuera de cette valeur sur un achat de terres agricoles. " />
 		
-		
 		<text name="bc_missionGeneration" text="Génération de contrats" />
 		<text name="bc_generationInterval" text="Interval de génération" />
-		<text name="bc_generationInterval_tooltip" text="Nombre d'heures dans le jeu à attendre avant de générer de nouveaux contrats." />
-		<text name="bc_missionGenPercentage" text="Pourcentage de génération" />
-		<text name="bc_missionGenPercentage_tooltip" text="Pourcentage de contrats maximum à générer à chaque fois." />
+		<text name="bc_generationInterval_tooltip" text="Nombre de 6-minutes intervals à attendre avant de générer de nouveaux contrats." />
+
+		<text name="bc_genGrain" text="Grain harvest" />
+		<text name="bc_genGrain_tooltip" text="Generate grain harvest contracts (possibly including maize, cotton)" />
+		<text name="bc_genVegetable" text="Vegetable harvest" />
+		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, and parsnip" />
+		<text name="bc_genGreen" text="Green crop harvest" />
+		<text name="bc_genGreen_tooltip" text="Generate harvest contracts for peas, beans, and spinach" />
+		<text name="bc_genRoot" text="Root crop harvest" />
+		<text name="bc_genRoot_tooltip" text="Generate harvest contracts for potatoes, sugarbeet" />
+		<text name="bc_genTree" text="Tree transport contracts" />
+		<text name="bc_genTree_tooltip" text="Generate tree transport contracts" />
+		<text name="bc_genDead" text="Deadwood contracts" />
+		<text name="bc_genDead_tooltip" text="Generate deadwood contracts" />
+		<text name="bc_genRock" text="Rock destruction contracts" />
+		<text name="bc_genRock_tooltip" text="Generate rock destruction contracts" />
 	</texts>
 </l10n>

@@ -167,7 +167,7 @@ function finish(self, success )
 	local jobs = farm.stats.npcJobs
 	local npcIndex = self.field.farmland.npcIndex
 
-	if success then
+	if success == MissionFinishState.SUCCESS then
 		-- (always) count as valid job for this npc:
 		if jobs[npcIndex] == nil then 
 			jobs[npcIndex] = 1 

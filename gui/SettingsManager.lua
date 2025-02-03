@@ -117,6 +117,27 @@ function SettingsManager:updateDisabled(controlName)
     	self[nam].setting:updateDisabled(disabled)
     end
 end
+function SettingsManager:setGeneration(setting)
+	-- body
+	local bc = BetterContracts
+	if setting.name == "generationInterval" then 
+		bc:updateGenerationInterval()
+		return
+	end
+	local nam = setting.name:sub(4)
+	-- update excluded contracts
+	if TableUtility.contains({"Tree","Dead","Rock"}, nam) then 
+		bc.noContracts.treeTransportMission = bc.config.genTree 
+		bc.noContracts.deadwoodMission = bc.config.genDead 
+		bc.noContracts.destructibleRockMission = bc.config.genRock
+		return
+	end
+	-- update excluded harvest contracts
+	bc.canHarvest.GRAIN = bc.config.genGrain
+	bc.canHarvest.GREEN = bc.config.genGreen
+	bc.canHarvest.VEGETABLES = bc.config.genVegetable
+	bc.canHarvest.ROOT = bc.config.genRoot
+end
 function updateSubCategoryPages(self, state)
 	-- overwrites InGameMenuSettingsFrame:updateSubCategoryPages() 
 	debugPrint("**updateSubCategoryPages state = %d", state)
@@ -127,9 +148,17 @@ function updateSubCategoryPages(self, state)
 		FocusManager:linkElements(self.subCategoryPaging, FocusManager.TOP, 
 			modPage.settingsLayout.elements[#modPage.settingsLayout.elements].elements[1])
 		FocusManager:linkElements(self.subCategoryPaging, FocusManager.BOTTOM, 
-			modPage.settingsLayout.elements[1].elements[1])
+			modPage.settingsLayout:findFirstFocusable(true))
+		--FocusManager:linkElements(
+		--	modPage.settingsLayout.elements[#modPage.settingsLayout.elements].elements[1],
+		--	FocusManager.BOTTOM, self.subCategoryPaging)
+
+		--FocusManager:linkElements(modPage.settingsLayout.elements[1].elements[1], 
+		--	FocusManager.TOP, self.subCategoryPaging)
 		
+		-- call the original:
 		modPage.updateSubCategoryPages(self, state)
+		--FocusManager:setFocus(modPage.settingsLayout.elements[1].elements[1])
 		-- set page header:
 		self.categoryHeaderIcon:setImageSlice(nil, "gui.icon_ingameMenu_contracts")
 		self.categoryHeaderText:setText(g_i18n:getText("bc_name"))
@@ -139,8 +168,9 @@ function updateSubCategoryPages(self, state)
 end
 function onSettingsFrameOpen(self)
 	-- appended to InGameMenuSettingsFrame:onFrameOpen()
-	local modPage = BetterContracts.modPage
-	local settingsPage = BetterContracts.settingsMgr
+	local bc = BetterContracts
+	local modPage = bc.modPage
+	local settingsPage = bc.settingsMgr
 	local isMultiplayer = g_currentMission.missionDynamicInfo.isMultiplayer
 
 	-- our mod button should always be the last one in subCategoryPaging MTO
@@ -162,19 +192,16 @@ function onSettingsFrameOpen(self)
 		-- apply initial disabled states
     	settingsPage:updateDisabled("lazyNPC")				
     	settingsPage:updateDisabled("discountMode")			
-    	settingsPage:updateDisabled("hardMode")		
-	
+    	settingsPage:updateDisabled("hardMode")
+
+    	if bc.contractBoost then 
+    	-- disable if ContractBoost.settings.enableContractValueOverrides is on
+		    local disabled = g_currentMission.contractBoostSettings.enableContractValueOverrides
+		    settingsPage.rewardMultiplier.setting:updateDisabled(disabled)
+		    settingsPage.rewardMultiplierMow.setting:updateDisabled(disabled)
+		end	
 		--  make alternating backgrounds
-		local light = true
-		for _, elem in pairs(modPage.settingsLayout.elements) do
-			if elem.name == "sectionHeader" then
-				light = true
-			else
-				local color = InGameMenuSettingsFrame.COLOR_ALTERNATING[light]
-				elem:setImageColor(nil, unpack(color))
-				light = not light
-			end
-		end
+		self:updateAlternatingElements(modPage.settingsLayout)
 	end
 end
 function SettingsManager:onSettingsChange(control, newValue) 
@@ -201,6 +228,10 @@ function SettingsManager:onSettingsChange(control, newValue)
     	end
     elseif setting.name == "toDeliver" then 
 		HarvestMission.SUCCESS_FACTOR = newValue
+
+	 elseif setting.name:sub(1,3) == "gen" then 
+	 	self:setGeneration(setting)
     end	
+
     SettingsEvent.sendEvent(setting)
 end

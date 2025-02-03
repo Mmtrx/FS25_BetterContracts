@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="93">
     <author>Mmtrx</author>
-    <version>1.1.0.0</version>
+    <version>1.1.1.0</version>
     <title>
         <en>Better Contracts</en>
     </title>
@@ -9,6 +9,12 @@
         <en>
             <![CDATA[
 Port of FS22_BetterContracts
+
+ChangeLog v1.1.1.0:
+- fix npc jobs for cancelled mission (#17)
+- awareness for FS25_LimeMission, FS25_ContractBoost
+- stay on NEW contracts list after accepting a contract
+- only show on hud active contracts with completion > 0
 
 ChangeLog v1.1.0.0:
 - fix MP errors
@@ -31,6 +37,12 @@ I plan to implement additional functions in next releases of the mod.
         <de>
             <![CDATA[
 Portierung von FS22_BetterContracts
+
+ChangeLog v1.1.1.0:
+- fix (#17): abgebrochene Aufträge erhöhen nicht den Rabatt
+- Kompatibilität mit FS25_LimeMission, FS25_ContractBoost
+- Beim Annehmen eines Auftrags wird die Auftragsliste nicht verlassen
+- Auf dem Hud werden nur begonnene Aufträge angezeigt (Fortschritt > 0)
 
 Changelog v1.1.0.0
 - Fix Multiplayer
