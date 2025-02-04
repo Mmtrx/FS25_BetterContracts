@@ -13,6 +13,8 @@
 --  v1.1.1.0    03.02.2025  fix npc jobs for cancelled mission (#17), compat lime, boost
 --							stay on NEW contracts list when accepting a contract
 --							only show on hud active cntr with completion > 0
+--  v1.1.1.1    04.02.2025  fix white UI page (#19, #24, #29). Fix server save/load #22, #27, #30.
+-- 							fix ContractBoost compat #28
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -512,8 +514,9 @@ function addMission(self, mission)
 		info.profit = 0
 		info.usage = 0
 
-		-- consumables cost estimate
-		if not bc.contractBoost or not g_currentMission.contractBoostSettings.enableFieldworkToolFillItems then
+		-- consumables cost estimate enableFieldworkToolFillItems
+		if not (g_currentMission.contractBoostSettings and 
+		 g_currentMission.contractBoostSettings.enableFieldworkToolFillItems) then
 			if mission.type.name == "fertilizeMission" then
 				info.usage = size * bc.sprUse[SC.FERTILIZER] *36000
 				info.profit = -info.usage * bc.prices[SC.FERTILIZER] /1000 
@@ -723,8 +726,8 @@ end
 
 function BetterContracts:onPostSaveSavegame(saveDir, savegameIndex)
 	-- save our settings
-	debugPrint("** saving settings to %s (%d)", saveDir, savegameIndex)
-	self.configFile = saveDir.."/".. self.name..'.xml'
+	self.configFile = saveDir.. self.name..'.xml'
+	debugPrint("** saving settings to %s (savegame%d)", self.configFile, savegameIndex)
 	local xmlFile = XMLFile.create("BCconf", self.configFile, self.baseXmlKey, self.xmlSchema)
 	if xmlFile == nil then return end 
 

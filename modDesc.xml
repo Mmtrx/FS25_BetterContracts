@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="93">
     <author>Mmtrx</author>
-    <version>1.1.1.0</version>
+    <version>1.1.1.1</version>
     <title>
         <en>Better Contracts</en>
     </title>
@@ -10,7 +10,8 @@
             <![CDATA[
 Port of FS22_BetterContracts
 
-ChangeLog v1.1.1.0:
+ChangeLog v1.1.1.1:
+- fix white UI page (#19, #24, #29), server save/load (#22, #27, #30)
 - fix npc jobs for cancelled mission (#17)
 - awareness for FS25_LimeMission, FS25_ContractBoost
 - stay on NEW contracts list after accepting a contract

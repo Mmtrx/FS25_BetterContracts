@@ -128,21 +128,21 @@
 		
 		<text name="bc_missionGeneration" text="Создание контрактов" />
 		<text name="bc_generationInterval" text="Интервал генерации" />
-		<text name="bc_generationInterval_tooltip" text="Amount of in-game 6-minute intervals to wait before generating new contracts." />
+		<text name="bc_generationInterval_tooltip" text="Количество внутриигровых 6-минутных интервалов ожидания перед созданием новых контрактов." />
 
-		<text name="bc_genGrain" text="Grain harvest" />
-		<text name="bc_genGrain_tooltip" text="Generate grain harvest contracts (possibly including maize, cotton)" />
-		<text name="bc_genVegetable" text="Vegetable harvest" />
-		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, and parsnip" />
-		<text name="bc_genGreen" text="Green crop harvest" />
-		<text name="bc_genGreen_tooltip" text="Generate harvest contracts for peas, beans, and spinach" />
-		<text name="bc_genRoot" text="Root crop harvest" />
-		<text name="bc_genRoot_tooltip" text="Generate harvest contracts for potatoes, sugarbeet" />
-		<text name="bc_genTree" text="Tree transport contracts" />
-		<text name="bc_genTree_tooltip" text="Generate tree transport contracts" />
-		<text name="bc_genDead" text="Deadwood contracts" />
-		<text name="bc_genDead_tooltip" text="Generate deadwood contracts" />
-		<text name="bc_genRock" text="Rock destruction contracts" />
-		<text name="bc_genRock_tooltip" text="Generate rock destruction contracts" />
+		<text name="bc_genGrain" text="Сбор урожая зерновых" />
+		<text name="bc_genGrain_tooltip" text="Генерирование контрактов на сбор урожая зерна (возможно, включая кукурузу, хлопок)" />
+		<text name="bc_genVegetable" text="Сбор урожая овощей" />
+		<text name="bc_genVegetable_tooltip" text="Генерирование контрактов на сбор урожая моркови, свеклы и пастернака" />
+		<text name="bc_genGreen" text="Сбор урожая зеленых культур" />
+		<text name="bc_genGreen_tooltip" text="Генерирование контрактов на сбор урожая гороха, фасоли и шпината" />
+		<text name="bc_genRoot" text="Сбор корнеплодов" />
+		<text name="bc_genRoot_tooltip" text="Генерирование контрактов на сбор урожая картофеля, сахарной свеклы" />
+		<text name="bc_genTree" text="Транспортные контракты" />
+		<text name="bc_genTree_tooltip" text="Генерирование транспортных контрактов на перевозку брёвен" />
+		<text name="bc_genDead" text="Контракты на сухостой" />
+		<text name="bc_genDead_tooltip" text="Генерирование контрактов на поставку сухостоя" />
+		<text name="bc_genRock" text="Контракты на разрушение горных пород" />
+		<text name="bc_genRock_tooltip" text="Генерирование контрактов на разрушение горных пород" />
 	</texts>
 </l10n>

@@ -88,7 +88,6 @@ function loadGUI(self, guiPath)
 			return false
 		end
 	end
-	self.settingsMgr = SettingsManager:new()
 	return canLoad
 end
 function initGui(self)
