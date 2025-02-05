@@ -13,8 +13,8 @@
 --  v1.1.1.0    03.02.2025  fix npc jobs for cancelled mission (#17), compat lime, boost
 --							stay on NEW contracts list when accepting a contract
 --							only show on hud active cntr with completion > 0
---  v1.1.1.1    04.02.2025  fix white UI page (#19, #24, #29). Fix server save/load #22, #27, #30.
--- 							fix ContractBoost compat #28
+--  v1.1.1.1    04.02.2025  fix white UI page (#19, #24, #29), fix ContractBoost compat #28
+--  v1.1.1.2    05.02.2025  fix server save/load #22, #27, #30.
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -205,7 +205,7 @@ function loadPrices(self)
 	local prices = {}
 	-- store prices per 1000 l
 	local items = {
-	 	{"data/objects/bigbagpallet/fertilizer/bigbagpallet_fertilizer.xml", 1, 1920, "FERTILIZER"},
+		{"data/objects/bigbagpallet/fertilizer/bigbagpallet_fertilizer.xml", 1, 1920, "FERTILIZER"},
 		{"data/objects/pallets/liquidtank/fertilizertank.xml", 0.5, 1600, "LIQUIDFERTILIZER"},
 		{"data/objects/pallets/liquidtank/herbicidetank.xml", 0.5, 1200, "HERBICIDE"},
 		{"data/objects/bigbagpallet/seeds/bigbagpallet_seeds.xml", 1, 900,""},
@@ -271,7 +271,8 @@ function hookFunctions(self)
 	Utility.appendedFunction(TransportMission, "writeStream", BetterContracts.writeTransport)
 	Utility.appendedFunction(TransportMission, "readStream", BetterContracts.readTransport)
  ]]
--- discount mode:
+	-- save our settings: 
+	Utility.prependedFunction(ItemSystem, "save", saveSavegame)
 	-- to count and save/load # of jobs per farm per NPC
 	Utility.appendedFunction(AbstractFieldMission,"finish",finish)
 	Utility.appendedFunction(FarmStats,"saveToXMLFile",saveToXML)
@@ -442,17 +443,17 @@ end
 function generateMission(self, superf)
 	-- overwritten, to not finish after 1st mission generated
 	local bc = BetterContracts
-   	local missionType = self.missionTypes[self.currentMissionTypeIndex]
-   	local increment = true 
-   	--debugPrint("* try %s", missionType.name)
-   	if missionType == nil then
+	local missionType = self.missionTypes[self.currentMissionTypeIndex]
+	local increment = true 
+	--debugPrint("* try %s", missionType.name)
+	if missionType == nil then
 	  self:finishMissionGeneration()
 	  return
-   	end
-   	if not bc.noContracts[self.currentMissionTypeIndex] and
-   			(missionType.name ~= "harvestMission" or bc:allowHarvest()) and
-   			missionType.classObject.tryGenerateMission ~= nil then
-  		mission = missionType.classObject.tryGenerateMission()
+	end
+	if not bc.noContracts[self.currentMissionTypeIndex] and
+			(missionType.name ~= "harvestMission" or bc:allowHarvest()) and
+			missionType.classObject.tryGenerateMission ~= nil then
+		mission = missionType.classObject.tryGenerateMission()
 		if mission ~= nil then
 		 self:registerMission(mission, missionType)
 		 increment = false
@@ -708,6 +709,23 @@ function BetterContracts:onPostLoadMap(mapNode, mapFile)
 	initGui(self) 			-- setup my gui additions
 	self.initialized = true
 end
+function BetterContracts:onWriteStream(streamId)
+	-- write settings to a client when it joins
+	for _, setting in ipairs(self.settingsMgr.settings) do 
+		setting:writeStream(streamId)
+	end
+end
+function BetterContracts:onReadStream(streamId)
+	-- client reads our config settings when it joins
+	for _, setting in ipairs(self.settingsMgr.settings) do 
+		setting:readStream(streamId)
+	end
+end
+function BetterContracts:onUpdate(dt)
+	if self.transportMission and g_server == nil then 
+		updateTransportTimes(dt)
+	end 
+end
 
 function BetterContracts:updateGenerationInterval()
 	-- set Mission generation rate (std is 6 min)
@@ -723,14 +741,31 @@ function BetterContracts:updateGenerationSettings()
 	debugPrint("[%s] Fields amount %s (%s)", self.name, fieldsAmount, adjustedFieldsAmount)
 	debugPrint("[%s] MAX_MISSIONS set to %s", self.name, MissionManager.MAX_MISSIONS)
 end
-
-function BetterContracts:onPostSaveSavegame(saveDir, savegameIndex)
+function saveSavegame()
 	-- save our settings
-	self.configFile = saveDir.. self.name..'.xml'
-	debugPrint("** saving settings to %s (savegame%d)", self.configFile, savegameIndex)
-	local xmlFile = XMLFile.create("BCconf", self.configFile, self.baseXmlKey, self.xmlSchema)
-	if xmlFile == nil then return end 
-
+	self = BetterContracts
+	if self.saveFile == nil then
+		if g_currentMission and g_currentMission.missionInfo then
+			local savegameDir = g_currentMission.missionInfo.savegameDirectory
+			if savegameDir ~= nil then
+				self.saveFile = ("%s/%s.xml"):format(savegameDir, self.name)
+				self.savegameIx = g_currentMission.missionInfo.savegameIndex
+			-- else: Save game directory is nil if this is a brand new save
+			end
+		else
+			Logging.warning("[%s] saveSavegame() could not get path to savegame directory",
+				self.name)
+			return
+		end
+	end
+	debugPrint("[%s] saving settings to %s (savegame%d)", 
+		self.name, self.saveFile, self.savegameIx)
+	local xmlFile = XMLFile.create("BCconf", self.saveFile, self.baseXmlKey, self.xmlSchema)
+	if xmlFile == nil then 
+		Logging.warning("[%s] saveSavegame() could not create xmlFile %s",
+				self.name, self.saveFile)
+		return 
+	end 
 	local conf = self.config
 	local key = self.baseXmlKey 
 	xmlFile:setBool ( key.."#debug", 		  conf.debug)
@@ -779,24 +814,6 @@ function BetterContracts:onPostSaveSavegame(saveDir, savegameIndex)
 	xmlFile:save()
 	xmlFile:delete()
 end
-function BetterContracts:onWriteStream(streamId)
-	-- write settings to a client when it joins
-	for _, setting in ipairs(self.settingsMgr.settings) do 
-		setting:writeStream(streamId)
-	end
-end
-function BetterContracts:onReadStream(streamId)
-	-- client reads our config settings when it joins
-	for _, setting in ipairs(self.settingsMgr.settings) do 
-		setting:readStream(streamId)
-	end
-end
-function BetterContracts:onUpdate(dt)
-	if self.transportMission and g_server == nil then 
-		updateTransportTimes(dt)
-	end 
-end
-
 function missionWriteStream(self, streamId, connection)
 	-- appended to AbstractMission.writeStream
 	if self.field ~= nil then
