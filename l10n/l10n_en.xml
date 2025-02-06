@@ -6,6 +6,9 @@
 	  v1.1.0.0    08.01.2025  UI settings page, discount mode
 =======================================================================================================-->
 <l10n>
+	<!--elements>
+		<e k="global_bc_name" v="Better Contracts"/>
+	</elements-->
 	<texts>
 		<!-- Keys -->
 		<text name = "input_MENU_EXTRA_3" text = "Better Contracts: Details on/off"/>
@@ -20,7 +23,7 @@
 		<text name="bc_detailsOn" text="BC on" />
 
 		<!-- Display texts -->
-		<text name="bc_name" text="Better Contracts" />
+		<text name="global_bc_name" text="Better Contracts" />
 		<text name="bc_mowed" text="Mowed:" />
 		<text name="bc_tomow" text="To mow:" />
 		<text name="bc_chaff" text="Cut %s" />

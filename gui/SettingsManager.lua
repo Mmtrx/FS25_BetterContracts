@@ -22,26 +22,30 @@ function InGameMenuSettingsFrame:showSettings()
 	-- callback for mod page tabs button
 	-- set the multitext to corresponding state
 	local modState = BetterContracts.settingsMgr.modState
+	if modState == nil then 
+		Logging.error("onClick BetterContracts: modState is nil")
+		return
+	end
 	self.subCategoryPaging:setState(modState, true)
 end
+--[[
 function InGameMenuSettingsFrame:onClickControls()
 	-- set to last but one state
 	self.subCategoryPaging:setState(#self.subCategoryPaging.texts -1, true)
 end
-
+]]
 function SettingsManager:insertSettingsPage()
-	-- make additional subCategory tab button  
+  -- make additional subCategory tab button  
 	local pageSettings = g_inGameMenu.pageSettings
 	local modButton = pageSettings.subCategoryTabs[1]:clone(pageSettings.subCategoryBox)
 	modButton.textUpperCase = false
 	modButton:setText("BetterContracts")
 	modButton.onClickCallback = InGameMenuSettingsFrame.showSettings
-	-- overwrite controls setting button callback:
-	pageSettings.subCategoryTabs[5].onClickCallback = InGameMenuSettingsFrame.onClickControls
 
+	-- our button / page is the last in the list
 	table.insert(pageSettings.subCategoryTabs, modButton) 
-	self.modPageNr = #pageSettings.subCategoryPages + 1   -- until now: always 6
-	--self.modState = #pageSettings.subCategoryPaging.texts + 1 -- moved to frameOpen
+
+	self.modPageNr = #pageSettings.subCategoryTabs   -- until now: always 6
 
 	pageSettings.subCategoryPaging:addText(self.modPageNr)
 	pageSettings.subCategoryBox:invalidateLayout()
@@ -53,11 +57,11 @@ function SettingsManager:insertSettingsPage()
 		end
 	end
 
-	-- make additional subCategory page  
+  -- make additional subCategory page  
 	local modPage = pageSettings.subCategoryPages[1]:clone(pageSettings)
 
 	table.insert(pageSettings.subCategoryPages, modPage)
-	modPage.id = "subCategoryPages[6]"
+	modPage.id = "bcPage"
 	modPage.settingsLayout =
 		modPage:getFirstDescendant(function(elem) 
 		return elem.profile == "fs25_settingsLayout" 
@@ -75,14 +79,14 @@ function SettingsManager:insertSettingsPage()
 	for i = #modPage.settingsLayout.elements,1,-1 do
 		modPage.settingsLayout.elements[i]:delete()
 	end
-	UIHelper.updateFocusIds(modPage)
+	--UIHelper.updateFocusIds(modPage)
 	
-	return modPage
+	return modPage, modButton
 end
 function SettingsManager:init()
 	local bc = BetterContracts
-	-- clone from generalSettings: id="subCategoryPages[2]":
-	local modPage = self:insertSettingsPage()
+	-- clone from generalSettings: id="subCategoryPages[1]":
+	local modPage, modButton = self:insertSettingsPage()
 	bc.modPage = modPage
 	
 	-- dynamically generate our gui elements for settings page
@@ -101,18 +105,87 @@ function SettingsManager:init()
 			end
 		end
 	end
-	--modPage:setVisible(true)
-	--InGameMenuSettingsFrame.updateAlternatingElements(_, modPage.settingsLayout)
-	modPage.settingsLayout:invalidateLayout()	-- Update the focus manager
+	-- Update the focus manager:
+	local currentGui = FocusManager.currentGui
+	FocusManager:setGui(bc.frSet.name)
+	FocusManager:removeElement(modPage)
+	FocusManager:removeElement(modButton) -- if we made our tab button from a gui.xml
+	FocusManager:loadElementFromCustomValues(modPage)
+	FocusManager:loadElementFromCustomValues(modButton)
+	FocusManager:setGui(currentGui)
+
+	modPage.settingsLayout:invalidateLayout()	
+
+	-- set our header info, to be picked up in updateSubCategoryPages()
+	InGameMenuSettingsFrame.SUB_CATEGORY.BCONTRACTS = self.modPageNr
+	InGameMenuSettingsFrame.HEADER_SLICES[InGameMenuSettingsFrame.SUB_CATEGORY.BCONTRACTS] = 
+		"gui.icon_ingameMenu_contracts"
+	InGameMenuSettingsFrame.HEADER_TITLES[InGameMenuSettingsFrame.SUB_CATEGORY.BCONTRACTS] = 
+		"bc_name"
 
 	-- adjust settings for our menu page when it is selected:
-	Utility.appendedFunction(InGameMenuSettingsFrame,"onFrameOpen",onSettingsFrameOpen)
-	
-	-- save the original subCategoryPaging callback:
-	modPage.updateSubCategoryPages = g_inGameMenu.pageSettings.subCategoryPaging.onClickCallback  
-	-- install our own:
-	g_inGameMenu.pageSettings.subCategoryPaging.onClickCallback = updateSubCategoryPages
+	Utility.appendedFunction(bc.frSet,"onFrameOpen", onSettingsFrameOpen)
+	Utility.overwrittenFunction(bc.frSet.subCategoryPaging, 
+		"onClickCallback", updateSubCategoryPages) 		-- subCategoryPaging callback
+
 	debugPrint("** SettingsManager:initiated")
+end
+function onSettingsFrameOpen(self)
+	-- appended to InGameMenuSettingsFrame:onFrameOpen()
+	debugPrint("**onSettingsFrameOpen()")
+	self.isOpening = true
+	local bc = BetterContracts
+	local modPage = bc.modPage
+	local settingsPage = bc.settingsMgr
+	local isMultiplayer = g_currentMission.missionDynamicInfo.isMultiplayer
+
+	-- our mod button should always be the last one in subCategoryPaging MTO
+	settingsPage.modState = #g_inGameMenu.pageSettings.subCategoryPaging.texts
+
+	if isMultiplayer and not (g_inGameMenu.isServer or g_inGameMenu.isMasterUser) then  
+		modPage.settingsLayout:setVisible(false)
+		modPage.noPermission:setVisible(true)
+	else
+		modPage.settingsLayout:setVisible(true)
+		modPage.noPermission:setVisible(false)
+
+		if settingsPage.populateAutoBindControls then 
+		  -- Note: This method is created dynamically by UIHelper.setupAutoBindControls
+			settingsPage.populateAutoBindControls() 
+		end
+		-- apply initial disabled states
+		settingsPage:updateDisabled("lazyNPC")				
+		settingsPage:updateDisabled("discountMode")			
+		settingsPage:updateDisabled("hardMode")
+
+		if bc.contractBoost then 
+		-- disable if ContractBoost.settings.enableContractValueOverrides is on
+			 local disabled = g_currentMission.contractBoostSettings.enableContractValueOverrides
+			 settingsPage.rewardMultiplier.setting:updateDisabled(disabled)
+			 settingsPage.rewardMultiplierMow.setting:updateDisabled(disabled)
+		end	
+		--  make alternating backgrounds
+		modPage:setVisible(true)
+		self:updateAlternatingElements(modPage.settingsLayout)
+	end
+	self.isOpening = false
+end
+function updateSubCategoryPages(self, superf, state)
+	-- overwrites InGameMenuSettingsFrame:updateSubCategoryPages() 
+	debugPrint("**updateSubCategoryPages state = %d", state)
+	local modPage = BetterContracts.modPage
+	local retValue = superf(self, state)
+	--local retValue = modPage.updateSubCategoryPages(self, state)
+
+	local val = self.subCategoryPaging.texts[state]
+	if val ~= nil and tonumber(val) == InGameMenuSettingsFrame.SUB_CATEGORY.BCONTRACTS then
+		self.settingsSlider:setDataElement(modPage.settingsLayout)
+		FocusManager:linkElements(self.subCategoryPaging, FocusManager.TOP, 
+			modPage.settingsLayout.elements[#modPage.settingsLayout.elements].elements[1])
+		FocusManager:linkElements(self.subCategoryPaging, FocusManager.BOTTOM, 
+			modPage.settingsLayout:findFirstFocusable(true))
+	end
+	return retValue
 end
 function SettingsManager:updateDisabled(controlName)
 	-- set disabled states for dependent controls
@@ -141,75 +214,6 @@ function SettingsManager:setGeneration(setting)
 	bc.canHarvest.GREEN = bc.config.genGreen
 	bc.canHarvest.VEGETABLES = bc.config.genVegetable
 	bc.canHarvest.ROOT = bc.config.genRoot
-end
-function updateSubCategoryPages(self, state)
-	-- overwrites InGameMenuSettingsFrame:updateSubCategoryPages() 
-	debugPrint("**updateSubCategoryPages state = %d", state)
-	local modPage = BetterContracts.modPage
-	local modState = BetterContracts.settingsMgr.modState
-	if state == modState then 
-		self.settingsSlider:setDataElement(modPage.settingsLayout)
-		FocusManager:linkElements(self.subCategoryPaging, FocusManager.TOP, 
-			modPage.settingsLayout.elements[#modPage.settingsLayout.elements].elements[1])
-		FocusManager:linkElements(self.subCategoryPaging, FocusManager.BOTTOM, 
-			modPage.settingsLayout:findFirstFocusable(true))
-		--FocusManager:linkElements(
-		--	modPage.settingsLayout.elements[#modPage.settingsLayout.elements].elements[1],
-		--	FocusManager.BOTTOM, self.subCategoryPaging)
-
-		--FocusManager:linkElements(modPage.settingsLayout.elements[1].elements[1], 
-		--	FocusManager.TOP, self.subCategoryPaging)
-		
-		-- call the original:
-		modPage.updateSubCategoryPages(self, state)
-		--FocusManager:setFocus(modPage.settingsLayout.elements[1].elements[1])
-		-- set page header:
-		self.categoryHeaderIcon:setImageSlice(nil, "gui.icon_ingameMenu_contracts")
-		self.categoryHeaderText:setText(g_i18n:getText("bc_name"))
-	else
-		return modPage.updateSubCategoryPages(self, state)
-	end
-end
-function onSettingsFrameOpen(self)
-	-- appended to InGameMenuSettingsFrame:onFrameOpen()
-	self.isOpening = true
-	local bc = BetterContracts
-	local modPage = bc.modPage
-	local settingsPage = bc.settingsMgr
-	local isMultiplayer = g_currentMission.missionDynamicInfo.isMultiplayer
-
-	-- our mod button should always be the last one in subCategoryPaging MTO
-	settingsPage.modState = #g_inGameMenu.pageSettings.subCategoryPaging.texts
-
-	if isMultiplayer and not (g_inGameMenu.isServer or g_inGameMenu.isMasterUser) then  
-		modPage.settingsLayout:setVisible(false)
-		--modPage.gameSettingsSeparator:setVisible(false)
-		modPage.noPermission:setVisible(true)
-	else
-		modPage.settingsLayout:setVisible(true)
-		--modPage.gameSettingsSeparator:setVisible(true)
-		modPage.noPermission:setVisible(false)
-
-		if settingsPage.populateAutoBindControls then 
-		  -- Note: This method is created dynamically by UIHelper.setupAutoBindControls
-			settingsPage.populateAutoBindControls() 
-		end
-		-- apply initial disabled states
-		settingsPage:updateDisabled("lazyNPC")				
-		settingsPage:updateDisabled("discountMode")			
-		settingsPage:updateDisabled("hardMode")
-
-		if bc.contractBoost then 
-		-- disable if ContractBoost.settings.enableContractValueOverrides is on
-			 local disabled = g_currentMission.contractBoostSettings.enableContractValueOverrides
-			 settingsPage.rewardMultiplier.setting:updateDisabled(disabled)
-			 settingsPage.rewardMultiplierMow.setting:updateDisabled(disabled)
-		end	
-		--  make alternating backgrounds
-		modPage:setVisible(true)
-		self:updateAlternatingElements(modPage.settingsLayout)
-	end
-	self.isOpening = false
 end
 function SettingsManager:onSettingsChange(control, newValue) 
 	-- called by the controls onClick callback. Callback has already set the corresponding

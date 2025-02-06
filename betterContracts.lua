@@ -15,6 +15,7 @@
 --							only show on hud active cntr with completion > 0
 --  v1.1.1.1    04.02.2025  fix white UI page (#19, #24, #29), fix ContractBoost compat #28
 --  v1.1.1.2    05.02.2025  fix server save/load #22, #27, #30.
+
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -84,6 +85,14 @@ source(Utils.getFilename("Utility.lua", g_currentModDirectory.."scripts/")) 	-- 
 ---@class BetterContracts : RoyalMod
 BetterContracts = RoyalMod.new(true, true)     --params bool debug, bool sync
 
+gEnv = getmetatable(_G).__index
+function addTexts()
+	for name, value in pairs(g_i18n.texts) do
+		if string.startsWith(name, "global_") then
+			gEnv.g_i18n:setText(name:sub(8), value)
+		end
+	end
+end
 function checkOtherMods(self)
 	local mods = {	
 		FS25_ContractBoost = "contractBoost",
@@ -415,6 +424,7 @@ function BetterContracts:initialize()
 	checkOtherMods(self)
 	registerXML(self) 			-- register xml: self.xmlSchema
 	hookFunctions(self) 		-- appends / overwrites to basegame functions
+	addTexts()  				-- raise i18n texts to global
 end
 function BetterContracts:allowHarvest()
 	-- check if fruit on current field is exluded from harvest contracts
@@ -703,6 +713,7 @@ function BetterContracts:onPostLoadMap(mapNode, mapFile)
 	self.gameMenu = g_inGameMenu
 	self.frCon = self.gameMenu.pageContracts
 	self.frMap = self.gameMenu.pageMapOverview
+	self.frSet = self.gameMenu.pageSettings
 	--self.frMap.ingameMap.onClickMapCallback = self.frMap.onClickMap
 	--self.frMap.buttonBuyFarmland.onClickCallback = onClickBuyFarmland
 
