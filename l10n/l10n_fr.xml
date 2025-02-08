@@ -10,8 +10,8 @@
 		<text name="bc_other" text="L'autre" />
 		<text name="bc_new_contracts" text="Rafraîchir" />
 		<text name="bc_clear_contracts" text="Purger" />
-		<text name="bc_detailsOff" text="Sans BC" />
-		<text name="bc_detailsOn" text="Avec BC" />
+		<text name="bc_detailsOff" text="Sans Détails" />
+		<text name="bc_detailsOn" text="Avec Détails" />
 
 		<!-- Hard mode -->
 		<text name="bc_penalty" text="Pénalité" />
@@ -121,21 +121,21 @@
 		
 		<text name="bc_missionGeneration" text="Génération de contrats" />
 		<text name="bc_generationInterval" text="Interval de génération" />
-		<text name="bc_generationInterval_tooltip" text="Nombre de 6-minutes intervals à attendre avant de générer de nouveaux contrats." />
+		<text name="bc_generationInterval_tooltip" text="Nombre d'intervale de 6 minutes à attendre dans le jeu avant de générer de nouveaux contrats." />
 
-		<text name="bc_genGrain" text="Grain harvest" />
-		<text name="bc_genGrain_tooltip" text="Generate grain harvest contracts (possibly including maize, cotton)" />
-		<text name="bc_genVegetable" text="Vegetable harvest" />
-		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, and parsnip" />
-		<text name="bc_genGreen" text="Green crop harvest" />
-		<text name="bc_genGreen_tooltip" text="Generate harvest contracts for peas, beans, and spinach" />
-		<text name="bc_genRoot" text="Root crop harvest" />
-		<text name="bc_genRoot_tooltip" text="Generate harvest contracts for potatoes, sugarbeet" />
-		<text name="bc_genTree" text="Tree transport contracts" />
-		<text name="bc_genTree_tooltip" text="Generate tree transport contracts" />
-		<text name="bc_genDead" text="Deadwood contracts" />
-		<text name="bc_genDead_tooltip" text="Generate deadwood contracts" />
-		<text name="bc_genRock" text="Rock destruction contracts" />
-		<text name="bc_genRock_tooltip" text="Generate rock destruction contracts" />
+		<text name="bc_genGrain" text="Moisson de Grain" />
+		<text name="bc_genGrain_tooltip" text="Généré des missions de moisson de grain (incluant le maïs et le cotton)" />
+		<text name="bc_genVegetable" text="Récolte de cultures Racinaires" />
+		<text name="bc_genVegetable_tooltip" text="Généré des missions de récolte pour les carottes, betteraves et panais" />
+		<text name="bc_genGreen" text="Récolte de cultures Maraichères" />
+		<text name="bc_genGreen_tooltip" text="Généré des missions de récolte pour les haricots, épinards et pois" />
+		<text name="bc_genRoot" text="Récolte de cultures Racinaires" />
+		<text name="bc_genRoot_tooltip" text="Généré des missions de récolte pour les pommes de terres (patates), et betteraves à sucre" />
+		<text name="bc_genTree" text="Mission de transport de bois" />
+		<text name="bc_genTree_tooltip" text="Généré des missions de transport de bois" />
+		<text name="bc_genDead" text="Mission de bois Mort" />
+		<text name="bc_genDead_tooltip" text="Généré des missions de bois mort" />
+		<text name="bc_genRock" text="Mission de destruction de rochets" />
+		<text name="bc_genRock_tooltip" text="Généré des missions de destruction des pierres" />
 	</texts>
 </l10n>
