@@ -71,22 +71,17 @@ function loadGUI(self, guiPath)
 	end)
 	if not canLoad then return false end 
 
-	-- load settings page controller "SettingsManager.lua"
-	if g_gui ~= nil then
-		local luaPath = guiPath .. "SettingsManager.lua"
-		if fileExists(luaPath) then
-			source(luaPath)
-		else
-			Logging.error("[GuiLoader %s]  Required file '%s' could not be found!", self.name, luaPath)
+	-- load "settingsPage.xml"
+	fname = guiPath .. "settingsPage.xml"
+	if fileExists(fname) then
+		self.modPage = SettingsPage.new()
+		if g_gui:loadGui(fname, "BCSettingsFrame", self.modPage) == nil then
+			Logging.error("[GuiLoader %s]  Error loading SettingsPage", self.name)
 			return false
 		end
-		luaPath = guiPath .. "UIHelper.lua"
-		if fileExists(luaPath) then
-			source(luaPath)
-		else
-			Logging.error("[GuiLoader %s]  Required file '%s' could not be found!", self.name, luaPath)
-			return false
-		end
+	else
+		Logging.error("[GuiLoader %s]  Required file '%s' could not be found!", self.name, fname)
+		return false
 	end
 	return canLoad
 end
@@ -96,7 +91,11 @@ function initGui(self)
 	else
 		debugPrint("-------- gui loaded -----------")
 	end
-	-- add new buttons
+	-- init our settings page controller
+	self.settingsMgr = SettingsManager.new()
+	self.settingsMgr:init()
+
+	-- add new buttons for contracts page
 	self.detailsButtonInfo = {
 		inputAction = InputAction.MENU_EXTRA_3,
 		text = g_i18n:getText("bc_detailsOn"),
@@ -128,8 +127,6 @@ function initGui(self)
 	-- inform us on subCategoryChange:
 	self.frCon.subCategorySelector.onClickCallback = onChangeSubCategory
 
-	self.settingsMgr = SettingsManager:new()
-	self.settingsMgr:init()  		-- init our settings page controller
 	--loadIcons(self)
 	------------------- setup my display elements -------------------------------------
  -- enlarge contract details listbox

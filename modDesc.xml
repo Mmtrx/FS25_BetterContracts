@@ -10,7 +10,8 @@
             <![CDATA[
 Port of FS22_BetterContracts
 
-ChangeLog v1.1.1.1:
+ChangeLog v1.1.1.2:
+- compatibility with FS25_additionalGameSettings (#31, #33, #35)
 - fix white UI page (#19, #24, #29), server save/load (#22, #27, #30)
 - fix npc jobs for cancelled mission (#17)
 - awareness for FS25_LimeMission, FS25_ContractBoost
@@ -96,6 +97,8 @@ Je prévois d'implémenter des fonctions supplémentaires dans les prochaines ve
         <sourceFile filename="scripts/missionVehicles.lua" />
         <sourceFile filename="scripts/options.lua" />
         <sourceFile filename="scripts/settings.lua" />
+        <sourceFile filename="scripts/SettingsManager.lua" />
+        <sourceFile filename="scripts/UIHelper.lua" />
         <sourceFile filename="scripts/userint.lua" />
     </extraSourceFiles>
     <l10n filenamePrefix="l10n/l10n" />

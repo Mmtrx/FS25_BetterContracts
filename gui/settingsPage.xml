@@ -2,29 +2,36 @@
 <!--=====================================================================================================
 	BetterContracts GUI additions
 	Purpose:    Enhance ingame contracts menu with filterbox
-	Author:     Mmtrx, modified from FS22_Courseplay   
-	Copyright:	Courseplay
+	Author:     Mmtrx, modified from FS25_Courseplay   
 	License:	GNU GPL v3.0
 	Changelog:
-	 v1.2.6.0   30.11.2022  UI for all settings
+	 v1.0.0.0   06.02.2025  UI page for all settings
 ======================================================================================================-->
 <GUI name="BCsettings">
-	<!--GuiElement profile="fs25_subCategorySelectorTabbedContainer"-->
-	<Text profile="fs25_settingsSectionHeader" name="sectionHeader" id="subTitlePrefab"/>
-	<Bitmap profile="fs25_multiTextOptionContainer" id="binaryPrefab">
-		<BinaryOption profile="fs25_settingsBinaryOption" onClick="onClickBinaryOption" id="checkPrefab">
-		<Text profile="fs25_multiTextOptionTooltip" name="ignore" />
-		</BinaryOption>
-		<Text profile="fs25_settingsMultiTextOptionTitle" />
-	</Bitmap>
-	<Bitmap profile="fs25_multiTextOptionContainer" id="multiPrefab">
-		<MultiTextOption profile="fs25_settingsMultiTextOption" onClick="onClickMultiOption" id="multiTextPrefab">
-		<Text profile="fs25_multiTextOptionTooltip" name="ignore" text="$l10n_toolTip_moneyUnit"/>
-		</MultiTextOption>
-		<Text profile="fs25_settingsMultiTextOptionTitle" text="$l10n_setting_moneyUnit"/>
-	</Bitmap>
-
+<GuiElement profile="fs25_menuContainer">
+	<BoxLayout profile="fs25_subCategorySelectorTabbedBox">
+		<Button profile="fs25_subCategorySelectorTabbedTab" id="bcTab" text="BetterContracts" onClick="onClickBC" textUpperCase="false">
+			<ThreePartBitmap profile="fs25_subCategorySelectorTabbedTabBg" name="background"/>
+		</Button>
+	</BoxLayout>
+	<GuiElement profile="fs25_subCategorySelectorTabbedContainer" id="bcPage">
+	<Text profile="fs25_settingsNoPermissionText" id="bcNoPermissionText" text="$l10n_bc_settingsNoPermission"/>
 	<ScrollingLayout profile="fs25_settingsLayout" id="settingsLayout">
+		<Text profile="fs25_settingsSectionHeader" name="sectionHeader" id="subTitlePrefab"/>
+		<Bitmap profile="fs25_multiTextOptionContainer" id="binaryPrefab">
+			<BinaryOption profile="fs25_settingsBinaryOption" onClick="onClickBinaryOption" id="checkPrefab">
+				<Text profile="fs25_multiTextOptionTooltip" name="ignore" />
+			</BinaryOption>
+			<Text profile="fs25_settingsMultiTextOptionTitle" />
+		</Bitmap>
+		<Bitmap profile="fs25_multiTextOptionContainer" id="multiPrefab">
+			<MultiTextOption profile="fs25_settingsMultiTextOption" onClick="onClickMultiOption" id="multiTextPrefab">
+				<Text profile="fs25_multiTextOptionTooltip" name="ignore" />
+			</MultiTextOption>
+			<Text profile="fs25_settingsMultiTextOptionTitle" />
+		</Bitmap>
 	</ScrollingLayout>
-	<!--/GuiElement-->
+	<Bitmap profile="fs25_settingsTooltipSeparator" id="bcSeparator"/>
+	</GuiElement>
+</GuiElement>
 </GUI>

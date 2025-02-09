@@ -4,12 +4,13 @@
 	Changelog:
 	  v1.0.0.0    28.10.2024  1st port to FS25
 	  v1.1.0.0    08.01.2025  UI settings page, discount mode
+	  v1.1.1.2    09.02.2025  compatible FS25_additionalGameSettings
 =======================================================================================================-->
 <l10n>
-	<!--elements>
-		<e k="global_bc_name" v="Better Contracts"/>
-	</elements-->
 	<texts>
+		<!-- updates v1.1.1.2 -->
+		<text name="global_bc_name" text="Better Contracts" />
+		<text name="bc_settingsNoPermission" text="You don&apos;t have the permission to change Better Contracts settings!" />
 		<!-- Keys -->
 		<text name = "input_MENU_EXTRA_3" text = "Better Contracts: Details on/off"/>
 		<text name = "input_BC_MTOGGLE" text = "BC: Toggle display of active farm contracts"/>
@@ -23,7 +24,6 @@
 		<text name="bc_detailsOn" text="BC on" />
 
 		<!-- Display texts -->
-		<text name="global_bc_name" text="Better Contracts" />
 		<text name="bc_mowed" text="Mowed:" />
 		<text name="bc_tomow" text="To mow:" />
 		<text name="bc_chaff" text="Cut %s" />

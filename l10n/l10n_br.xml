@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <l10n>
 	<texts>
+		<!-- updates v1.1.1.2 -->
+		<text name="global_bc_name" text="Better Contracts" />
+		<text name="bc_settingsNoPermission" text="You don&apos;t have the permission to change Better Contracts settings!" />
 		<!-- Keys -->
 		<text name = "input_MENU_EXTRA_3" text = "Melhores contratos: Detalhes Ligado/Desligado"/>
 		<text name = "input_BC_MTOGGLE" text = "BC: Toggle display of active farm contracts"/>
@@ -14,7 +17,6 @@
 		<text name="bc_detailsOn" text="BC Ligado" />
 
 		<!-- Display texts -->
-		<text name="bc_name" text="Better Contracts" />
 		<text name="bc_mowed" text="Mowed:" />
 		<text name="bc_tomow" text="To mow:" />
 		<text name="bc_chaff" text="Cut %s" />

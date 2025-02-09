@@ -15,7 +15,7 @@
 --							only show on hud active cntr with completion > 0
 --  v1.1.1.1    04.02.2025  fix white UI page (#19, #24, #29), fix ContractBoost compat #28
 --  v1.1.1.2    05.02.2025  fix server save/load #22, #27, #30.
-
+-- 							compatible with FS25_additionalGameSettings #31, #33, #35
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index

@@ -6,15 +6,17 @@
 ---v1.1: Fixed choice controls when using string values
 ---v1.2: Choice controls can now be nillable, too
 ---v1.3: Adapted for BetterContracts, use an own settings page, separate from general settings
----@class UIHelper
+
 UIHelper = {}
 
----Creates a new section with the given title
----@param settingsPage table @The mods settings page 
----@param i18nTitleId string @The I18N ID of the title to be displayed
----@return table|nil @The created section element
 function UIHelper.createSection(settingsPage, i18nTitleId)
-	local sectionHeader = g_inGameMenu.pageSettings:getDescendantByName("sectionHeader")
+ ---Creates a new section with the given title
+ ---@param settingsPage table @The mods settings page 
+ ---@param i18nTitleId string @The I18N ID of the title to be displayed
+ ---@return table|nil @The created section element
+	local sectionHeader = settingsPage.subTitlePrefab
+	--local sectionHeader = settingsPage:getDescendantById("subTitlePrefab")
+	--local sectionHeader = g_inGameMenu.pageSettings:getDescendantByName("sectionHeader")
 
 	local sectionTitle = sectionHeader:clone(settingsPage.settingsLayout)
 	if sectionTitle then
@@ -25,9 +27,8 @@ function UIHelper.createSection(settingsPage, i18nTitleId)
 	return sectionTitle
 end
 
----Sets the focusId properties of the element and any children to a new unique ID each
----@param element table the element
 function UIHelper.updateFocusIds(element)
+	--Sets the focusId properties of the element and any children to a new unique ID each
 	if not element then
 		return
 	end
@@ -52,7 +53,7 @@ local function createElement(settingsPage, template, id, i18nTextId, target, cal
 	-- 1.) Any callback will be executed on the target object
 	-- 2.) The focus manager will ignore anything which has a different target _name_ than the current UI
 	-- => Since we want to allow any target for callbacks, we just copy the general settings page's name to the target
-	target.name = settingsPage.name
+	target.name = g_inGameMenu.pageSettings.name
 	-- Change generic values
 	elementOption.id = id
 	elementOption:setDisabled(false)
@@ -67,29 +68,17 @@ local function createElement(settingsPage, template, id, i18nTextId, target, cal
 	return elementBox
 end
 
----Adds a simple yes/no switch to the UI
----@param page   				table       @The mods object for the settings page
----@param id                    string      @The unique ID of the new element
----@param i18nTextId            string      @The key in the internationalization XML (must be two keys with a _short and _long suffix)
----@param target                table       @The object which contains the callback func
----@param callbackFunc          string      @The name of the function to call when the value changes
----@return                      table       @The created object
 function UIHelper.createBoolElement(page, id, i18nTextId, target, callbackFunc)
-	local template = g_inGameMenu.pageSettings.checkWoodHarvesterAutoCutBox
+	local template = page.binaryPrefab
+	--local template = page:getDescendantById("binaryPrefab")
+	--local template = g_inGameMenu.pageSettings.checkWoodHarvesterAutoCutBox
 	return createElement(page, template, id, i18nTextId, target, callbackFunc)
 end
 
----Creates an element which allows choosing one out of several text values
----@param page   				table       @The mods object for the settings page
----@param id                    string      @The unique ID of the new element
----@param i18nTextId            string      @The key in the internationalization XML (must be two keys with a _short and _long suffix)
----@param i18nValueMap          table       @An map of values containing translation IDs for the possible values
----@param target                table       @The object which contains the callback func
----@param callbackFunc          string      @The name of the function to call when the value changes
----@param nillable              string      @If set to true, the first entry will mean the setting has no effect. The text value will be "-".
----@return                      table       @The created object
 function UIHelper.createChoiceElement(page, id, i18nTextId, i18nValueMap, target, callbackFunc, nillable)
-	local template = g_inGameMenu.pageSettings.multiVolumeVoiceBox
+	local template = page.multiPrefab
+	--local template = page:getDescendantById("multiPrefab")
+	--local template = g_inGameMenu.pageSettings.multiVolumeVoiceBox
 	local choiceElementBox = createElement(page, template, id, i18nTextId, target, callbackFunc)
 
 	local choiceElement = choiceElementBox.elements[1]
@@ -115,23 +104,14 @@ function UIHelper.createChoiceElement(page, id, i18nTextId, i18nValueMap, target
 	return choiceElementBox
 end
 
----Creates an element which allows choosing one out of several integer values
----@param page   				table       @The mods object for the settings page
----@param id                    string      @The unique ID of the new element
----@param i18nTextId            string      @The key in the internationalization XML (must be two keys with a _short and _long suffix)
----@param minValue              integer     @The first value which can be selected
----@param maxValue              integer     @The last value which can be selected
----@param step                  integer     @The difference between any two values. Make sure this matches max value
----@param unit                  string      @The unit to be displayed (may be empty)
----@param target                table       @The object which contains the callback func
----@param callbackFunc          string      @The name of the function to call when the value changes
----@param nillable              string      @If set to true, the first entry will mean the setting has no effect. The text value will be "-".
----@return                      table       @The created object
 function UIHelper.createRangeElement(page, id, i18nTextId, minValue, maxValue, step, unit, target, callbackFunc, nillable)
-	-- createElement does the container, multitext, title, and tooltip
-	local template = g_inGameMenu.pageSettings.multiVolumeVoiceBox
+	--Creates an element which allows choosing one out of several integer values
+	local template = page.multiPrefab
+	--local template = page:getDescendantById("multiPrefab")
 	--debugPrint("*createRangeElement id %s, i18nTitleId %s, unit %s, nill %s",
 	--	id, i18nTextId, unit, nillable or false)
+
+	-- createElement does the container, multitext, title, and tooltip:
 	local rangeElementBox = createElement(page, template, id, i18nTextId, target, callbackFunc)
 
 	local rangeElement = rangeElementBox.elements[1]
@@ -163,28 +143,26 @@ function UIHelper.createRangeElement(page, id, i18nTextId, minValue, maxValue, s
 	return rangeElementBox
 end
 
----Dynamically creates controls based on the controlProperties configuration table.
----For bool values, supply just the name, for ranges, additionally supply min, max and step, and for choices, supply a values table in addition to the name
----For choices, you can also set nillable to true to get a "-" item for base game behavior, for example.
----For every control name, a <prefix>_<name>_long and _short text must exist in the l10n files.
----The _short text will be the title of the setting, the _long" text will be its tool tip.
----For each control, a on_<name>_changed callback will be called on change.
----@param settingsPage table @The general settings page
----@param owningTable table @The table which owns the controls and will receive the callbacks. Every control name will be available as <owningTable>.<name> and will be added to <owningTable.controls>
----@param controlProperties table @A table comprised of entries as described above
----@param prefix string @An optional prefix for every control name. This will also be prepended to the i18n keys
 function UIHelper.createControlsDynamically(settingsPage, owningTable, controlProperties, prefix)
+ --[[ 
+	For each control defined in controlProperties list, a on_<name>_changed 
+	callback will be called on change.
+	owningTable: table which owns the controls and will receive the callbacks.
+	Every control name will be available as <owningTable>.<name> and will be
+	added to <owningTable.controls>
+	prefix: optional prefix for every control name. This will also be 
+	prepended to the i18n keys
+ ]]
 	local uiControl, id, callback
 	for _, controlProps in ipairs(controlProperties) do
 		if controlProps.title ~= nil then  
-			uiControl = UIHelper.createSection(settingsPage, controlProps.title)  --
+			uiControl = UIHelper.createSection(settingsPage, controlProps.title)
 			table.insert(owningTable.controls, uiControl)
 			owningTable[controlProps.title] = uiControl
 		else
 			local id = prefix .. controlProps.name
 			local title = controlProps.ui or id  -- set a MTO title from basegame l10n
 			local callback = "on_" .. controlProps.name .. "_changed"
-
 			local setting = BCcontrol.new(controlProps.name)
 
 			if controlProps.min ~= nil then
@@ -229,10 +207,10 @@ function UIHelper.createControlsDynamically(settingsPage, owningTable, controlPr
 	end
 end
 
----Hooks into the focus manager at just the right point in time to register any relevant controls.
----Make sure you also supply your section headers here!
----@param controls table @A list of controls
 function UIHelper.registerFocusControls(page, controls)
+	-- Hooks into the focus manager at just the right point in time to
+	-- register any relevant controls.
+	-- Make sure you also supply your section headers here!
 	FocusManager.setGui = Utils.appendedFunction(FocusManager.setGui, function(_, gui)
 		for _, control in ipairs(controls) do
 			if not control.focusId or not FocusManager.currentFocusData.idToElementMapping[control.focusId] then
@@ -246,16 +224,20 @@ function UIHelper.registerFocusControls(page, controls)
 		page.settingsLayout:invalidateLayout()
 	end)
 end
-
----Makes sure UI controls are being populated with data from targetTable when the settings frame gets opened, and updates the properties in targetTable when the user changes values.
----If you need to populate the controls at additional points in time, you can call the "populateAutoBindControls" function in owningTable after calling this method.
----Whenever a value changes, the updateFunc will be called, if it was supplied
----@param owningTable table @The table which owns the controls.
----@param targetTable table @The table which holds the settings. The name of the controls and the name of the settings must be identical
----@param updateFunc function @This function will be called whenever any auto-bound value changes
 function UIHelper.setupAutoBindControls(owningTable, targetTable, updateFunc)
-	-- Define and store a function which is able to populate the automatically bound controls
-	-- will be called from my own onFrameOpen, appended to basegame frame open func
+	-- Define and store a function to populate the automatically bound controls
+   --[[
+	Call it when the settings frame gets opened, so that UI controls are 
+	being populated with data from targetTable  and updates the properties
+	 in targetTable when the user changes values.
+	If you need to populate the controls at additional points in time, 
+	you can call the "populateAutoBindControls" function in owningTable
+	 after calling this method.
+	targetTable: table which holds the settings. The name of the controls
+	 and the name of the settings must be identical
+	updateFunc: function will be called whenever any auto-bound 
+	value changes
+   ]]
 	owningTable.populateAutoBindControls = function()
 		for _, control in ipairs(owningTable.controls) do
 			if control.autoBind then
@@ -284,11 +266,9 @@ function UIHelper.setupAutoBindControls(owningTable, targetTable, updateFunc)
 	end
 end
 
----Reads the current value of an auto bound control from the settings object (rather than from the UI control's current state)
----@param control table @The UI control
----@param targetTable table @The table which is bound to the control
----@return any @The value
 function UIHelper.getAutoBoundValueFromTable(control, targetTable)
+-- Reads the current value of an auto bound control from the settings 
+-- object (rather than from the UI control's current state)
 	if control.subTable == nil then
 		return targetTable[control.propName or control.name]
 	else
@@ -296,11 +276,8 @@ function UIHelper.getAutoBoundValueFromTable(control, targetTable)
 	end
 end
 
----Writes the current value for an auto bound control to the settings object
----@param control table @The UI control
----@param value any @The value
----@param targetTable table @The table which is bound to the control
 function UIHelper.setAutoBoundValueInTable(control, value, targetTable)
+-- Writes the current value for an auto bound control to the settings object
 	if control.subTable == nil then
 		targetTable[control.propName or control.name or "ERROR"] = value
 	else
@@ -308,10 +285,9 @@ function UIHelper.setAutoBoundValueInTable(control, value, targetTable)
 	end
 end
 
----Sets a range control to the given value. The method will find the appropriate index for the value automatically.
----@param control table @The UI control
----@param value number @The value which shall be displayed to the user
 function UIHelper.setRangeValue(control, value)
+-- Sets a range control to the given value. The method will find 
+-- the appropriate index for the value automatically.
 	local valueIndex
 	if control.nillable and value == nil then
 		valueIndex = 1
@@ -324,11 +300,8 @@ function UIHelper.setRangeValue(control, value)
 	control.elements[1]:setState(valueIndex)
 end
 
----Retrieves the current value of a UI range control.
----@param control table @The UI control
----@param controlState number @The currently selected index
----@return number|nil @The value which was selected by the user (rather than the index)
 function UIHelper.getRangeValue(control, controlState)
+--Retrieves the current value of a UI range control.
 	if control.nillable and controlState == 1 then
 		return nil
 	else
@@ -340,10 +313,10 @@ function UIHelper.getRangeValue(control, controlState)
 	end
 end
 
----Sets a choice control to the given value. The method will find the appropriate index for the value automatically.
----@param control table @The UI control
----@param value number @The value which shall be displayed to the user, except for enums, where this is the index
 function UIHelper.setChoiceValue(control, value)
+-- Sets a choice control to the given state or (for range controls) value.
+-- The method will find the appropriate state index for a range 
+-- value automatically.
 	if control.hasStrings then
 		control.elements[1]:setState(value)
 	else
@@ -356,11 +329,8 @@ function UIHelper.setChoiceValue(control, value)
 	end
 end
 
----Retrieves the current value of a UI choice control.
----@param control table @The UI control
----@param controlState number @The currently selected index
----@return number|nil @The value which was selected by the user (rather than the index, except for enums, where this will be the index)
 function UIHelper.getChoiceValue(control, controlState)
+-- Retrieves the current value of a UI choice control.
 	if control.hasStrings then
 		return controlState
 	else
@@ -368,24 +338,20 @@ function UIHelper.getChoiceValue(control, controlState)
 	end
 end
 
----Sets the current value for a UI yes/no control.
----@param control table @The UI control
----@param value number @The value which shall be displayed to the user
 function UIHelper.setBoolValue(control, value)
+--Sets the current value for a UI yes/no control.
 	control.elements[1]:setState(value and 2 or 1)
 end
 
----Gets the current value of a UI yes/no control
----@param controlState number @The currently selected index of the control.
----@return boolean @The yes/no value as selected by the user
 function UIHelper.getBoolValue(controlState)
+--Gets the current value of a UI yes/no control
 	return controlState == 2
 end
 
----Sets the given value for the given control. The function will automatically determine whether this is a yes/no, an enum or a number range value
----@param control table @The control
----@param value any @The value
 function UIHelper.setControlValue(control, value)
+--Sets the given value for the given control. The function will 
+-- automatically determine whether this is a yes/no, an enum,
+-- or a number range value
 	if control.min ~= nil then
 		UIHelper.setRangeValue(control, value)
 	elseif control.values ~= nil then
@@ -395,11 +361,9 @@ function UIHelper.setControlValue(control, value)
 	end
 end
 
----Retrieves the value from the given control based on the control state (which is obtained from the callback function)
----@param control table @The UI control
----@param controlState number @The current index of the selected value
----@return any @The value of the control. This could be a boolean, a number value, an enum value or nil dependent on the type of control
 function UIHelper.getControlValue(control, controlState)
+-- Retrieves the value from the given control based on the 
+--control state (obtained from the callback function)
 	if control.min ~= nil then
 		return UIHelper.getRangeValue(control, controlState)
 	elseif control.values ~= nil then
