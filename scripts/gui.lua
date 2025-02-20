@@ -9,6 +9,8 @@
 --  v1.0.0.0    28.10.2024  1st port to FS25
 --  v1.0.1.0    10.12.2024  some details
 --  v1.1.0.0    08.01.2025  UI settings page, discount mode
+--  v1.1.1.3    14.02.2025  fix generation non-field contracts #47. Prevent FS25_RefreshContracts
+--							new settings switches: hideMission, stayNew, finishField 
 --=======================================================================================================
 -- calculate real size from pixel value: 140*g_pixelSizeScaledX
 function loadIcons(self)
@@ -76,7 +78,7 @@ function loadGUI(self, guiPath)
 	if fileExists(fname) then
 		self.modPage = SettingsPage.new()
 		if g_gui:loadGui(fname, "BCSettingsFrame", self.modPage) == nil then
-			Logging.error("[GuiLoader %s]  Error loading SettingsPage", self.name)
+			Logging.error("[GuiLoader %s]  Error loading %s", self.name, fname)
 			return false
 		end
 	else
@@ -89,7 +91,7 @@ function initGui(self)
 	if not loadGUI(self, self.directory .. "gui/") then
 		Logging.warning("'%s.Gui' failed to load! Supporting files are missing.", self.name)
 	else
-		debugPrint("-------- gui loaded -----------")
+		Logging.info("%s: -------- gui loaded -----------",self.name)
 	end
 	-- init our settings page controller
 	self.settingsMgr = SettingsManager.new()
@@ -232,9 +234,12 @@ end
 function onFrameOpen(self)
 	-- appended to InGameMenuContractsFrame:onFrameOpen
 	local bc = BetterContracts
-	local inGameMenu = bc.gameMenu
 	--FocusManager:unsetFocus(self.frCon.contractsList)  -- to allow focus movement
 
+	if bc.refreshContracts then  
+	-- prevent execution of FS25_RefreshContracts
+		g_inGameMenu.refreshContractsElement_Button = 1
+	end
  	local newContracts = self.subCategorySelector.state == 1
 	bc.newButton:setVisible(newContracts)
 	bc.clearButton:setVisible(newContracts and 
@@ -257,7 +262,8 @@ function onFrameClose()
 end
 function onMissionStarted(self,superf,state,lease)
 	-- overwritten to InGameMenuContractsFrame:onMissionStarted()
-	if state == MissionStartState.OK then
+	-- prevent switch to ACTIVE contracts list
+	if state == MissionStartState.OK and BetterContracts.config.stayNew then
 		if lease then
 			InfoDialog.show(g_i18n:getText("contract_vehiclesAtShop"), nil, nil, DialogElement.TYPE_INFO)
 		else
@@ -277,8 +283,7 @@ function onChangeSubCategory(self)
 	-- switch visibility of our menu buttons
 	local bc = BetterContracts
  	local newContracts = self.subCategorySelector.state == 1
- 	debugPrint("** onChangeSubCategory **")
-	debugState(self) 				-- selected 2,2. State = 2!
+	--debugState(self) 				-- selected 2,2. State = 2!
 	bc.newButton:setVisible(newContracts)
 	bc.clearButton:setVisible(newContracts and 
 	  self.sectionContracts[1][1]) -- at least 1 section in new contracts
@@ -386,7 +391,8 @@ function populateCell(self, list, sect, index, cell)
 	local rewValue = m:getReward()
 	cell:getAttribute("reward"):setText(formatReward(rewValue)) 	-- formats values > 1k
 
-	if m.type.name == "harvestMission" then 
+	if m.type.name == "harvestMission" or
+		m.type.name == "mowbaleMission" then 
 		-- update total profit
 		_,_, profValue = bc:calcProfit(m, HarvestMission.SUCCESS_FACTOR)
 		
@@ -523,41 +529,6 @@ function sortList(self, superfunc)
 		end
 	end
 end
-function updateList(self)
-	-- overwrites InGameMenuContractsFrame:updateList()
-	local missions = g_missionManager:getMissionsByFarmId(g_currentMission:getFarmId())
-	local hasMissions = #missions ~= 0
-	self.contractsListBox:setVisible(hasMissions)
-	self.detailsList:setVisible(hasMissions)
-	local contract = self:getSelectedContract()
-	if contract == nil then
-		self.storedSelected = nil
-	else
-		self.storedSelected = contract.mission.generationTime
-	end
-	self.contracts = {}
-	for _, contract in ipairs(missions) do
-		local active = contract.status == MissionStatus.RUNNING and true or contract.status == MissionStatus.PREPARING
-		local finished = contract.status == MissionStatus.FINISHED
-		local possible = contract.status == MissionStatus.CREATED
-		table.insert(self.contracts, {
-			["mission"] = contract,
-			["active"] = active,
-			["finished"] = finished,
-			["possible"] = possible
-		})
-
-	end
-	debugPrint("** updateList:")
-	debugState(self)
-	self:sortList()
-	debugState(self)
-	-- if just started a cont, don't switch to ACTIVE 
-	self.contractsList:reloadData()
-	debugState(self)
-
-	self.contentContainer:setVisible(self.contractsList:getItemCount() > 0)
-end
 function updateFarmersBox(self, field, npc)
 	local bc = BetterContracts
 	-- hide farmerBox when our mapTable is shown:
@@ -667,7 +638,8 @@ function onRemoveSortButton(frCon, button)
 end
 function missionUpdate(self, superf)
 	-- overwrites AbstractMission:update()
-	if (self.status == MissionStatus.RUNNING or self.status == MissionStatus.FINISHED) 
+	local hide = BetterContracts.config.hideMission
+	if hide and (self.status == MissionStatus.RUNNING) --or self.status == MissionStatus.FINISHED) 
 		and (g_localPlayer ~= nil and g_localPlayer.farmId == self.farmId) and
 		self.completion == 0 then
 			self.farmId = nil 	-- prevent superf from adding a progress bar

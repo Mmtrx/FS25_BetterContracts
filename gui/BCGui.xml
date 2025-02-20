@@ -18,7 +18,7 @@
 			<Button profile="BCsortpMin" id="sortpmin" />
 		</BoxLayout>
 		<Text profile="betterContractsLeft" id="sort" position="5px 0px" text="$l10n_SC_sort" anchors="0 0 0.5 0.5" debugEnabled="false"/>
-		<Text profile="betterContractsLeft" id="helpsort" width="90px" position="50px 0px" text="helpsort" anchors="0 0 0.5 0.5" debugEnabled="false"/>
+		<Text profile="betterContractsLeft" id="helpsort" width="90px" position="50px 0px" anchors="0 0 0.5 0.5" debugEnabled="false"/>
 	</GuiElement>
 
   <!-- active missions display (anchor top right: 1 1 1 1) 

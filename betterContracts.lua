@@ -16,6 +16,9 @@
 --  v1.1.1.1    04.02.2025  fix white UI page (#19, #24, #29), fix ContractBoost compat #28
 --  v1.1.1.2    05.02.2025  fix server save/load #22, #27, #30.
 -- 							compatible with FS25_additionalGameSettings #31, #33, #35
+--  v1.1.1.3    14.02.2025  fix generation non-field contracts #47, fix #38 
+--							new settings switches: hideMission #44, stayNew, finishField #48
+--							Prevent FS25_RefreshContracts
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -97,6 +100,8 @@ function checkOtherMods(self)
 	local mods = {	
 		FS25_ContractBoost = "contractBoost",
 		FS25_LimeMission = "limeMission",
+		FS25_MowBaleMission = "mowbaleMission",
+		FS25_RefreshContracts = "refreshContracts",
 		--FS22_MaizePlus = "maizePlus",
 		--FS22_KommunalServices = "kommunal",
 		}
@@ -112,6 +117,10 @@ function registerXML(self)
 	self.xmlSchema:register(XMLValueType.BOOL, self.baseXmlKey.."#debug")
 	self.xmlSchema:register(XMLValueType.BOOL, self.baseXmlKey.."#ferment")
 	self.xmlSchema:register(XMLValueType.BOOL, self.baseXmlKey.."#forcePlow")
+	self.xmlSchema:register(XMLValueType.BOOL, self.baseXmlKey.."#hideMission")
+	self.xmlSchema:register(XMLValueType.BOOL, self.baseXmlKey.."#stayNew")
+	self.xmlSchema:register(XMLValueType.BOOL, self.baseXmlKey.."#finishField")
+
 	self.xmlSchema:register(XMLValueType.BOOL, self.baseXmlKey.."#lazyNPC")
 	self.xmlSchema:register(XMLValueType.BOOL, self.baseXmlKey.."#discount")
 	self.xmlSchema:register(XMLValueType.BOOL, self.baseXmlKey.."#hard")
@@ -165,6 +174,10 @@ function readconfig(self)
 		self.config.debug =		xmlFile:getValue(key.."#debug", false)			
 		self.config.ferment =	xmlFile:getValue(key.."#ferment", false)			
 		self.config.forcePlow =	xmlFile:getValue(key.."#forcePlow", false)			
+		self.config.hideMission = xmlFile:getValue(key.."#hideMission", false)	
+		self.config.stayNew = xmlFile:getValue(key.."#stayNew", true)	
+		self.config.finishField = xmlFile:getValue(key.."#finishField", true)	
+
 		self.config.maxActive = xmlFile:getValue(key.."#maxActive", 3)
 		self.config.rewardMultiplier = xmlFile:getValue(key.."#reward", 1.)
 		self.config.rewardMultiplierMow = xmlFile:getValue(key.."#rewardMow", 1.)
@@ -232,18 +245,8 @@ function loadPrices(self)
 end
 function hookFunctions(self)
  --[[
-	-- to allow forage wagon on bale missions:
-	Utility.overwrittenFunction(BaleMission, "new", baleMissionNew)
-	-- to allow MOWER / SWATHER on harvest missions:
-	Utility.overwrittenFunction(HarvestMission, "new", harvestMissionNew)
-	Utility.prependedFunction(HarvestMission, "completeField", harvestCompleteField)
 	-- to set missionBale for packed 240cm bales:
 	Utility.overwrittenFunction(Bale, "loadBaleAttributesFromXML", loadBaleAttributes)
-	-- allow stationary baler to produce mission bales:
-	local pType =  g_vehicleTypeManager:getTypeByName("pdlc_goeweilPack.balerStationary")
-	if pType ~= nil then
-		SpecializationUtil.registerOverwrittenFunction(pType, "createBale", self.createBale)
-	end
 
 	-- adjust NPC activity for missions: 
 	Utility.overwrittenFunction(FieldManager, "updateNPCField", NPCHarvest)
@@ -274,14 +277,16 @@ function hookFunctions(self)
 	-- tag mission fields in map: 
 	Utility.appendedFunction(FieldHotspot, "render", renderIcon)
 
-	-- get addtnl mission values from server:
-	Utility.appendedFunction(BaleMission, "writeStream", BetterContracts.writeStream)
-	Utility.appendedFunction(BaleMission, "readStream", BetterContracts.readStream)
 	Utility.appendedFunction(TransportMission, "writeStream", BetterContracts.writeTransport)
 	Utility.appendedFunction(TransportMission, "readStream", BetterContracts.readTransport)
  ]]
 	-- save our settings: 
 	Utility.prependedFunction(ItemSystem, "save", saveSavegame)
+	-- to allow MOWER / SWATHER on harvest missions:
+	Utility.overwrittenFunction(HarvestMission, "new", harvestMissionNew)
+	-- force plowing after root crop harvest mission:
+	Utility.prependedFunction(HarvestMission, "completeField", harvestCompleteField)
+
 	-- to count and save/load # of jobs per farm per NPC
 	Utility.appendedFunction(AbstractFieldMission,"finish",finish)
 	Utility.appendedFunction(FarmStats,"saveToXMLFile",saveToXML)
@@ -330,7 +335,7 @@ function hookFunctions(self)
 	Utility.overwrittenFunction(InGameMenuContractsFrame, "sortList", sortList)
 	Utility.overwrittenFunction(InGameMenuContractsFrame, "startContract", startContract)
 	Utility.appendedFunction(InGameMenuContractsFrame, "updateFarmersBox", updateFarmersBox)
-	--Utility.overwrittenFunction(InGameMenuContractsFrame, "updateList", updateList)
+	-- to stay on NEW contr list when mission accepted:
 	Utility.overwrittenFunction(InGameMenuContractsFrame, "onMissionStarted", onMissionStarted)
 	
 	-- who can clear / generate contracts
@@ -338,6 +343,8 @@ function hookFunctions(self)
 
 	-- to hide 0% missions from hud
 	Utility.overwrittenFunction(AbstractMission,"update",missionUpdate)
+	-- allow mission work to continue, after mission finished
+	Utility.overwrittenFunction(AbstractFieldMission,"getIsWorkAllowed",getIsWorkAllowed)
 end
 function BetterContracts:initialize()
 	debugPrint("[%s] initialize(): %s", self.name,self.initialized)
@@ -347,6 +354,9 @@ function BetterContracts:initialize()
 		debug = false, 				-- debug mode
 		ferment = false, 			-- allow insta-fermenting wrapped bales by player
 		forcePlow = false, 			-- force plow after root crop harvest
+		hideMission = false, 		-- hide missions not begun from hud
+		stayNew = true, 			-- don't switch to ACTIVE list when contr accepted
+		finishField = true, 		-- allow 100% field completion after contr finish
 		maxActive = 3, 				-- max active contracts
 		rewardMultiplier = 1., 		-- general reward multiplier
 		rewardMultiplierMow = 1.,  	-- mow reward multiplier
@@ -414,7 +424,11 @@ function BetterContracts:initialize()
 		weed = 0.9,
 		lime = 0.9
 	}
-	self.noContracts = {}  		-- avoid generation if noContracts[type] is true
+	self.genContracts = {}  	-- avoid generation if genContracts[type] is false
+	local types = g_missionManager.missionTypes
+	for i = 1, #types do
+		self.genContracts[g_missionManager:getMissionTypeById(i).name] = true
+	end
 	self.canHarvest = {			-- allow generation if canHarvest[variant] is true
 		GRAIN = true,
 		ROOTCROP = true,
@@ -460,7 +474,7 @@ function generateMission(self, superf)
 	  self:finishMissionGeneration()
 	  return
 	end
-	if not bc.noContracts[self.currentMissionTypeIndex] and
+	if bc.genContracts[missionType.name] and
 			(missionType.name ~= "harvestMission" or bc:allowHarvest()) and
 			missionType.classObject.tryGenerateMission ~= nil then
 		mission = missionType.classObject.tryGenerateMission()
@@ -542,7 +556,8 @@ function addMission(self, mission)
 				info.profit = -info.usage * bc.prices[SC.SEEDS] /1000
 			end
 		end
-		if mission.type.name == "harvestMission" then
+		if mission.type.name == "harvestMission" or 
+			mission.type.name == "mowbaleMission" then
 			if mission.expectedLiters == nil then
 				Logging.warning("[%s]:addMission(): contract '%s %s on field %s' has no expectedLiters.", 
 					bc.name, mission.type.name, bc.ft[mission.fillType].title, mission.field:getName())
@@ -660,7 +675,7 @@ end
 
 function BetterContracts:onSetMissionInfo(missionInfo, missionDynamicInfo)
 	PlowMission.REWARD_PER_HA = 2800 	-- tweak plow reward (#137)
-	self:updateGenerationInterval()
+	self:updateGeneration()
 end
 function BetterContracts:onStartMission()
 	-- check mission vehicles
@@ -689,6 +704,7 @@ function BetterContracts:onPostLoadMap(mapNode, mapFile)
 	HarvestMission.SUCCESS_FACTOR = self.config.toDeliver
 	BaleMission.FILL_SUCCESS_FACTOR = self.config.toDeliverBale 
 
+	-- init mission generation settings
 	BetterContracts:updateGenerationSettings()
 
 	-- initialize constants depending on game manager instances
@@ -738,12 +754,21 @@ function BetterContracts:onUpdate(dt)
 	end 
 end
 
-function BetterContracts:updateGenerationInterval()
+function BetterContracts:updateGeneration()
 	-- set Mission generation rate (std is 6 min)
 	MissionManager.MISSION_GENERATION_INTERVAL = self.config.generationInterval * 360000
+	-- update excluded contracts
+	self.genContracts.treeTransportMission = self.config.genTree 
+	self.genContracts.deadwoodMission = self.config.genDead 
+	self.genContracts.destructibleRockMission = self.config.genRock
+	-- update excluded harvest contracts
+	self.canHarvest.GRAIN = self.config.genGrain
+	self.canHarvest.GREEN = self.config.genGreen
+	self.canHarvest.VEGETABLES = self.config.genVegetable
+	self.canHarvest.ROOT = self.config.genRoot
 end
 function BetterContracts:updateGenerationSettings()
-	self:updateGenerationInterval()
+	self:updateGeneration()
 
 	-- adjust max missions
 	local fieldsAmount = table.size(g_fieldManager.fields)
@@ -782,7 +807,11 @@ function saveSavegame()
 	xmlFile:setBool ( key.."#debug", 		  conf.debug)
 	xmlFile:setBool ( key.."#ferment", 		  conf.ferment)
 	xmlFile:setBool ( key.."#forcePlow", 	  conf.forcePlow)
+	xmlFile:setBool ( key.."#hideMission", 	  conf.hideMission)
+	xmlFile:setBool ( key.."#stayNew", 	  	  conf.stayNew)
+	xmlFile:setBool ( key.."#finishField", 	  conf.finishField)
 	xmlFile:setInt  ( key.."#maxActive",	  conf.maxActive)
+
 	xmlFile:setFloat( key.."#reward", 		  conf.rewardMultiplier)
 	xmlFile:setFloat( key.."#rewardMow", 	  conf.rewardMultiplierMow)
 	xmlFile:setFloat( key.."#lease", 		  conf.leaseMultiplier)
@@ -880,17 +909,19 @@ function hasFarmReachedMissionLimit(self,superf,farmId)
 	MissionManager.MAX_MISSIONS_PER_FARM = maxActive
 	return superf(self, farmId)
 end
-function baleMissionNew(isServer, superf, isClient, customMt )
-	-- allow forage wagons to collect grass/ hay, for baling/wrapping at stationary baler
-	local self = superf(isServer, isClient, customMt)
-	self.workAreaTypes[WorkAreaType.FORAGEWAGON] = true 
-	self.workAreaTypes[WorkAreaType.CUTTER] = true 
-	return self
-end
 function harvestMissionNew(isServer, superf, isClient, customMt )
 	-- allow mower/ swather to harvest swaths
 	local self = superf(isServer, isClient, customMt)
 	self.workAreaTypes[WorkAreaType.MOWER] = true 
 	self.workAreaTypes[WorkAreaType.FORAGEWAGON] = true 
 	return self
+end
+function harvestCompleteField(self)
+	-- prepended to HarvestMission:completeField()
+	if not BetterContracts.config.forcePlow then return end
+	
+	local ft = g_fruitTypeManager:getFruitTypeByIndex(self.field.fruitType)
+	if string.find("MAIZE POTATO SUGARBEET", ft.name) then 
+		self.fieldPlowFactor = 0 -- force plowing after root crop harvest
+	end
 end

@@ -196,27 +196,6 @@ function SettingsManager:updateDisabled(controlName)
 		self[nam].setting:updateDisabled(disabled)
 	 end
 end
-function SettingsManager:setGeneration(setting)
-	-- body
-	local bc = BetterContracts
-	if setting.name == "generationInterval" then 
-		bc:updateGenerationInterval()
-		return
-	end
-	local nam = setting.name:sub(4)
-	-- update excluded contracts
-	if TableUtility.contains({"Tree","Dead","Rock"}, nam) then 
-		bc.noContracts.treeTransportMission = bc.config.genTree 
-		bc.noContracts.deadwoodMission = bc.config.genDead 
-		bc.noContracts.destructibleRockMission = bc.config.genRock
-		return
-	end
-	-- update excluded harvest contracts
-	bc.canHarvest.GRAIN = bc.config.genGrain
-	bc.canHarvest.GREEN = bc.config.genGreen
-	bc.canHarvest.VEGETABLES = bc.config.genVegetable
-	bc.canHarvest.ROOT = bc.config.genRoot
-end
 function SettingsManager:onSettingsChange(control, newValue) 
 	-- called by the controls onClick callback. Callback has already set the corresponding
 	-- bc.config value on client who changed it
@@ -243,7 +222,7 @@ function SettingsManager:onSettingsChange(control, newValue)
 		HarvestMission.SUCCESS_FACTOR = newValue
 
 	 elseif setting.name:sub(1,3) == "gen" then 
-		self:setGeneration(setting)
+		bc:updateGeneration()
 	 end	
 
 	 SettingsEvent.sendEvent(setting)

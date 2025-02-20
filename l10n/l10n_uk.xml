@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <l10n>
 	<texts>
+		<!-- updates v1.1.1.3 -->
+		<text name="bc_stayNew" text="Stay on NEW contracts list" />
+		<text name="bc_stayNew_tooltip" text="Do not switch to ACTIVE contracts list when a new contract is accepted." />
+		<text name="bc_finishField" text="Complete contract field" />
+		<text name="bc_finishField_tooltip" text="Allow to complete 100% of a field after contract finishes." />
+		<text name="bc_hideMission" text="Hide inactive contracts" />
+		<text name="bc_hideMission_tooltip" text="Hide accepted contracts with 0% completion from right side hud." />
 		<!-- updates v1.1.1.2 -->
 		<text name="global_bc_name" text="Кращі контракти" />
 		<text name="bc_settingsNoPermission" text="You don&apos;t have the permission to change Better Contracts settings!" />

@@ -25,6 +25,9 @@ ControlProperties = {
     { name = "refreshMP", values = {"ui_admin","ui_farmManager","ui_players"}, autoBind = true },
     { name = "ferment", autoBind = true },
     { name = "forcePlow", autoBind = true },
+    { name = "hideMission", autoBind = true },
+    { name = "stayNew", autoBind = true },
+    { name = "finishField", autoBind = true },
     { name = "debug", autoBind = true },
 
 	{title = "bc_discountModeTitle"},

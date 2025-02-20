@@ -82,6 +82,14 @@ function NPCHarvest(self, superf, field, allowUpdates)
 end
 
 --------------------- completion / reward / lease cost --------------------------------------------------
+function getIsWorkAllowed(self, superf, _,_,_, workAreaType)
+	-- overwrites AbstractFieldMission:getIsWorkAllowed()
+	if BetterContracts.config.finishField then
+		return workAreaType==nil or self.workAreaTypes[workAreaType]
+	else
+		return superf(self, _,_,_, workAreaType)
+	end
+end
 function getCompletion(self,superf)
 	-- overwrites AbstractFieldMission:getCompletion()
 	local fieldCompletion = self:getFieldCompletion()
@@ -103,7 +111,7 @@ function baleCompletion(self,superf)
 end
 function getReward(self,superf)
 	-- overwrites AbstractFieldMission:getReward()
-	if self.type.name == "mowMission" then
+	if self.type.name:sub(1,3) == "mow" then
 		return BetterContracts.config.rewardMultiplierMow * superf(self)
 	end		
 	return BetterContracts.config.rewardMultiplier * superf(self)
@@ -657,15 +665,5 @@ function renderIcon(self, x, y, rot)
 		--icon:setColor(r, g, b, a * alpha)
 		icon:setScale(self.scale, self.scale)
 		icon:render()
-	end
-end
-
-function harvestCompleteField(self)
-	-- prepended to HarvestMission:completeField()
-	if not BetterContracts.config.forcePlow then return end
-	
-	local ft = g_fruitTypeManager:getFruitTypeByIndex(self.field.fruitType)
-	if string.find("MAIZE POTATO SUGARBEET", ft.name) then 
-		self.fieldPlowFactor = 0 -- force plowing after root crop harvest
 	end
 end

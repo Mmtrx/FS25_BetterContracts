@@ -8,6 +8,13 @@
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.1.1.3 -->
+		<text name="bc_stayNew" text="Liste Neue Verträge" />
+		<text name="bc_stayNew_tooltip" text="Verhindert das Umschalten auf die Liste aktiver Aufträge, wenn ein neuer Auftrag angenommen wird." />
+		<text name="bc_finishField" text="Feldarbeit beenden" />
+		<text name="bc_finishField_tooltip" text="Erlaubt die Fertigbearbeitung des kompletten Feldes, auch wenn der Auftrag schon erfüllt ist." />
+		<text name="bc_hideMission" text="Aufträge ausblenden" />
+		<text name="bc_hideMission_tooltip" text="Blendet alle noch nicht begonnenen Aufträge (Fortschritt 0%) bei der Hud Anzeige aus." />
 		<!-- updates v1.1.1.2 -->
 		<text name="global_bc_name" text="Better Contracts" />
 		<text name="bc_settingsNoPermission" text="Du hast nicht die Berechtigung, die Mod-Einstellungen zu ändern." />
@@ -104,7 +111,6 @@
 		<text name="bc_lazyNPCTitle" text="Faule Farmer" />
 
 		<text name="bc_lazyNPC" text="Aktiviert" />
-		<text name="bc_active" text="Aktiviert" />
 		<text name="bc_lazyNPC_tooltip" text="Wenn aktiviert, unterlassen NPC-Farmer häufiger die Arbeit auf ihren Feldern, so dass mehr Verträge angeboten werden können." />
 		<text name="bc_npcHarvest_tooltip" text="Wenn aktiv, werden die NPC-Farmer gar nicht mehr zum Ernten fahren. Könnte also eine Menge Arbeit für dich werden." />
 		<text name="bc_npcSow_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener Säh-Arbeiten selbst ausführen, und sie dafür als Lohnarbeit anbieten." />
