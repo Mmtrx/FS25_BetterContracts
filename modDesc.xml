@@ -11,6 +11,9 @@
 Port of FS22_BetterContracts
 
 ChangeLog v1.1.1.3:
+- compatibility with FS25_RefreshContracts
+- fix #38, #47 exclude deadWood, transport, rock contracts 
+- new settings: hideMission #44, stayNew, finishField #48
 
 ChangeLog v1.1.1.2:
 - compatibility with FS25_additionalGameSettings (#31, #33, #35)
