@@ -387,7 +387,7 @@ function BetterContracts:resetJobsLeft()
 	for _,farm in pairs(g_farmManager:getFarms()) do
 		if farm.farmId ~= FarmManager.SPECTATOR_FARM_ID then
 			local mlist = table.ifilter(g_missionManager:getMissionsList(farm.farmId), function(m)
-				return m.status ~= AbstractMission.STATUS_STOPPED
+				return m.status > MissionStatus.PREPARING
 				end)
 			local count = table.size(mlist)
 			farm.stats.jobsLeft =  math.max(self.config.hardLimit - count, 0)

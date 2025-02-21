@@ -410,16 +410,17 @@ function populateCell(self, list, sect, index, cell)
 	end
 	profit:setVisible(profValue ~= 0)
 
-	-- indicate leased equipment for active missions
-	if cont and cont.miss.status == AbstractMission.STATUS_RUNNING then
+	--[[ indicate leased equipment for active missions
+	if m.status == MissionStatus.RUNNING then
 		local indicator = cell:getAttribute("indicatorActive")
 		local txt = ""
-		if cont.miss.spawnedVehicles then
+		if m.spawnedVehicles then
 			txt = g_i18n:getText("bc_leased")
 		end
 		indicator:setText(g_i18n:getText("fieldJob_active")..txt)
 		indicator:setVisible(true)
 	end
+	]]
 end
 function sortList(self, superfunc)
 	--[[ sort self.contracts according to sort button clicked:

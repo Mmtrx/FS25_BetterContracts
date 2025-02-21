@@ -19,6 +19,8 @@
 --  v1.1.1.3    14.02.2025  fix generation non-field contracts #47, fix #38 
 --							new settings switches: hideMission #44, stayNew, finishField #48
 --							Prevent FS25_RefreshContracts
+--  v1.1.1.4    22.02.2025  MP fixes: generation non-field contracts #47,
+-- 							no progress in fieldwork / deposited liters #40 
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -610,11 +612,10 @@ function fieldGetDetails(self, superf)
 	end
 	-- field percentage only for active missions
 	if self.status == MissionStatus.RUNNING then
-		local eta = {
+		table.insert(list, {
 			["title"] = g_i18n:getText("SC_worked"),
 			["value"] = string.format("%.1f%%", self.fieldPercentageDone * 100)
-		}
-		table.insert(list, eta)
+		})
 	end
 	return list
 end
@@ -628,9 +629,9 @@ function harvestGetDetails(self, superf)
 	-- add our values to show in contract details list
 	local price = BetterContracts:getFilltypePrice(self)
 	local deliver = self.expectedLiters - self.info.keep
+	local eta = {}
 
 	if self.status == MissionStatus.RUNNING then
-		table.insert(list, eta)
 		local depo = 0 		-- just as protection
 		if self.depositedLiters then depo = self.depositedLiters end
 		depo = MathUtil.round(depo / 100) * 100
@@ -887,7 +888,7 @@ function harvestReadStream(self, streamId, connection)
 end
 function missionWriteUpdateStream(self, streamId, connection, dirtyMask)
 	-- appended to AbstractMission.writeUpdateStream
-	if self.status == AbstractMission.STATUS_RUNNING then
+	if self.status == MissionStatus.RUNNING then
 		streamWriteBool(streamId, self.spawnedVehicles or false)
 		streamWriteFloat32(streamId, self.fieldPercentageDone or 0.)
 		streamWriteFloat32(streamId, self.depositedLiters or 0.)
@@ -895,7 +896,7 @@ function missionWriteUpdateStream(self, streamId, connection, dirtyMask)
 end
 function missionReadUpdateStream(self, streamId, timestamp, connection)
 	-- appended to AbstractMission.readUpdateStream
-	if self.status == AbstractMission.STATUS_RUNNING then
+	if self.status == MissionStatus.RUNNING then
 		self.spawnedVehicles = streamReadBool(streamId)
 		self.fieldPercentageDone = streamReadFloat32(streamId)
 		self.depositedLiters = streamReadFloat32(streamId)

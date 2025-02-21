@@ -97,11 +97,13 @@ function BCcontrol:setIx(ix)
 -- update the BetterContracts.config value MP only, on Server
 	-- set it to values[ix]
 	local conf = BetterContracts.config
+	local settingsMgr = BetterContracts.settingsMgr
 	if self.current ~= ix then 
 		self.previous = self.current
 		self.current = ix 
 		local value = UIHelper.getControlValue(self.guiElement, ix)
 		conf[self.name] = value
+		settingsMgr:onSettingsChange(self.guiElement, value)
 		debugPrint("** %s set to %s **", self.name,value)
 	end
 end

@@ -2,15 +2,15 @@
 <l10n>
 	<texts>
 		<!-- updates v1.1.1.3 -->
-		<text name="bc_stayNew" text="Stay on NEW contracts list" />
-		<text name="bc_stayNew_tooltip" text="Do not switch to ACTIVE contracts list when a new contract is accepted." />
-		<text name="bc_finishField" text="Complete contract field" />
-		<text name="bc_finishField_tooltip" text="Allow to complete 100% of a field after contract finishes." />
-		<text name="bc_hideMission" text="Hide inactive contracts" />
-		<text name="bc_hideMission_tooltip" text="Hide accepted contracts with 0% completion from right side hud." />
+		<text name="bc_stayNew" text="Залишайтеся в списку НОВИХ контрактів" />
+		<text name="bc_stayNew_tooltip" text="Не переходьте до списку АКТИВНИХ контрактів, коли прийнято новий контракт." />
+		<text name="bc_finishField" text="Повне контрактне поле" />
+		<text name="bc_finishField_tooltip" text="Дозволяє заповнити 100% поля після закінчення контракту." />
+		<text name="bc_hideMission" text="Приховати неактивні контракти" />
+		<text name="bc_hideMission_tooltip" text="Приховати прийняті контракти з 0% виконання з правого боку вікна." />
 		<!-- updates v1.1.1.2 -->
 		<text name="global_bc_name" text="Кращі контракти" />
-		<text name="bc_settingsNoPermission" text="You don&apos;t have the permission to change Better Contracts settings!" />
+		<text name="bc_settingsNoPermission" text="Ви не маєте дозволу змінювати налаштування кращих контрактів!" />
 		<!-- Ключі -->
 		<text name = "input_MENU_EXTRA_3" text = "Better Contracts: Деталі вкл./викл."/>
 		<text name = "input_BC_MTOGGLE" text = "BC:Переключити відображення активних контрактів на ферми"/>

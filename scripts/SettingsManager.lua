@@ -224,6 +224,7 @@ function SettingsManager:onSettingsChange(control, newValue)
 	 elseif setting.name:sub(1,3) == "gen" then 
 		bc:updateGeneration()
 	 end	
-
-	 SettingsEvent.sendEvent(setting)
+	 if g_currentMission:getIsClient() then 
+	 	SettingsEvent.sendEvent(setting)
+	 end
 end
