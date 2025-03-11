@@ -4,19 +4,21 @@
 	Changelog:
 	  v1.0.0.0    28.10.2024  1st port to FS25
 	  v1.1.0.0    08.01.2025  UI settings page, discount mode
+	  v1.1.1.2    09.02.2025  compatible FS25_additionalGameSettings
 =======================================================================================================-->
 <l10n>
 	<texts>
 		<!-- updates v1.1.1.3 -->
-		<text name="bc_stayNew" text="Stay on NEW contracts list" />
-		<text name="bc_stayNew_tooltip" text="Do not switch to ACTIVE contracts list when a new contract is accepted." />
-		<text name="bc_finishField" text="Complete contract field" />
-		<text name="bc_finishField_tooltip" text="Allow to complete 100% of a field after contract finishes." />
-		<text name="bc_hideMission" text="Hide inactive contracts" />
-		<text name="bc_hideMission_tooltip" text="Hide accepted contracts with 0% completion from right side hud." />
+		<text name="bc_stayNew" text="Zůstat na seznamu NOVÝCH zakázek" />
+		<text name="bc_stayNew_tooltip" text="Nepřepínejte na seznam AKTIVNÍ zakázky, když je přijata nová zakázka." />
+		<text name="bc_finishField" text="Kompletní zakázky na poli" />
+		<text name="bc_finishField_tooltip" text="Umožňuje dokončit 100 % pole po skončení zakázky." />
+		<text name="bc_hideMission" text="Skrýt neaktivní zakázky" />
+		<text name="bc_hideMission_tooltip" text="Skrýt přijaté zakázky s dokončením 0 % z pravé strany hud." />
+		
 		<!-- updates v1.1.1.2 -->
-		<text name="global_bc_name" text="Better Contracts" />
-		<text name="bc_settingsNoPermission" text="You don&apos;t have the permission to change Better Contracts settings!" />
+		<text name="global_bc_name" text="BETTER CONTRACTS" />
+		<text name="bc_settingsNoPermission" text="Nemáte oprávnění měnit nastavení Better Contracts!" />
 		<!-- Keys -->
 		<text name = "input_MENU_EXTRA_3" text = "Vylepšené zakázky: Detaily zap/vyp"/>
 		<text name = "input_BC_MTOGGLE" text = "BC: Přepnout zobrazení aktivních zakázek farmy"/>
@@ -141,21 +143,21 @@
 
 		<text name="bc_missionGeneration" text="Generování zakázek" />
 		<text name="bc_generationInterval" text="Interval generování" />
-		<text name="bc_generationInterval_tooltip" text="Amount of in-game 6-minute intervals to wait before generating new contracts." />
+		<text name="bc_generationInterval_tooltip" text="Počet šestiminutových intervalů ve hře, po kterých se čeká na vygenerování nových zakázek." />
 
-		<text name="bc_genGrain" text="Grain harvest" />
-		<text name="bc_genGrain_tooltip" text="Generate grain harvest contracts (possibly including maize, cotton)" />
-		<text name="bc_genVegetable" text="Vegetable harvest" />
-		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, and parsnip" />
-		<text name="bc_genGreen" text="Green crop harvest" />
-		<text name="bc_genGreen_tooltip" text="Generate harvest contracts for peas, beans, and spinach" />
-		<text name="bc_genRoot" text="Root crop harvest" />
-		<text name="bc_genRoot_tooltip" text="Generate harvest contracts for potatoes, sugarbeet" />
-		<text name="bc_genTree" text="Tree transport contracts" />
-		<text name="bc_genTree_tooltip" text="Generate tree transport contracts" />
-		<text name="bc_genDead" text="Deadwood contracts" />
-		<text name="bc_genDead_tooltip" text="Generate deadwood contracts" />
-		<text name="bc_genRock" text="Rock destruction contracts" />
-		<text name="bc_genRock_tooltip" text="Generate rock destruction contracts" />
+		<text name="bc_genGrain" text="Sklizeň obilí" />
+		<text name="bc_genGrain_tooltip" text="Vytváření zakázek na sklizeň obilí (případně kukuřice, bavlny)." />
+		<text name="bc_genVegetable" text="Sklizeň zeleniny" />
+		<text name="bc_genVegetable_tooltip" text="Vytváření zakázek na sklizeň mrkve, červené řepy a pastináku." />
+		<text name="bc_genGreen" text="Sklizeň zelených plodin" />
+		<text name="bc_genGreen_tooltip" text="Vytváření zakázek o sklizni hrachu, fazolí a špenátu." />
+		<text name="bc_genRoot" text="Sklizeň kořenových plodin" />
+		<text name="bc_genRoot_tooltip" text="Vytváření zakázek na sklizeň brambor, cukrové řepy." />
+		<text name="bc_genTree" text="Zakázky na přepravu stromů" />
+		<text name="bc_genTree_tooltip" text="Vytváření zakázek na přepravu stromů" />
+		<text name="bc_genDead" text="Zakázky na suché stromy" />
+		<text name="bc_genDead_tooltip" text="Vytváření zakázek na suché stromy" />
+		<text name="bc_genRock" text="Zakázky na odstraňování kamenů" />
+		<text name="bc_genRock_tooltip" text="Vytváření zakázek na odstraňování kamenů" />
 	</texts>
 </l10n>
