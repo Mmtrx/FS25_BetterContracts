@@ -94,11 +94,11 @@
 		<text name="bc_maxActive" text="Gleichzeitig aktive Verträge" />
 		<text name="bc_maxActive_tooltip" text="Maximalzahl der gleichzeitig erlaubten aktiven Verträge. 0 bedeutet: unbegrenzt." />
 		<text name="bc_toDeliver" text="Lieferanteil Ernteverträge" />
-		<text name="bc_toDeliver_tooltip" text="Pozentsatz des theoretisch möglichen Ertrags, der zur Erfüllung eines Erntevertrags abgeliefert werden muss." />
+		<text name="bc_toDeliver_tooltip" text="Prozentsatz des theoretisch möglichen Ertrags, der zur Erfüllung eines Erntevertrags abgeliefert werden muss." />
 		<text name="bc_toDeliverBale" text="Lieferanteil Ballenverträge" />
-		<text name="bc_toDeliverBale_tooltip" text="Pozentsatz des theoretisch möglichen Ertrags, der zur Erfüllung eines Vertrags zum Mähen und Ballenpressen abgeliefert werden muss." />
+		<text name="bc_toDeliverBale_tooltip" text="Prozentsatz des theoretisch möglichen Ertrags, der zur Erfüllung eines Vertrags zum Mähen und Ballenpressen abgeliefert werden muss." />
 		<text name="bc_fieldCompletion" text="Feldbearbeitung abgeschlossen" />
-		<text name="bc_fieldCompletion_tooltip" text="Pozentsatz der Feldfläche, ab dem das Feld als komplett bearbeitet zählt." />
+		<text name="bc_fieldCompletion_tooltip" text="Prozentsatz der Feldfläche, ab dem das Feld als komplett bearbeitet zählt." />
 		<text name="bc_refreshMP" text="Berechtigung Vertragsliste" />
 		<text name="bc_refreshMP_tooltip" text="Wer in einem MP-Spiel Verträge löschen/ erzeugen darf" />
 		<text name="bc_ferment" text="Insta-Gären" />
@@ -116,7 +116,7 @@
 		<text name="bc_npcSow_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener Säh-Arbeiten selbst ausführen, und sie dafür als Lohnarbeit anbieten." />
 		<text name="bc_npcPlowCultivate" text="Pflügen und Grubbern" />
 		<text name="bc_npcPlowCultivate_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener selbst pflügen und grubbern." />
-		<text name="bc_npcFertilize_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener Dünge-Arbeiten selbst ausführen, und sie dafür als Lohnarbeit anbieten." />
+		<text name="bc_npcFertilize_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener Dünge-Arbeiten selbst ausführen und sie dafür als Lohnarbeit anbieten." />
 		<text name="bc_npcWeed_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener das Unkraut auf ihren Feldern selbst bekämpfen, sondern Jät- und Sprüh-Aufträge als Lohnarbeit anbieten." />
 
 		<text name="bc_hardModeTitle" text="Erhöhte Schwierigkeit" />
