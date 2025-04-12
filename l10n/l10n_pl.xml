@@ -2,15 +2,15 @@
 <l10n>
 	<texts>
 		<!-- updates v1.1.1.3 -->
-		<text name="bc_stayNew" text="Stay on NEW contracts list" />
-		<text name="bc_stayNew_tooltip" text="Do not switch to ACTIVE contracts list when a new contract is accepted." />
-		<text name="bc_finishField" text="Complete contract field" />
-		<text name="bc_finishField_tooltip" text="Allow to complete 100% of a field after contract finishes." />
-		<text name="bc_hideMission" text="Hide inactive contracts" />
-		<text name="bc_hideMission_tooltip" text="Hide accepted contracts with 0% completion from right side hud." />
+		<text name="bc_stayNew" text="Pozostań na liście NOWYCH kontraktów" />
+		<text name="bc_stayNew_tooltip" text="Nie przełączaj na listę AKTYWNYCH kontraktów po zaakceptowaniu nowego kontraktu." />
+		<text name="bc_finishField" text="Zakończ kontrakt na polu" />
+		<text name="bc_finishField_tooltip" text="Pozwala na ukończenie 100% pola po zakończeniu kontraktu." />
+		<text name="bc_hideMission" text="Ukryj nieaktywne kontrakty" />
+		<text name="bc_hideMission_tooltip" text="Ukrywa zaakceptowane kontrakty z 0% ukończenia z HUDa po prawej stronie." />
 		<!-- updates v1.1.1.2 -->
-		<text name="global_bc_name" text="Better Contracts" />
-		<text name="bc_settingsNoPermission" text="You don&apos;t have the permission to change Better Contracts settings!" />
+		<text name="global_bc_name" text="Lepsze Kontrakty" />
+		<text name="bc_settingsNoPermission" text="Nie masz uprawnień do zmiany ustawień Lepszych Kontraktów!" />
 		<!-- Keys -->
 		<text name="input_MENU_EXTRA_3" text="Włącz/Wyłącz szczegóły"/>
 		<text name="input_BC_MTOGGLE" text="Przełącz wyświetlanie aktywnych kontraktów rolniczych"/>
@@ -24,8 +24,8 @@
 		<text name="bc_detailsOn" text="BC wł." />
 
 		<!-- Display texts -->
-		<text name="bc_mowed" text="Mowed:" />
-		<text name="bc_tomow" text="To mow:" />
+		<text name="bc_mowed" text="Skoszone:" />
+		<text name="bc_tomow" text="Do skoszenia:" />
 		<text name="bc_chaff" text="Zetnij %s" />
 		<text name="bc_jobType_chaff" text="Sieczka qq" />
 		<text name="bc_harvest" text="Zbiór %s" />
@@ -42,7 +42,7 @@
 
 		<!-- discount mode -->
 		<text name="bc_maxJobs" text="Osiągnięto maksymalny rabat dla %s." />
-		<text name="bc_discount" text="rabatu" />
+		<text name="bc_discount" text="rabat" />
 		<text name="bc_discValue" text="%s daje Ci %d %% rabatu na przyszłe zakupy pól." />
 		<text name="bc_jobsCompleted" text="Wykonane zlecenia: %d" />
 		<text name="bc_owner" text="Właściciel:" />
@@ -91,8 +91,8 @@
 		<text name="bc_toDeliver_tooltip" text="Procent oszacowanego całkowitego plonu, który musisz dostarczyć, aby zakończyć umowę na zbiór." />
 		<text name="bc_toDeliverBale" text="Dostawa przy umowach związanych z belowaniem" />
 		<text name="bc_toDeliverBale_tooltip" text="Procent oszacowanego całkowitego plonu, który musisz dostarczyć, aby zakończyć umowę na zbiór." />
-		<text name="bc_fieldCompletion" text="Fieldwork complete" />
-		<text name="bc_fieldCompletion_tooltip" text="Min percentage of field area worked, to count as fieldwork complete." />
+		<text name="bc_fieldCompletion" text="Prace polowe ukończone" />
+		<text name="bc_fieldCompletion_tooltip" text="Minimalny procent obrobionego pola, liczony jako ukończona praca." />
 		<text name="bc_refreshMP" text="Lista umów do usunięcia/odświeżenia" />
 		<text name="bc_refreshMP_tooltip" text="Kto może usuwać/odświeżać umowy w grze wieloosobowej." />d
 		<text name="bc_ferment" text="Natychmiastowa fermentacja" />
@@ -132,21 +132,21 @@
 
 		<text name="bc_missionGeneration" text="Generowanie umów" />
 		<text name="bc_generationInterval" text="Interwał generacji" />
-		<text name="bc_generationInterval_tooltip" text="Amount of in-game 6-minute intervals to wait before generating new contracts." />
+		<text name="bc_generationInterval_tooltip" text="Ilość 6-minutowych interwałów w grze, które należy odczekać przed wygenerowaniem nowych kontraktów." />
 
-		<text name="bc_genGrain" text="Grain harvest" />
-		<text name="bc_genGrain_tooltip" text="Generate grain harvest contracts (possibly including maize, cotton)" />
-		<text name="bc_genVegetable" text="Vegetable harvest" />
-		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, and parsnip" />
-		<text name="bc_genGreen" text="Green crop harvest" />
-		<text name="bc_genGreen_tooltip" text="Generate harvest contracts for peas, beans, and spinach" />
-		<text name="bc_genRoot" text="Root crop harvest" />
-		<text name="bc_genRoot_tooltip" text="Generate harvest contracts for potatoes, sugarbeet" />
-		<text name="bc_genTree" text="Tree transport contracts" />
-		<text name="bc_genTree_tooltip" text="Generate tree transport contracts" />
-		<text name="bc_genDead" text="Deadwood contracts" />
-		<text name="bc_genDead_tooltip" text="Generate deadwood contracts" />
-		<text name="bc_genRock" text="Rock destruction contracts" />
-		<text name="bc_genRock_tooltip" text="Generate rock destruction contracts" />
+		<text name="bc_genGrain" text="Żniwa zbóż" />
+		<text name="bc_genGrain_tooltip" text="Generuj kontrakty na żniwa zbóż (w tym kukurydzy, bawełny)" />
+		<text name="bc_genVegetable" text="Zbiór warzyw" />
+		<text name="bc_genVegetable_tooltip" text="Generuj kontrakty na zbiór marchwi, buraków i pasternaku" />
+		<text name="bc_genGreen" text="Zbiór roślin zielonych" />
+		<text name="bc_genGreen_tooltip" text="Generuj kontrakty na zbiór grochu, fasoli i szpinaku" />
+		<text name="bc_genRoot" text="Zbiór roślin okopowych" />
+		<text name="bc_genRoot_tooltip" text="Generuj kontrakty na zbiór ziemniaków, buraków cukrowych" />
+		<text name="bc_genTree" text="Kontrakty transportu drzew" />
+		<text name="bc_genTree_tooltip" text="Generuj kontrakty na transport drzew" />
+		<text name="bc_genDead" text="Kontrakty na wycinkę uschniętych drzew" />
+		<text name="bc_genDead_tooltip" text="Generuj kontrakty na wycinkę uschniętych drzew" />
+		<text name="bc_genRock" text="Kontrakty na rozbijanie skał" />
+		<text name="bc_genRock_tooltip" text="Generuj kontrakty na rozbijanie skał" />
 	</texts>
 </l10n>
