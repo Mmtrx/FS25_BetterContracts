@@ -5,9 +5,12 @@
 	  v1.0.0.0    28.10.2024  1st port to FS25
 	  v1.1.0.0    08.01.2025  UI settings page, discount mode
 	  v1.1.1.2    09.02.2025  compatible FS25_additionalGameSettings
+	  v1.2.0.0    12.05.2025  new vehicle seleection dialog
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.2.0.0 -->
+		<text name="bc_vehicleBox" text="Maschinen-Auswahl" />
 		<!-- updates v1.1.1.3 -->
 		<text name="bc_stayNew" text="Liste Neue Verträge" />
 		<text name="bc_stayNew_tooltip" text="Verhindert das Umschalten auf die Liste aktiver Aufträge, wenn ein neuer Auftrag angenommen wird." />
@@ -116,7 +119,7 @@
 		<text name="bc_npcSow_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener Säh-Arbeiten selbst ausführen, und sie dafür als Lohnarbeit anbieten." />
 		<text name="bc_npcPlowCultivate" text="Pflügen und Grubbern" />
 		<text name="bc_npcPlowCultivate_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener selbst pflügen und grubbern." />
-		<text name="bc_npcFertilize_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener Dünge-Arbeiten selbst ausführen und sie dafür als Lohnarbeit anbieten." />
+		<text name="bc_npcFertilize_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener Dünge-Arbeiten selbst ausführen, und sie dafür als Lohnarbeit anbieten." />
 		<text name="bc_npcWeed_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener das Unkraut auf ihren Feldern selbst bekämpfen, sondern Jät- und Sprüh-Aufträge als Lohnarbeit anbieten." />
 
 		<text name="bc_hardModeTitle" text="Erhöhte Schwierigkeit" />

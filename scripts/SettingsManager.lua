@@ -123,7 +123,7 @@ function SettingsManager:init()
 	Utility.overwrittenFunction(pageSettings.subCategoryPaging, 
 		"onClickCallback", updateSubCategoryPages) 		
 	
-	-- adjust Controls tab callback:
+	--[[ adjust Controls tab callback:
 	local button = pageSettings.subCategoryBox:getFirstDescendant(function(e)
 		return e.onClickCallback == InGameMenuSettingsFrame.onClickControls
 		end)
@@ -131,6 +131,7 @@ function SettingsManager:init()
 		-- set to last but one state
 		pageSettings.subCategoryPaging:setState(#pageSettings.subCategoryPaging.texts -1, true)
 	end) 
+	]]
 	debugPrint("** SettingsManager:initiated")
 end
 function onSettingsFrameOpen(self)

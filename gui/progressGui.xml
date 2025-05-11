@@ -4,27 +4,34 @@
 	Purpose:	Enhance active contracts progress bar
 	Author:		Mmtrx		
 	Changelog:
-	 v1.2.7.3	18.02.2023	initial beta
+	 v1.2.0.0	18.02.2025	initial FS25
 ======================================================================================================-->
 <GUI name="bc_progress">
-	<!-- progr bar 1 -->
-	<GuiElement type="boxLayout" profile="myProgressLayout" id="box1" size="800px 46px" position="0px -240px" debugEnabled="false">
-		<GuiElement type="text" profile="ingameMenuContractsContractTextSmall" id="prog1Label" text="$l10n_bc_progField" textAlignment="left" textAutoWidth="true" size="100px 40px" >
+	<!-- double progress bars, parent: "contentContainer" -->
+	<GuiElement profile="fs25_contractsProgressBox" id="bcProgressBox" debugEnabled="false">
+		<Text profile="fs25_contractsContentTitle" text="$l10n_contract_progress:"/>
+		<Text profile="fs25_contractsContentExtraText" id="extraProgressText"/>
+		<Text profile="fs25_contractsContentValue" id="progressText"/>
+
+		<!-- progr bar 1 -->
+	<BoxLayout profile="myProgressLayout" id="box1" size="760px 46px" position="0px -40px" debugEnabled="false">
+		<GuiElement type="text" profile="fs25_contractsContentTitle" id="prog1Label" text="$l10n_bc_progField" textAlignment="left" textAutoWidth="true" size="100px 40px" >
 		</GuiElement>
-        <GuiElement type="bitmap" profile="ingameMenuContractsProgressBarBackground" id="progressBarBg">
-            <GuiElement type="bitmap" profile="ingameMenuContractsProgressBar" id="progressBar1"/>
+        <GuiElement type="bitmap" profile="fs25_contractsProgressBarBg" id="progressBarBg">
+            <GuiElement type="bitmap" profile="fs25_contractsProgressBar" id="progressBar1"/>
         </GuiElement>
-		<GuiElement type="text" profile="ingameMenuContractsContractTextSmall" id="prog1" textAlignment="left" textAutoWidth="true" size="0 40px" >
+		<GuiElement type="text" profile="fs25_contractsContentValue" id="prog1" textAlignment="left" textAutoWidth="true" size="0 40px" >
 		</GuiElement>
-	</GuiElement>
-	<!-- progr bar 2 -->
-	<GuiElement type="boxLayout" profile="myProgressLayout" id="box2" size="800px 46px" position="0px -290px" debugEnabled="false">
-		<GuiElement type="text" profile="ingameMenuContractsContractTextSmall" id="prog2Label" text="$l10n_bc_progDeliver" textAlignment="left" textAutoWidth="true" size="100px 40px" >
+	</BoxLayout>
+		<!-- progr bar 2 -->
+	<BoxLayout type="boxLayout" profile="myProgressLayout" id="box2" size="760px 46px" position="0px -90px" debugEnabled="false">
+		<GuiElement type="text" profile="fs25_contractsContentTitle" id="prog2Label" text="$l10n_bc_progDeliver" textAlignment="left" textAutoWidth="true" size="100px 40px" >
 		</GuiElement>
-        <GuiElement type="bitmap" profile="ingameMenuContractsProgressBarBackground" >
-            <GuiElement type="bitmap" profile="ingameMenuContractsProgressBar" id="progressBar2"/>
+        <GuiElement type="bitmap" profile="fs25_contractsProgressBarBg" >
+            <GuiElement type="bitmap" profile="fs25_contractsProgressBar" id="progressBar2"/>
         </GuiElement>
-		<GuiElement type="text" profile="ingameMenuContractsContractTextSmall" id="prog2" textAlignment="left" textAutoWidth="true" size="0 40px" >
+		<GuiElement type="text" profile="fs25_contractsContentValue" id="prog2" textAlignment="left" textAutoWidth="true" size="0 40px" >
 		</GuiElement>
+	</BoxLayout>
 	</GuiElement>
 </GUI>

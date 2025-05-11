@@ -133,3 +133,53 @@ function SettingsEvent.sendEvent(setting)
         g_client:getServerConnection():sendEvent(SettingsEvent.new(setting))
     end
 end
+
+--------------------- Change Vehicles Event ------------------------------------------------------------- 
+ChangeVecEvent = {}
+ChangeVecEvent_mt = Class(ChangeVecEvent, Event)
+InitEventClass(ChangeVecEvent, "ChangeVecEvent")
+
+function ChangeVecEvent.emptyNew()
+	return Event.new(ChangeVecEvent_mt)
+end
+function ChangeVecEvent.new(mission, groupId)
+	local o = ChangeVecEvent.emptyNew()
+	o.mission = mission
+	o.groupId = groupId
+	return o
+end
+function ChangeVecEvent:writeStream(streamId, connection)
+	NetworkUtil.writeNodeObject(streamId, self.mission)
+	streamWriteUInt8(streamId, self.groupId)
+
+end
+function ChangeVecEvent:readStream(streamId, connection)
+	self.mission = NetworkUtil.readNodeObjectId(streamId)
+	self.groupId = streamReadUInt8(streamId)
+	self:run(connection)
+end
+function ChangeVecEvent:run(connection)
+	-- will update mission vecs on server, no matter where event came from 
+	local isServer = g_currentMission:getIsServer()
+	assert(isServer, "BetterContracts: ChangeVecEvent:run() is a server-only function")
+	assert(not connection:getIsServer(), "BetterContracts: ChangeVecEvent should only come from clients")
+	-- set the missions vehicles
+	local m = self.mission
+	local ix = self.groupId
+	local vecSelect = BetterContracts.vehicleSelect 
+	vecSelect:getGroups(m)
+	m.vehiclesToLoad = vecSelect.groups[ix].vehicles
+	m.vehicleGroupIdentifier = vecSelect.groups[ix].identifier
+	m:prepare(true)  	-- spawns mission vehicles
+	m:raiseActive()
+	-- inform client about mission start ok:
+	connection:sendEvent(MissionStartEvent.newServerToClient(MissionStartState.OK,true))
+	-- not necessary to inform other clients, since this mission was just taken
+end
+function ChangeVecEvent.sendEvent(m, groupId)
+	local event = ChangeVecEvent.new(m, groupId)
+	if g_client ~= nil then
+		-- clients have to send to server
+		g_client:getServerConnection():sendEvent(event)
+	end
+end

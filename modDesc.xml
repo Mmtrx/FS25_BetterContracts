@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<modDesc descVersion="93">
+<modDesc descVersion="96">
 	<author>Mmtrx</author>
-	<version>1.1.1.4</version>
+	<version>1.1.2.0</version>
 	<title>
 		<en>Better Contracts</en>
 	</title>
@@ -10,36 +10,18 @@
 			<![CDATA[
 Port of FS22_BetterContracts
 
-ChangeLog v1.1.1.4:
-- MP fix #47 exclude deadWood, ...
-- MP fix #40 no progress in fieldwork / deposited liters 
+This version enables following features:
 
-ChangeLog v1.1.1.3:
-- compatibility with FS25_RefreshContracts
-- fix #38, #47 exclude deadWood, transport, rock contracts 
-- new settings: hideMission #44, stayNew, finishField #48
-
-ChangeLog v1.1.1.2:
-- compatibility with FS25_additionalGameSettings (#31, #33, #35)
-- fix white UI page (#19, #24, #29), server save/load (#22, #27, #30)
-- fix npc jobs for cancelled mission (#17)
-- awareness for FS25_LimeMission, FS25_ContractBoost
-- stay on NEW contracts list after accepting a contract
-- only show on hud active contracts with completion > 0
-
-ChangeLog v1.1.0.0:
-- fix MP errors
-- UI settings page
-- discount mode enabled
-
-ChangeLog v1.0.1.1:
-- fix details button
-- enlarge contract details list
-- new icon (courtesy DrDrulia)
-
-ChangeLog v1.0.0.0
 - clear list of available contracts 
 - generate new contracts 
+- sort contracts list
+- comprehensive UI settings page 
+- (configurable) stay on NEW contracts list after accepting a contract
+- (configurable) only show on hud active contracts with completion > 0
+- (configurable) allow field work completion after contract finish
+- possibly exclude certain contract types from being generated
+- discount mode enabled
+- compatibility with FS25_RefreshContracts, FS25_LimeMission, FS25_ContractBoost, FS25_additionalGameSettings
 
 GitHub link: https://github.com/Mmtrx/FS25_BetterContracts
 I plan to implement additional functions in next releases of the mod.
@@ -49,25 +31,18 @@ I plan to implement additional functions in next releases of the mod.
 			<![CDATA[
 Portierung von FS22_BetterContracts
 
-ChangeLog v1.1.1.0:
-- fix (#17): abgebrochene Aufträge erhöhen nicht den Rabatt
-- Kompatibilität mit FS25_LimeMission, FS25_ContractBoost
-- Beim Annehmen eines Auftrags wird die Auftragsliste nicht verlassen
-- Auf dem Hud werden nur begonnene Aufträge angezeigt (Fortschritt > 0)
+Diese Version enthält folgende Funktionen:
 
-Changelog v1.1.0.0
-- Fix Multiplayer
-- UI Menu für Einstellungen
-- Rabatt-Mode aktiviert
-
-Changelog v1.0.1.1
-- Fix (D)etails-Button
-- Vergrößerung der Liste mit Auftragsdetails
-- Neues Icon 
-
-Changelog v1.0.0.0
 - Löschen der Auftragsliste
 - Erzeugen neuer Aufträge
+- Sortieren der Aufträge
+- UI Menu für Einstellungen
+- (einstellbar) Beim Annehmen eines Auftrags wird die Auftragsliste nicht verlassen
+- (einstellbar) Auf dem Hud werden nur begonnene Aufträge angezeigt (Fortschritt > 0)
+- (einstellbar) Feldarbeit beenden nach Vertragsende
+- Möglichkeit, bestimmte Auftragsarten nicht zu erzeugen
+- Rabatt-Mode aktiviert
+- Kompatibilität mit FS25_RefreshContracts, FS25_LimeMission, FS25_ContractBoost, FS25_additionalGameSettings 
 
 Weitere Funktionen sind für die Zukunft geplant.
 GitHub link: https://github.com/Mmtrx/FS25_BetterContracts
@@ -77,57 +52,23 @@ GitHub link: https://github.com/Mmtrx/FS25_BetterContracts
 			<![CDATA[
 Portage de FS22_BetterContracts
 
-ChangeLog v1.1.0.0 :
-- Correction des erreurs MP
-- Page de paramétrage de l'interface utilisateur
-- mode de réduction activé
+Cette version permet les fonctionnalités suivantes :
 
-ChangeLog v1.0.1.1 :
-- correction du bouton « détails
-- agrandissement de la liste des détails du contrat
-- nouvelle icône (avec l'aimable autorisation de DrDrulia)
-
-ChangeLog v1.0.0.0
 - effacer la liste des contrats disponibles 
 - générer de nouveaux contrats 
+- tri de la liste des contrats
+- page de configuration complète de l'interface utilisateur 
+- (configurable) rester dans la liste des NOUVEAUX contrats après avoir accepté un contrat
+- (configurable) n'afficher dans le hud que les contrats actifs dont le degré d'achèvement est > 0
+- (configurable) autoriser le travail sur le terrain après la fin du contrat
+- possibilité d'exclure certains types de contrats de la génération
+- mode d'escompte activé
+- compatibilité avec FS25_RefreshContracts, FS25_LimeMission, FS25_ContractBoost, FS25_additionalGameSettings
 
 Lien GitHub : https://github.com/Mmtrx/FS25_BetterContracts
 Je prévois d'implémenter des fonctions supplémentaires dans les prochaines versions du mod.
 ]]>
 		</fr>
-		<it>
-	<![CDATA[Contratti Migliori per FS25
-
-ChangeLog v1.1.1.3:
-- compatibilità con FS25_RefreshContracts
-- Fix #38, #47: escludere i contratti di Legna secca, trasporto e missione di raccolta sassi.
-- Nuove impostazioni: nascondi Missione #44, resta Nuovo, termina Campo #48.
-
-ChangeLog v1.1.1.2:
-- compatibilità con FS25_additionalGameSettings (#31, #33, #35)
-- correzione della pagina bianca dell'interfaccia utente (#19, #24, #29), salvataggio/caricamento del server (#22, #27, #30)
-- correggere i lavori degli npc per le missioni annullate (#17)
-- consapevolezza per FS25_LimeMission, FS25_ContractBoost
-- rimanere nell'elenco dei NUOVI contratti dopo l'accettazione di un contratto
-- mostra sull'hud solo i contratti attivi con completamento > 0
-
-ChangeLog v1.1.0.0:
-- correzione errori MP
-- Pagina delle impostazioni dell'interfaccia utente
-- modalità sconto abilitata
-
-ChangeLog v1.0.1.1:
-- correzione del pulsante dei dettagli
-- ingrandimento dell'elenco dei dettagli del contratto
-- nuova icona (per gentile concessione di DrDrulia)
-
-ChangeLog v1.0.0.0
-- cancellare l'elenco dei contratti disponibili 
-- generare nuovi contratti 
-
-Link GitHub: https://github.com/Mmtrx/FS25_BetterContracts
-Ho intenzione di implementare ulteriori funzioni nelle prossime versioni della mod.]]>
-		</it>
 	</description>
 	<iconFilename>icon_BetterContracts.dds</iconFilename>
 	<multiplayer supported="true" />

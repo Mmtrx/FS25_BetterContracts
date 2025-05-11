@@ -6,590 +6,408 @@
 	Limitation: no entries for cotton/ sugarcane harvest, sugarBeet/ cotton/ sugarcane
 				sowing, and mow-bale for small/ medium fields
 	Changelog:
-	 v1.2.0.1   29.03.2022  initial beta
-	 v1.2.3.1   01.08.2022  adapt vehicle configs for FS22
-	 v1.2.4.0   17.08.2022  correct tractor/ weight for sow-small-grain and weed-small
-	 v1.2.6.3   18.01.2023  remove outdated configs from tractors
+	 v1.1.2.0   24.02.2025  initial FS25
 
 ======================================================================================================-->
 <missionVehicles overwrite="false">
 	<variants/>
+	<requiredMods>
+		<mod name="FS25_lizardTardis" id="1"/>
+		<mod name="FS25_poettingerMowerPack" id="2" />
+	</requiredMods>
 
-	<mission type="harvest" >
+	<mission type="harvestMission" >
 		<!-- grainMission -->
-		<group fieldSize="small" variant="GRAIN" rewardScale="1.2">
-			<vehicle filename="$data/vehicles/rostselmash/nova330/nova330.xml" /> <!-- combine -->
-			<vehicle filename="$data/vehicles/rostselmash/powerStream500/powerStream500.xml" /> <!-- header -->
-			<vehicle filename="$data/vehicles/fendt/favorit500/favorit500.xml" /> <!-- tractor -->
+		<group size="small" variant="GRAIN" rewardScale="1.2">
+			<vehicle filename="$data/vehicles/caseIH/axialFlow150/axialFlow150.xml"/>
+			 <!-- combine -->
+			<vehicle filename="$data/vehicles/caseIH/terraFlex3020/terraFlex3020.xml"/> <!-- header -->
+			<vehicle filename="$data/vehicles/lindner/lintrac130/lintrac130.xml"/> 	<!-- tractor -->
 			<vehicle filename="$data/vehicles/brantner/z18051/z18051.xml">
 				<!-- trailer -->
 				<configuration name="cover" id="2" />
-				<configuration name="wheel" id="2" />
 			</vehicle>
+		<!-- Test Mod: -->
+			<vehicle filename="lizardTrailer.xml" requiredMod="1"/> 
+			<vehicle filename="novacat301/novacat301.xml" requiredMod="2"/> 
 		</group>
-		<group fieldSize="medium" variant="GRAIN">
-			<vehicle filename="$data/vehicles/johnDeere/t560/t560.xml" /> <!-- combine -->
-			<vehicle filename="$data/vehicles/johnDeere/header625X/header625X.xml" /> <!-- header -->
+		<group size="medium" variant="GRAIN">
+			<vehicle filename="$data/vehicles/claas/lexion6900/lexion6900.xml"/>
+			<vehicle filename="$data/vehicles/claas/convioFlex1080/convioFlex1080.xml"/>
+			 <!-- combine - header -->
 			<vehicle filename="$data/vehicles/nardi/n40bx/n40bx.xml" /> <!-- headerTrailer -->
 			<vehicle filename="$data/vehicles/caseIH/magnumT4B/magnumT4B.xml">
 				<!-- tractor -->
 				<configuration name="motor" id="2" />
-				<configuration name="wheel" id="4" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RP/tdk301RP.xml" /> <!-- trailer -->
 		</group>
-		<group fieldSize="large" variant="GRAIN">
-			<vehicle filename="$data/vehicles/johnDeere/x9_1100/x9_1100.xml"/>
+		<group size="large" variant="GRAIN">
+			<vehicle filename="$data/vehicles/johnDeere/seriesS7/seriesS7.xml"/>
 			<vehicle filename="$data/vehicles/johnDeere/headerHD45X/headerHD45X.xml" /> <!-- header -->
 			<vehicle filename="$data/vehicles/nardi/n60_45/n60_45.xml" /> <!-- headerTrailer -->
 			<vehicle filename="$data/vehicles/johnDeere/series8R/series8R.xml">
 				<!-- tractor -->
 				<configuration name="motor" id="2" />
-				<configuration name="wheel" id="6" />
 			</vehicle>
-			<vehicle filename="data/vehicles/krone/gx520/gx520.xml"> <!-- trailer -->
+			<vehicle filename="$data/vehicles/krone/gx520/gx520.xml"> <!-- trailer -->
 				<configuration name="cover" id="2" />
 			</vehicle>
 		</group>
 
 		<!-- maizeMission -->
-		<group fieldSize="small" variant="MAIZE" rewardScale="1.4">
-			<vehicle filename="$data/vehicles/newHolland/chSeries/chSeries.xml" /> <!-- combine -->
+		<group size="small" variant="MAIZE" rewardScale="1.4">
+			<vehicle filename="$data/vehicles/fendt/series5275csl/series5275csl.xml"/> <!-- combine -->
 			<vehicle filename="$data/vehicles/capello/diamant8/diamant8.xml"/>
-			<vehicle filename="$data/vehicles/newHolland/t7/t7.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="4" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/claas/carat/carat.xml">
+			<vehicle filename="$data/vehicles/newHolland/t7/t7.xml"/>
+			<vehicle filename="$data/vehicles/claas/arion400/arion400.xml">
+				<configuration name="motor" id="7"/>
+			</vehicle> 	<!-- tractor -->
+			<vehicle filename="$data/vehicles/krampe/sks30_150/sks30_150.xml"/>
 				<!-- trailer -->
-				<configuration name="fillVolume" id="2" />
-				<configuration name="fillUnit" id="2" />
-				<configuration name="baseMaterial" id="2"/>
-			</vehicle>
 		</group>
-		<group fieldSize="medium" variant="MAIZE">
-			<vehicle filename="$data/vehicles/claas/lexion8000/lexion8000.xml">
-				<!-- combine -->
-				<configuration name="wheel" id="2" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/claas/corio1275C/corio1275C.xml" />
-				<!-- header -->
-			<vehicle filename="$data/vehicles/claas/corio1275CTrailer/corio1275CTrailer.xml" />
-				<!-- header trailer -->
-			<vehicle filename="$data/vehicles/jcb/fastrac4220/fastrac4220.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="3" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RA/tdk301RA.xml">
-				<!-- trailer -->
+		<group size="medium" variant="MAIZE">
+			<vehicle filename="$data/vehicles/johnDeere/seriesS7/seriesS7.xml"/>
+			<vehicle filename="$data/vehicles/capello/diamant8/diamant8.xml"/>
+			<vehicle filename="$data/vehicles/johnDeere/series6R/series6RLarge.xml">
+				<configuration name="motor" id="3"/>
+			</vehicle>  <!-- tractor -->
+			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RA/tdk301RA.xml"> <!-- trailer -->
 				<configuration name="fillUnit" id="2"/>
-				<configuration name="baseMaterial" id="2"/>
 				<configuration name="fillVolume" id="2"/>
 			</vehicle>
-			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RA/tdk301RA.xml">
-				<!-- trailer 2 -->
+			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RA/tdk301RA.xml"> <!-- trailer 2 -->
 				<configuration name="fillUnit" id="2"/>
-				<configuration name="baseMaterial" id="2"/>
 				<configuration name="fillVolume" id="2"/>
 			</vehicle>
 		</group>
-		<group fieldSize="large" variant="MAIZE">
-			<vehicle filename="$data/vehicles/johnDeere/x9_1100/x9_1100.xml"/>
+		<group size="large" variant="MAIZE">
+			<vehicle filename="$data/vehicles/johnDeere/seriesS7/seriesS7.xml"/>
 			<vehicle filename="$data/vehicles/johnDeere/headerC16F/headerC16F.xml" /> <!-- header -->
 			<vehicle filename="$data/vehicles/nardi/n60_45/n60_45.xml" /> <!-- headerTrailer -->
 			<vehicle filename="$data/vehicles/johnDeere/series8R/series8R.xml">
 				<!-- tractor -->
 				<configuration name="motor" id="2" />
-				<configuration name="wheel" id="6" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RP/tdk301RP.xml" /> <!-- trailer -->
 			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RP/tdk301RP.xml" /> <!-- trailer -->
 		</group>
 
 		<!-- sugarBeetMission -->
-		<group fieldSize="small" variant="SUGARBEET">
-			<vehicle filename="$data/vehicles/grimme/ft300/ft300.xml" /> <!-- combine -->
-			<vehicle filename="$data/vehicles/grimme/rootster604/rootster604.xml" /> <!-- header -->
-			<vehicle filename="$data/vehicles/masseyFerguson/series7710S/series7710S.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="5" />
-			</vehicle>
+		<group size="small" variant="SUGARBEET">
+			<vehicle filename="$data/vehicles/holmer/terraDosT540/terraDosT540.xml"/>
+			<vehicle filename="$data/vehicles/holmer/terraDosT540Header/terraDosT540Header.xml"/>
 			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml">
 				<!-- weight -->
-				<configuration name="baseMaterial" id="15" />
+				<configuration name="designColor" id="15" />
 			</vehicle>
-			<vehicle filename="$data/vehicles/masseyFerguson/series7710S/series7710S.xml">
-				<!-- tractor -->
-				<configuration name="motor" id="3" />
-				<configuration name="wheel" id="3" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/welger/dk115/dk115.xml" /> <!-- trailer -->
-			<vehicle filename="$data/vehicles/welger/dk115/dk115.xml" /> <!-- trailer -->
+			<vehicle filename="$data/vehicles/lindner/lintrac130/lintrac130.xml"/> 	<!-- tractor -->
+			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RP/tdk301RP.xml" /> <!-- trailer -->
 		</group>
 
-		<group fieldSize="medium" variant="SUGARBEET" rewardScale="1.5">
-			<vehicle filename="$data/vehicles/grimme/ft300/ft300.xml" /> <!-- combine -->
-			<vehicle filename="$data/vehicles/grimme/rootster604/rootster604.xml" /> <!-- header -->
-			<vehicle filename="$data/vehicles/masseyFerguson/series7710S/series7710S.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="5" />
+		<group size="medium" variant="SUGARBEET" rewardScale="1.5">
+			<vehicle filename="$data/vehicles/ropa/tiger6S/tiger6S.xml"/>
+			<vehicle filename="$data/vehicles/ropa/rrXL9/rrXL9.xml"/>
+			<vehicle filename="$data/vehicles/ropa/rrXLTrailer/rrXLTrailer.xml"/>
+			<vehicle filename="$data/vehicles/deutzFahr/series6C/series6C.xml"> 	<!-- tractor -->
+				<configuration name="design2" id="2" />
 			</vehicle>
-			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml">
-				<!-- weight -->
-				<configuration name="baseMaterial" id="15" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/masseyFerguson/series7710S/series7710S.xml">
-				<!-- tractor -->
-				<configuration name="motor" id="2" />
-				<configuration name="wheel" id="3" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/welger/dk115/dk115.xml" /> <!-- trailer -->
-			<vehicle filename="$data/vehicles/welger/dk115/dk115.xml" /> <!-- trailer 2 -->
-		</group>
-
-		<group fieldSize="medium" variant="SUGARBEET">
-			<vehicle filename="$data/vehicles/ropa/panther2/panther2.xml" /> <!-- combine -->
-			<vehicle filename="$data/vehicles/ropa/rr6x45/rr6x45.xml" /> <!-- header -->
-			<vehicle filename="$data/vehicles/johnDeere/series6R/series6R.xml">
-				<!-- tractor -->
-				<configuration name="motor" id="2" />
-				<configuration name="wheel" id="2" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/johnDeere/pickUp900/pickUp900.xml" />
-			<vehicle filename="$data/vehicles/krampe/hp20/hp20.xml" /> <!-- trailer -->
-		</group>
-
-		<group fieldSize="large" variant="SUGARBEET">
-			<vehicle filename="$data/vehicles/grimme/rexor6300/rexor6300.xml" /> <!-- combine -->
-			<vehicle filename="$data/vehicles/jcb/fastrac8330/fastrac8330.xml">
-				<configuration name="wheel" id="4" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/jcb/fastrac8330/fastrac8330.xml">
-				<configuration name="wheel" id="4" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RA/tdk301RA.xml">
-				<!-- trailer -->
+			<vehicle filename="$data/vehicles/brantner/tr34090/tr34090.xml">
 				<configuration name="fillUnit" id="2"/>
-				<configuration name="baseMaterial" id="2"/>
-				<configuration name="fillVolume" id="2"/>
-			</vehicle>
-			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RA/tdk301RA.xml">
-				<configuration name="fillUnit" id="2"/>
-				<configuration name="baseMaterial" id="2"/>
 				<configuration name="fillVolume" id="2"/>
 			</vehicle>
 		</group>
-		<group fieldSize="large" variant="SUGARBEET">
+
+		<group size="large" variant="SUGARBEET">
 			<vehicle filename="$data/vehicles/ropa/tiger6S/tiger6S.xml" /> <!-- combine -->
 			<vehicle filename="$data/vehicles/ropa/rrXL9/rrXL9.xml" /> <!-- header -->
 			<vehicle filename="$data/vehicles/ropa/rrXLTrailer/rrXLTrailer.xml" /> <!-- headerTrailer -->
-			<vehicle filename="$data/vehicles/man/tgs18500/tgs18500.xml">
-				<!-- tractor -->
-				<configuration name="baseMaterial" id="15" />
-			</vehicle>
+			<vehicle filename="$data/vehicles/international/transtarII/transtarIIEagle.xml">
+				<configuration name="design4" id="2"/>
+				<configuration name="design5" id="2"/>
+				<configuration name="design6" id="4"/>
+			</vehicle>	<!-- truck -->
 			<vehicle filename="$data/vehicles/krampe/sks30_150/sks30_150.xml" /> <!-- trailer -->
 		</group>
 
 		<!-- potatoMission -->
-		<group fieldSize="small" variant="POTATO">
+		<group size="small" variant="POTATO">
+			<vehicle filename="$data/vehicles/lindner/lintrac130/lintrac130.xml"/> 	<!-- tractor -->
 			<vehicle filename="$data/vehicles/grimme/evo290/evo290.xml" /> <!-- combine -->
-			<vehicle filename="$data/vehicles/grimme/ks754/ks754.xml" /> <!-- header -->
-			<vehicle filename="$data/vehicles/steyr/series8150/series8150.xml"> <!-- tractor -->
-				<configuration name="wheel" id="5" />
+			<vehicle filename="$data/vehicles/caseIH/puma/puma.xml">
+				<configuration name="motor" id="3"/>
 			</vehicle>
-			<vehicle filename="$data/vehicles/steyr/series8150/series8150.xml">
-				<configuration name="wheel" id="3" />
+			<vehicle filename="$data/vehicles/steyr/absolut/absolut.xml">
+				<configuration name="motor" id="4"/>
 			</vehicle>
-			<vehicle filename="$data/vehicles/welger/dk115/dk115.xml" /> <!-- trailer -->
-			<vehicle filename="$data/vehicles/welger/dk115/dk115.xml" /> <!-- trailer 2 -->
+			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RP/tdk301RP.xml"/>
 		</group>
-		<group fieldSize="medium" variant="POTATO">
-			<vehicle filename="$data/vehicles/ropa/keiler2/keiler2.xml" /> <!-- combine -->
-			<vehicle filename="$data/vehicles/steyr/series8150/series8150.xml"> <!-- tractor -->
-				<configuration name="wheel" id="5" />
+		<group size="medium" variant="POTATO">
+			<vehicle filename="$data/vehicles/grimme/ventor4150/ventor4150.xml"/>
+			<vehicle filename="$data/vehicles/caseIH/puma/puma.xml">
+				<configuration name="motor" id="3"/>
 			</vehicle>
-			<vehicle filename="$data/vehicles/johnDeere/series6M/series6M.xml">
-				<configuration name="wheel" id="3" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RA/tdk301RA.xml">
-				<!-- trailer -->
+			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RA/tdk301RA.xml">	<!-- trailer -->
 				<configuration name="fillUnit" id="2"/>
-				<configuration name="baseMaterial" id="2"/>
 				<configuration name="fillVolume" id="2"/>
 			</vehicle>
 			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RA/tdk301RA.xml">
-				<!-- trailer 2 -->
 				<configuration name="fillUnit" id="2"/>
-				<configuration name="baseMaterial" id="2"/>
 				<configuration name="fillVolume" id="2"/>
 			</vehicle>
 		</group>
-		<group fieldSize="medium" variant="POTATO">
-			<vehicle filename="$data/vehicles/ropa/keiler2/keiler2.xml" /> <!-- combine -->
-			<vehicle filename="$data/vehicles/johnDeere/series6M/series6M.xml"> <!-- tractor -->
-				<configuration name="wheel" id="3" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/johnDeere/series6R/series6R.xml" /> <!-- tractor -->
-			<vehicle filename="$data/vehicles/krampe/hp20/hp20.xml" /> <!-- trailer -->
-		</group>
-		<group fieldSize="large" variant="POTATO">
+		<group size="large" variant="POTATO">
 			<vehicle filename="$data/vehicles/grimme/ventor4150/ventor4150.xml" /> <!-- combine -->
 			<vehicle filename="$data/vehicles/fendt/vario1000/vario1000.xml" /> <!-- tractor -->
 			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RP/tdk301RP.xml" /> <!-- trailer -->
 			<vehicle filename="$data/vehicles/rudolphSohn/tdk301RP/tdk301RP.xml" /> <!-- trailer -->
 		</group>
-		<group fieldSize="large" variant="POTATO">
+		<group size="large" variant="POTATO">
 			<vehicle filename="$data/vehicles/grimme/ventor4150/ventor4150.xml" /> <!-- combine -->
-			<vehicle filename="$data/vehicles/jcb/fastrac8330/fastrac8330.xml"> <!-- tractor -->
-				<configuration name="wheel" id="4" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/jcb/fastrac8330/fastrac8330.xml">
-				<configuration name="wheel" id="4" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/fliegl/asw271/asw271.xml" /> <!-- trailer -->
-			<vehicle filename="$data/vehicles/fliegl/asw271/asw271.xml" /> <!-- trailer2 -->
-		</group>
+			<vehicle filename="$data/vehicles/international/transtarII/transtarIIEagle.xml">
+				<configuration name="design4" id="2"/>
+				<configuration name="design5" id="2"/>
+				<configuration name="design6" id="4"/>
+			</vehicle>	<!-- truck -->
+			<vehicle filename="$data/vehicles/krampe/sks30_150/sks30_150.xml" />		</group>
 	</mission>
 
-	<mission type="plow">
-		<group fieldSize="small">
+	<mission type="plowMission">
+		<group size="small">
 			<vehicle filename="$data/vehicles/newHolland/t7/t7.xml">
 				<!-- tractor -->
 				<configuration name="motor" id="2" />
-				<configuration name="wheel" id="4" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/agromasz/pov5xl/pov5xl.xml" /> <!-- plow -->
 			<vehicle filename="$data/vehicles/agco/weight650/weight650.xml" /> <!-- weight -->
 		</group>
-		<group fieldSize="small">
-			<vehicle filename="$data/vehicles/fendt/favorit500/favorit500.xml">
-				<!-- tractor -->
-				<configuration name="motor" id="2" />
-				<configuration name="wheel" id="2" />
-			</vehicle>
+		<group size="small">
+			<vehicle filename="$data/vehicles/lindner/lintrac130/lintrac130.xml"/> 	<!-- tractor -->
 			<vehicle filename="$data/vehicles/agromasz/pov5xl/pov5xl.xml"/> <!-- plow -->
 			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml">
-				<configuration name="baseMaterial" id="7" />
+				<configuration name="designColor" id="11" />
 			</vehicle>
 		</group>
-		<group fieldSize="medium">
+		<group size="medium">
 			<vehicle filename="$data/vehicles/deutzFahr/series8/series8.xml">
 				<!-- tractor -->
 				<configuration name="design" id="2"/>
 				<configuration name="rimColor" id="2"/>
-				<configuration name="designMaterial" id="5"/>
-				<configuration name="wheel" id="4" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/lemken/titan18/titan18.xml" /> <!-- plow -->
 			<vehicle filename="$data/vehicles/agco/weight1500/weight1500.xml" /> <!-- weight -->
 		</group>
-		<group fieldSize="large">
-			<vehicle filename="$data/vehicles/challenger/mt700/mt700.xml">
+		<group size="large">
+			<vehicle filename="$data/vehicles/johnDeere/series8R/series8R.xml">
 				<!-- tractor -->
-				<configuration name="motor" id="2" />
+				<configuration name="motor" id="4" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/kverneland/pw10012/pw10012.xml"/> <!-- plow -->
 		</group>
 	</mission>
 
-	<mission type="sow">
+	<mission type="sowMission">
 		<!-- grainMission -->
-		<group fieldSize="small" variant="GRAIN">
-			<vehicle filename="$data/vehicles/newHolland/t6/t6.xml">
-				<!-- tractor -->
-				<configuration name="motor" id="3" />
-				<configuration name="wheel" id="20" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/amazone/centaya3000Super/centaya3000Super.xml"    >
-				<!-- seeder -->
-			</vehicle>
+		<group size="small" variant="GRAIN">
+			<vehicle filename="$data/vehicles/lindner/lintrac130/lintrac130.xml"/> 	<!-- tractor -->
+			<vehicle filename="$data/vehicles/agromasz/aquilaDrive400/aquilaDrive400.xml"/>	<!-- seeder -->
 			<vehicle filename="$data/vehicles/tenwinkel/weight1000/weight1000.xml">
-				<configuration name="baseMaterial" id="7" />
+				<configuration name="designColor" id="12" />
 			</vehicle>
 		</group>
-		<group fieldSize="medium" variant="GRAIN" rewardScale="1.5">
-			<vehicle filename="$data/vehicles/caseIH/magnumT4B/magnumT4B.xml">
+		<group size="medium" variant="GRAIN" rewardScale="1.5">
+			<vehicle filename="$data/vehicles/caseIH/magnumT4B/magnumT4B.xml"/>
 				<!-- tractor -->
-				<configuration name="wheel" id="3" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/kuhn/venta4030/venta4030.xml"/> <!-- seeder -->
-			<vehicle filename="$data/vehicles/kuhn/hr4040/hr4040.xml"/><!-- cultivator -->
 			<vehicle filename="$data/vehicles/kuhn/tf1512/tf1512.xml"/><!-- frontTank -->
 		</group>
-		<group fieldSize="large" variant="GRAIN">
+		<group size="large" variant="GRAIN">
 			<vehicle filename="$data/vehicles/johnDeere/series8R/series8R.xml">
 				<!-- tractor -->
 				<configuration name="motor" id="4" />
-				<configuration name="wheel" id="3" />
 			</vehicle>
-			<vehicle filename="data/vehicles/lemken/solitair12/solitair12.xml" /> <!-- seeder -->
+			<vehicle filename="$data/vehicles/lemken/solitair12/solitair12.xml" /> <!-- seeder -->
 			<vehicle filename="$data/vehicles/johnDeere/pickUp1800/pickUp1800.xml" /> <!-- weight -->
 		</group>
 
 		<!-- maizeMission -->
-		<group fieldSize="small" variant="MAIZE">
-			<vehicle filename="$data/vehicles/valtra/gSeries/gSeries.xml">
-				<!-- tractor -->
-				<configuration name="motor" id="2" />
-				<configuration name="wheel" id="4" />
-				<configuration name="baseMaterial" id="23" />
-				<configuration name="rimColor" id="9" />
-				<configuration name="design" id="2" />
-			</vehicle>
+		<group size="small" variant="MAIZE">
+			<vehicle filename="$data/vehicles/zetor/crystal/crystal.xml" /> <!-- tractor -->
 			<vehicle filename="$data/vehicles/amazone/precea4500/precea4500.xml"/> <!-- seeder -->
 			<vehicle filename="$data/vehicles/tenwinkel/weight600/weight600.xml"/> <!-- weight -->
 		</group>
-		<group fieldSize="medium" variant="MAIZE" rewardScale="0.8">
+		<group size="medium" variant="MAIZE" rewardScale="0.8">
 			<vehicle filename="$data/vehicles/fendt/vario700/vario700.xml">
 				<!-- tractor -->
-				<configuration name="wheel" id="3" />
 				<configuration name="motor" id="2" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/kverneland/optimaRS9m/optimaRS9m.xml" /> <!-- seeder -->
 			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml" /> <!-- weight -->
 		</group>
-		<group fieldSize="large" variant="MAIZE">
+		<group size="large" variant="MAIZE">
 			<vehicle filename="$data/vehicles/caseIH/magnumT4B/magnumT4B.xml">
 				<!-- tractor -->
-				<configuration name="wheel" id="3" />
 				<configuration name="motor" id="2" />
 			</vehicle>
-			<vehicle filename="$data/vehicles/vaderstad/tempoL16/tempoL16.xml" /> <!-- seeder -->
+			<vehicle filename="$data/vehicles/kinze/planter4900/planter4900.xml"/>
+			 <!-- seeder -->
 			<vehicle filename="$data/vehicles/agco/weight1500/weight1500.xml">
-				<configuration name="baseMaterial" id="7" />
+				<configuration name="designColor" id="13" />
 			</vehicle>
 		</group>
 
 		<!-- potatoMission -->
-		<group fieldSize="small" variant="POTATO">
-			<vehicle filename="$data/vehicles/claas/arion600/arion600.xml" > <!-- tractor -->
-				<configuration name="motor" id="3" />
+		<group size="small" variant="POTATO">
+			<vehicle filename="$data/vehicles/fendt/vario500/vario500.xml"> 	<!-- tractor -->
+			 <configuration name="design" id="2" />
+			 <!-- BROAD_BKT_agrimaxVFlecto -->
 			</vehicle>
 			<vehicle filename="$data/vehicles/grimme/gl420/gl420.xml" /> <!-- seeder -->
 			<vehicle filename="$data/vehicles/claas/w900/w900.xml" /> <!-- weight -->
 		</group>
-		<group fieldSize="medium" variant="POTATO">
-			<vehicle filename="$data/vehicles/johnDeere/series6M/series6M.xml">
-				<!-- tractor -->
-				<configuration name="motor" id="2" />
-				<configuration name="wheel" id="2" />
+		<group size="medium" variant="POTATO">
+			<vehicle filename="$data/vehicles/mcCormick/x8VTDrive/x8VTDrive.xml" > <!-- tractor -->
+				<configuration name="motor" id="3" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/grimme/gl420/gl420.xml" /> <!-- seeder -->
 			<vehicle filename="$data/vehicles/johnDeere/pickUp900/pickUp900.xml" /> <!-- weight -->
 		</group>
-		<group fieldSize="large" variant="POTATO" rewardScale="1.2">
-			<vehicle filename="$data/vehicles/valtra/series8750/series8750.xml">
+		<group size="large" variant="POTATO" rewardScale="1.2">
+			<vehicle filename="$data/vehicles/caseIH/magnumT4B/magnumT4B.xml">
 				<!-- tractor -->
-				<configuration name="baseMaterial" id="9" />
-				<configuration name="rimColor" id="22" />
-				<configuration name="wheel" id="3" />
+				<configuration name="motor" id="2" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/grimme/gl860/gl860.xml" /> <!-- seeder -->
 			<vehicle filename="$data/vehicles/agco/weight1500/weight1500.xml">
-				<configuration name="baseMaterial" id="22" />
+				<configuration name="designColor" id="20" />
 			</vehicle>
 		</group>
 	</mission>
 
-	<mission type="weed">
-		<group fieldSize="small" rewardScale="0.7">
-			<vehicle filename="$data/vehicles/zetor/majorCL80/majorCL80.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="7" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/einboeck/pneumaticstar900/pneumaticstar900.xml" /> <!-- weeder -->
+	<mission type="weedMission">
+		<group size="small" rewardScale="0.7">
+			<vehicle filename="$data/vehicles/zetor/crystal/crystal.xml" /> <!-- tractor -->
+			<vehicle filename="$data/vehicles/einboeck/pneumaticstarPro1200/pneumaticstarPro1200.xml" /> <!-- weeder -->
 			<vehicle filename="$data/vehicles/agco/weight650/weight650.xml">
-				<configuration name="baseMaterial" id="7" />
+				<configuration name="designColor" id="14" />
 			</vehicle>
 		</group>
-		<group fieldSize="medium">
+		<group size="medium">
 			<vehicle filename="$data/vehicles/fendt/vario700/vario700.xml">
 				<!-- tractor -->
-				<configuration name="wheel" id="6" />
 				<configuration name="motor" id="2" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/einboeck/pneumaticstarPro1200/pneumaticstarPro1200.xml" /> <!-- weeder -->
 			<vehicle filename="$data/vehicles/agco/weight650/weight650.xml">
-				<configuration name="baseMaterial" id="6" />
+				<configuration name="designColor" id="6" />
 			</vehicle>
 		</group>
-		<group fieldSize="large">
+		<group size="large">
 			<vehicle filename="$data/vehicles/fendt/vario700/vario700.xml">
 				<!-- tractor -->
-				<configuration name="wheel" id="6" />
 				<configuration name="motor" id="2" />
 			</vehicle>
-			<vehicle filename="$data/vehicles/treffler/ts1520/ts1520.xml" /> <!-- weeder -->
+			<vehicle filename="$data/vehicles/einboeck/aerostar2400/aerostar2400.xml"/> <!-- weeder -->
 			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml">
-				<configuration name="baseMaterial" id="7" />
+				<configuration name="designColor" id="28" />
 			</vehicle>
 		</group>
 	</mission>
 
-	<mission type="spray">
-		<group fieldSize="small">
-			<vehicle filename="$data/vehicles/valtra/gSeries/gSeries.xml">
-				<!-- tractor -->
-				<configuration name="baseMaterial" id="8" />
-				<configuration name="rimColor" id="3" />
-				<configuration name="wheel" id="6" />
+	<mission type="herbicideMission">
+		<group size="small">
+			<vehicle filename="$data/vehicles/zetor/crystal/crystal.xml" /> <!-- tractor -->
+			<vehicle filename="$data/vehicles/hardi/mega1200L/mega1200L.xml" /> <!-- spreader -->
+			<vehicle filename="$data/vehicles/hardi/mega1200L/mega1200LTank.xml" /> <!-- frontTank -->
+		</group>
+		<group size="medium">
+			<vehicle filename="$data/vehicles/deutzFahr/series6C/series6C.xml"> 	<!-- tractor -->
+				<configuration name="design2" id="2" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/hardi/mega1200L/mega1200L.xml" /> <!-- spreader -->
 			<vehicle filename="$data/vehicles/hardi/mega1200L/mega1200LTank.xml" /> <!-- frontTank -->
 		</group>
-		<group fieldSize="medium">
-			<vehicle filename="$data/vehicles/jcb/fastrac4220/fastrac4220.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="5" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/hardi/commander4500DF/commander4500DF.xml"> <!-- spreader -->
-				<configuration name="variableWorkWidth" id="3"/>
-				<configuration name="ai" id="3"/>
-				<configuration name="folding" id="3"/>
-			</vehicle>
-			<vehicle filename="$data/vehicles/agco/weight1500/weight1500.xml">
-				<configuration name="baseMaterial" id="10" />
-			</vehicle>
-		</group>
-		<group fieldSize="large">
-			<vehicle filename="$data/vehicles/caseIH/magnumT4B/magnumT4B.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="5" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/berthoud/vantage4300/vantage4300.xml" /> <!-- spreader -->
-		</group>
+		<!--group size="large">
+			<vehicle filename="$data/vehicles/caseIH/magnumT4B/magnumT4B.xml"/>
+		</group-->
 	</mission>
 
-	<mission type="fertilize">
-		<group fieldSize="small">
-			<vehicle filename="$data/vehicles/caseIH/magnumT4B/magnumT4B.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="2" />
-			</vehicle>
+	<mission type="fertilizeMission">
+		<group size="small">
+			<vehicle filename="$data/vehicles/caseIH/magnumT4B/magnumT4B.xml"/>	<!-- tractor -->
 			<vehicle filename="$data/vehicles/farmtech/supercis800/supercis800.xml"/> <!-- spreader -->
 		</group>
-		<group fieldSize="small">
-			<vehicle filename="$data/vehicles/valtra/gSeries/gSeries.xml">
-				<!-- tractor -->
-				<configuration name="motor" id="2" />
-				<configuration name="baseMaterial" id="8" />
-				<configuration name="rimColor" id="7" />
-				<configuration name="wheel" id="4" />
+		<group size="small">
+			<vehicle filename="$data/vehicles/fendt/vario500/vario500.xml"> 	<!-- tractor -->
+			 <configuration name="design" id="2" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/farmtech/variofex750/variofex750.xml"/> <!-- spreader -->
 			<vehicle filename="$data/vehicles/agco/weight650/weight650.xml">
-				<configuration name="baseMaterial" id="7" />
+				<configuration name="designColor" id="12" />
 			</vehicle>
 		</group>
-		<group fieldSize="medium" rewardScale="1.5">
-			<vehicle filename="$data/vehicles/masseyFerguson/series7710S/series7710S.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="4" />
+		<group size="medium" rewardScale="1.5">
+			<vehicle filename="$data/vehicles/deutzFahr/series6C/series6C.xml"> 	<!-- tractor -->
+				<configuration name="design2" id="2" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/amazone/zgts10001/zgts10001.xml"/> <!-- spreader -->
 			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml" />
 		</group>
-		<group fieldSize="medium" rewardScale="1.5">
+		<group size="medium" rewardScale="1.5">
 			<vehicle filename="$data/vehicles/deutzFahr/series8/series8.xml">
 				<!-- tractor -->
 				<configuration name="design" id="2"/>
 				<configuration name="rimColor" id="2"/>
-				<configuration name="designMaterial" id="5"/>
-				<configuration name="wheel" id="4" />
 			</vehicle>
-			<vehicle filename="$data/vehicles/rudolfSchouten/vt130/vt130.xml"/> <!-- spreader -->
-			<vehicle filename="$data/vehicles/rudolfSchouten/sp6834/sp6834.xml"/>
+			<vehicle filename="$data/vehicles/amazone/zgts10001/zgts10001.xml"/> <!-- spreader -->
 			<vehicle filename="$data/vehicles/agco/weight2300/weight2300.xml">
-				<configuration name="baseMaterial" id="7" />
+				<configuration name="designColor" id="26" />
 			</vehicle>
 		</group>
-		<group fieldSize="large">
-			<vehicle filename="$data/vehicles/masseyFerguson/series7720S/series7720S.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="3" />
+		<group size="large">
+			<vehicle filename="$data/vehicles/johnDeere/series7R/series7R.xml">
+				<configuration name="motor" id="3"/>
 			</vehicle>
-			<vehicle filename="$data/vehicles/samsonAgro/flex2023/flex2023.xml"/> <!-- spreader -->
+				<!-- tractor -->
+			<vehicle filename="$data/vehicles/bredal/k105/k105.xml">
+			<configuration name="folding" id="2"/>
+			</vehicle>
+			 <!-- spreader -->
 			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml" /> <!-- weight -->
 		</group>
-		<group fieldSize="large">
-			<vehicle filename="$data/vehicles/fendt/vario1000/vario1000.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="4" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/samsonAgro/pgII35m/pgII35m.xml"/> <!-- spreader -->
+		<group size="large">
+			<vehicle filename="$data/vehicles/fendt/vario1000/vario1000.xml"/> <!-- tractor -->
+			 <!-- spreader -->
 			<vehicle filename="$data/vehicles/samsonAgro/sbh4_36/sbh4_36.xml"/>
-			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml">
-			</vehicle>
+			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml"/>
 		</group>
 	</mission>
 
-	<mission type="cultivate">
-		<group fieldSize="small">
-			<vehicle filename="$data/vehicles/newHolland/t7/t7.xml">
+	<mission type="cultivateMission">
+		<group size="small">
+			<vehicle filename="$data/vehicles/newHolland/t7/t7.xml"/>
 				<!-- tractor -->
-				<configuration name="wheel" id="3" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/horsch/terrano3FX/terrano3FX.xml"/>
 			<vehicle filename="$data/vehicles/agco/weight1500/weight1500.xml">
-				<configuration name="baseMaterial" id="19" />
+				<!-- New Holland blue -->
+				<configuration name="designColor" id="20" />
 			</vehicle>
+			<vehicle filename="$data/vehicles/lemken/smaragd9_500k/smaragd9_500k.xml"/>
 		</group>
-		<group fieldSize="medium">
-			<vehicle filename="$data/vehicles/newHolland/t8/t8.xml">
+		<group size="medium">
+			<vehicle filename="$data/vehicles/newHolland/t8/t8.xml"/>
 				<!-- tractor -->
-				<configuration name="wheel" id="7" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/koeckerling/rebellClassic600T/rebellClassic600T.xml"/>
+			<vehicle filename="$data/vehicles/poettinger/terria6040/terria6040.xml"/>
+			<!-- cultivator -->
 			<vehicle filename="$data/vehicles/agco/weight2300/weight2300.xml">
-				<configuration name="baseMaterial" id="19" />
+				<configuration name="designColor" id="20" />
 			</vehicle>
 		</group>
-		<group fieldSize="large">
-			<vehicle filename="$data/vehicles/newHolland/t9/t9.xml" /> <!-- tractor -->
+		<group size="large">
+			<vehicle filename="$data/vehicles/caseIH/quadtrac715/quadtrac715.xml">
+			<configuration name="design" id="2"/>
+			</vehicle>
+			 <!-- tractor -->
 			<vehicle filename="$data/vehicles/vaderstad/nzExtreme1425/nzExtreme1425.xml" />
 		</group>
 	</mission>
 
-	<mission type="mow_bale">
-		<group fieldSize="large" variant="SILAGE">
-			<vehicle filename="$data/vehicles/krone/bigM450/bigM450.xml" /> <!-- mower -->
-			<vehicle filename="$data/vehicles/johnDeere/series6R/series6R.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="2" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/newHolland/bigBaler1290HD/bigBaler1290HD.xml" /> <!-- baler -->
-			<vehicle filename="$data/vehicles/kuhn/sw4014/sw4014.xml" /> <!-- bale wrapper -->
-			<vehicle filename="$data/vehicles/jcb/fastrac8330/fastrac8330.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="3" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/agco/weight1500/weight1500.xml">
-				<configuration name="baseMaterial" id="10" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/arcusin/fsx6372/fsx6372.xml" /> <!-- bale stacker -->
-		</group>
-		<group fieldSize="large" variant="HAY">
-			<vehicle filename="$data/vehicles/krone/bigM450/bigM450.xml" /> <!-- mower -->
-			<vehicle filename="$data/vehicles/fendt/vario300/vario300.xml">
-				<!-- tractor -->
-				<configuration name="motor" id="2" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/poettinger/hit1618T/hit1618T.xml" /> <!-- tedder -->
-			<vehicle filename="$data/vehicles/kuhn/ga15131/ga15131.xml" /> <!-- windrower -->
-			<vehicle filename="$data/vehicles/fendt/vario700/vario700.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="4" />
-				<configuration name="motor" id="3" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/newHolland/bigBaler1290HD/bigBaler1290HD.xml" /> <!-- baler -->
-			<vehicle filename="$data/vehicles/jcb/fastrac4220/fastrac4220.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="3" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/agco/weight1500/weight1500.xml">
-				<configuration name="baseMaterial" id="10" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/arcusin/fsx6372/fsx6372.xml" /> <!-- bale stacker -->
-		</group>
-	</mission>
 </missionVehicles>

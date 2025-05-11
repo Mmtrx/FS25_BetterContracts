@@ -249,53 +249,33 @@ function harvestCalcStealing(self,superf)
 	end
 	return steal + penal
 end
-function updateDetails(self, section, index)
+function updateDetailContents(self, sect, index)
 	-- appended to InGameMenuContractsFrame:updateDetailContents()
 	local bc = BetterContracts
-	local contract = nil
-	local sectionContracts = self.sectionContracts[section]
-	if sectionContracts ~= nil then
-		contract = sectionContracts.contracts[index]
-	end
-	
-	if contract == nil then return end
-	local mission = contract.mission
+	local section = self.sectionContracts[self.subCategorySelector:getState()][sect]
+	if section == nil then return end
+	local contract = self.currentContract
+	local m = contract.mission
 
-	if contract.finished then
-		bc.my.npcbox:setVisible(false)  	-- remove our npcbox
-	end
+	--bc.my.vehicleBox:setVisible(true)
+	--bc.frCon.mapBox:setVisible(false)
+	--bc.frCon:invalidateLayout()	-- reorder elements in focus manager
 
-	-- hard Mode: vehicle lease cost also for canceled mission
-	if bc.config.hardMode and contract.finished and not mission.success then 
-		local lease, penal = 0, 0
-		if mission:hasLeasableVehicles() and mission.spawnedVehicles then
-			lease = - MathUtil.round(mission.vehicleUseCost)
-		end
-		-- stealing contains our penalty value
-		if mission.stealingCost ~= nil then
-			penal = - MathUtil.round(mission.stealingCost)
-			self.tallyBox:getDescendantByName("stealingText"):setText(g_i18n:getText("bc_penalty"))
-		end
-		local total = lease + penal 
-		self.tallyBox:getDescendantByName("leaseCost"):setText(g_i18n:formatMoney(lease, 0, true, true))
-		self.tallyBox:getDescendantByName("stealing"):setText(g_i18n:formatMoney(penal, 0, true, true))
-		self.tallyBox:getDescendantByName("total"):setText(g_i18n:formatMoney(total, 0, true, true))
-	end
+
+ -- toggle standard / enhanced progress bars
 	local noActive = not contract.active or not bc.isOn
-
-	-- toggle standard / enhanced progress bars
-	bc:showProgressBars(contract, not noActive and 
-		table.hasElement({"harvestMission","mow_baleMission", "chaffMission"}, mission.type.name))
+	--bc:showProgressBars(contract, not noActive and 
+	--	table.hasElement({"harvestMission","mow_baleMission", "chaffMission"}, m.type.name))
 	if noActive then return end 
 
-	-- update display for active contracts
-	if mission:hasLeasableVehicles() and mission.spawnedVehicles then
+	--[[ update display for active contracts
+	if m:hasLeasableVehicles() and m.spawnedVehicles then
 		-- show leased vecs for active contract
 		local totalWidth = 0 
 		-- smaller vehiclesBox to not interfere with 2nd progress bar
 		self.vehicleTemplate:applyProfile("myVehiclesItem")
 		self.vehiclesBox:applyProfile("myVehiclesBox")
-		for _, v in ipairs(mission.vehiclesToLoad) do
+		for _, v in ipairs(m.vehiclesToLoad) do
 			local storeItem = g_storeManager:getItemByXMLFilename(v.filename)
 			local element = self.vehicleTemplate:clone(self.vehiclesBox)
 			element:setImageFilename(storeItem.imageFilename)
@@ -308,6 +288,23 @@ function updateDetails(self, section, index)
 		self.vehiclesBox:setSize(totalWidth)
 		self.vehiclesBox:invalidateLayout()
 	end
+ -- hard Mode: vehicle lease cost also for canceled mission
+	if bc.config.hardMode and contract.finished and not m.success then 
+		local lease, penal = 0, 0
+		if m:hasLeasableVehicles() and m.spawnedVehicles then
+			lease = - MathUtil.round(m.vehicleUseCost)
+		end
+		-- stealing contains our penalty value
+		if m.stealingCost ~= nil then
+			penal = - MathUtil.round(m.stealingCost)
+			self.tallyBox:getDescendantByName("stealingText"):setText(g_i18n:getText("bc_penalty"))
+		end
+		local total = lease + penal 
+		self.tallyBox:getDescendantByName("leaseCost"):setText(g_i18n:formatMoney(lease, 0, true, true))
+		self.tallyBox:getDescendantByName("stealing"):setText(g_i18n:formatMoney(penal, 0, true, true))
+		self.tallyBox:getDescendantByName("total"):setText(g_i18n:formatMoney(total, 0, true, true))
+	end
+]]
 end
 function BetterContracts:showProgressBars(contract, on)
 	-- hide standard progress bar
@@ -341,17 +338,18 @@ function dismiss(self)
 	end
 end
 function startContract(frCon, superf, wantsLease)
-	self = BetterContracts
+	-- overwrites InGameMenuContractsFrame:startContract()
+	local bc = BetterContracts
 	local farmId = g_currentMission:getFarmId()
 
 	-- overwrite dialog info box
 	if g_missionManager:hasFarmReachedMissionLimit(farmId) 
-		and BetterContracts.config.maxActive ~= 3 then
+		and bc.config.maxActive ~= 3 then
 		InfoDialog.show(g_i18n:getText("bc_enoughMissions"))
 		return
 	end
 	-- (hardMode) --
-	if self.config.hardMode then 
+	if bc.config.hardMode then 
 		local farm = g_farmManager:getFarmById(farmId)
 		if wantsLease then 
 		-- check if enough jobs complete to allow lease
@@ -361,16 +359,16 @@ function startContract(frCon, superf, wantsLease)
 			if farm.stats.npcJobs ~= nil and farm.stats.npcJobs[npc.index] ~= nil then 
 				jobs = farm.stats.npcJobs[npc.index]
 			end
-			if jobs < self.config.hardLease then
+			if jobs < bc.config.hardLease then
 				InfoDialog.show(string.format(g_i18n:getText("bc_leaseNotEnough"),
-						self.config.hardLease - jobs, npc.title))
+						bc.config.hardLease - jobs, npc.title))
 				return
 			end
 		end
-		if self.config.hardLimit > -1 then
+		if bc.config.hardLimit > -1 then
 		-- check available monthly jobs limit
 			if farm.stats.jobsLeft == -1 then  	-- hardLimit was set during this game
-				farm.stats.jobsLeft = self.config.hardLimit
+				farm.stats.jobsLeft = bc.config.hardLimit
 			end
 			if farm.stats.jobsLeft == 0 then 
 				InfoDialog.show(g_i18n:getText("bc_monthlyLimit"))
@@ -380,7 +378,19 @@ function startContract(frCon, superf, wantsLease)
 			end
 		end
 	end
-	superf(frCon, wantsLease)
+	-- lease vehicle selection
+	if wantsLease and bc.isOn then
+	 -- show vehicle selector list:
+		local m = frCon:getSelectedContract().mission
+		bc.vehicleSelect:init(m)
+		g_gui:showDialog("VehicleSelect")
+		-- do we need subscribe?
+		g_messageCenter:subscribe(MissionStartEvent, frCon.onMissionStarted, frCon)
+		g_client:getServerConnection():sendEvent(MissionStartEvent.new(m, farmId, wantsLease))
+	else
+		superf(frCon, wantsLease)
+	end
+
 end
 function BetterContracts:resetJobsLeft()
 	-- recalc jobs left per farm

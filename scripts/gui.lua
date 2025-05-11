@@ -66,18 +66,49 @@ function loadGUI(self, guiPath)
 	local canLoad = loadGuiFile(self, guiPath.."BCGui.xml", self.frCon.contractsListBox, function(parent)
 		self.my.sortbox = parent:getDescendantById("sortbox")
 		fixPosition(self.my.sortbox)
-		parent:getDescendantById("layout"):invalidateLayout(true) -- adjust sort buttons
+		-- adjust sort buttons:
+		parent:getDescendantById("layout"):invalidateLayout(true) 
 
 		-- position mission table:
 		--fixPosition(parent:getDescendantById("container"))
 	end)
-	if not canLoad then return false end 
+	-- load progress bars:
+	if canLoad then 
+		canLoad = loadGuiFile(self, guiPath.."progressGui.xml", self.frCon.contentContainer, function(parent)
+		--self.my.vehicleBox = parent:getDescendantById("vehicleBox")
+		--fixPosition(self.my.vehicleBox)
+		--self.my.vehicleBox:setVisible(false)
+		--self.my.vehiclesList = parent:getDescendantById("vehiclesList")
+		--self.my.vehiclesList:onGuiSetupFinished()
 
+		self.my.progressBox = parent:getDescendantById("bcProgressBox")
+		fixPosition(self.my.progressBox)
+		for _,id in ipairs({"box1","box2"}) do
+			self.my[id] = parent:getDescendantById(id)
+			fixPosition(self.my[id], true)
+		end
+		end)
+	end
 	-- load "settingsPage.xml"
 	fname = guiPath .. "settingsPage.xml"
 	if fileExists(fname) then
 		self.modPage = SettingsPage.new()
-		if g_gui:loadGui(fname, "BCSettingsFrame", self.modPage) == nil then
+		if g_gui:loadGui(fname, "BCSettingsFrame", self.modPage) == nil 
+			and not self.financing then -- FS25_Financing swallows rc of loadGui()
+			Logging.error("[GuiLoader %s]  Error loading %s", self.name, fname)
+			return false
+		end
+	else
+		Logging.error("[GuiLoader %s]  Required file '%s' could not be found!", self.name, fname)
+		return false
+	end
+	-- load "vehiclesGui.xml"
+	fname = guiPath .. "vehiclesGui.xml"
+	if fileExists(fname) then
+		-- init our mission vehicles selector
+		self.vehicleSelect = VehicleSelect.new()
+		if g_gui:loadGui(fname, "VehicleSelect", self.vehicleSelect) == nil 
+			and not self.financing then -- FS25_Financing swallows rc of loadGui()
 			Logging.error("[GuiLoader %s]  Error loading %s", self.name, fname)
 			return false
 		end
@@ -93,6 +124,7 @@ function initGui(self)
 	else
 		Logging.info("%s: -------- gui loaded -----------",self.name)
 	end
+	FocusManager.DEBUG = true
 	-- init our settings page controller
 	self.settingsMgr = SettingsManager.new()
 	self.settingsMgr:init()
@@ -103,10 +135,10 @@ function initGui(self)
 		text = g_i18n:getText("bc_detailsOn"),
 		callback = detailsButtonCallback
 	}
-	-- register action, so that our button is also activated by keystroke
+	--[[ register action, so that our button is also activated by keystroke
 	local _, eventId = g_inputBinding:registerActionEvent("MENU_EXTRA_3", g_inGameMenu, onClickMenuExtra3, false, true, false, true)
 	self.eventExtra3 = eventId
-
+	]]
 	-- setup new / clear buttons for contracts page:
 	local parent = g_inGameMenu.menuButton[1].parent
 	local button = g_inGameMenu.menuButton[1]:clone(parent)
@@ -186,10 +218,6 @@ function initGui(self)
 	--self.frMap.farmlandValueBox:setSize(unpack(GuiUtils.getNormalizedValues(
 	--		"1000px", {g_referenceScreenWidth,g_referenceScreenHeight})))
 
- -- set controls for npcbox, sortbox and their elements:
-	--for _, name in pairs(SC.CONTROLS) do
-	--	self.my[name] = self.frCon.detailsBox:getDescendantById(name)
-	--end
 	-- set controls for contractBox:
 	for _, name in pairs(SC.CONTBOX) do
 		self.my[name] = self.frCon.contractBox:getDescendantById(name)
@@ -234,11 +262,11 @@ end
 function onFrameOpen(self)
 	-- appended to InGameMenuContractsFrame:onFrameOpen
 	local bc = BetterContracts
-	--FocusManager:unsetFocus(self.frCon.contractsList)  -- to allow focus movement
-
 	if bc.refreshContracts then  
-	-- prevent execution of FS25_RefreshContracts
+	-- prevent execution of FS25_RefreshContracts.onFrameOpen
 		g_inGameMenu.refreshContractsElement_Button = 1
+		-- to prevent FS25_RefreshContracts.onFrameClose:
+		FS25_RefreshContracts.RefreshContracts.onFrameClose = function() end
 	end
  	local newContracts = self.subCategorySelector.state == 1
 	bc.newButton:setVisible(newContracts)
@@ -250,8 +278,13 @@ function onFrameOpen(self)
 		bc:radioButton(bc.sort)
 	end
 end
-function onFrameClose()
+function onFrameClose(self)
+	-- prepended InGameMenuContractsFrame:onFrameClose()
 	local bc = BetterContracts
+	if bc.refreshContracts then  
+	-- prevent execution of FS25_RefreshContracts
+		g_inGameMenu.refreshContractsElement_Button = nil
+	end
 	for _, button in ipairs(
 		{	bc.newButton,
 			bc.clearButton
@@ -263,7 +296,8 @@ end
 function onMissionStarted(self,superf,state,lease)
 	-- overwritten to InGameMenuContractsFrame:onMissionStarted()
 	-- prevent switch to ACTIVE contracts list
-	if state == MissionStartState.OK and BetterContracts.config.stayNew then
+	local bc = BetterContracts
+	if state == MissionStartState.OK and bc.config.stayNew then
 		if lease then
 			InfoDialog.show(g_i18n:getText("contract_vehiclesAtShop"), nil, nil, DialogElement.TYPE_INFO)
 		else
@@ -319,9 +353,6 @@ function onClickMenuExtra2(inGameMenu, superFunc, ...)
 	if bc.clearButton ~= nil then
 		bc.clearButton.onClickCallback(inGameMenu)
 	end
-end
-function onClickMenuExtra3(inGameMenu)
-	-- do we stil need this?
 end
 function onClickNewContractsCallback(inGameMenu)
 	BetterContractsNewEvent.sendEvent()
@@ -640,12 +671,22 @@ end
 function missionUpdate(self, superf)
 	-- overwrites AbstractMission:update()
 	local hide = BetterContracts.config.hideMission
-	if hide and (self.status == MissionStatus.RUNNING) --or self.status == MissionStatus.FINISHED) 
-		and (g_localPlayer ~= nil and g_localPlayer.farmId == self.farmId) and
-		self.completion == 0 then
-			self.farmId = nil 	-- prevent superf from adding a progress bar
-			superf(self)
-			self.farmId = g_localPlayer.farmId
+
+	if (self.status == MissionStatus.RUNNING) --or self.status == MissionStatus.FINISHED) 
+		and (g_localPlayer ~= nil and g_localPlayer.farmId == self.farmId) then
+
+		if self.progressBar == nil then
+			self.progressBar = g_currentMission.hud:addSideNotificationProgressBar(
+				g_i18n:getText("contract_title"), self.progressTitle, self.completion)
+		end
+		if not hide or self.completion > 0.01 then
+		-- add time left to progress title:
+			local time = g_i18n:formatMinutes(self:getMinutesLeft())
+			self.progressBar.progress = self.completion
+			self.progressBar.text = string.format("%s  /  %s", self.progressTitle, time)
+			g_currentMission.hud:markSideNotificationProgressBarForDrawing(self.progressBar)
+			self:raiseActive()
+		end
 	else 
 		superf(self)
 	end

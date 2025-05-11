@@ -5,9 +5,12 @@
 	  v1.0.0.0    28.10.2024  1st port to FS25
 	  v1.1.0.0    08.01.2025  UI settings page, discount mode
 	  v1.1.1.2    09.02.2025  compatible FS25_additionalGameSettings
+	  v1.2.0.0    12.05.2025  new vehicle seleection dialog
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.2.0.0 -->
+		<text name="bc_vehicleBox" text="Vehicle Selection" />
 		<!-- updates v1.1.1.3 -->
 		<text name="bc_stayNew" text="Stay on NEW contracts list" />
 		<text name="bc_stayNew_tooltip" text="Do not switch to ACTIVE contracts list when a new contract is accepted." />

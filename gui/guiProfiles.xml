@@ -16,6 +16,7 @@
 		<Preset name="colorDisabled" value="0.4 0.4 0.4 1"/>
 		<Preset name="fs25_colorDarkGreen" value="0.008 0.063 0.063 1"/>
 		<Preset name="fs25_colorGreen" value="0.33716 0.55834 0.0003 1"/>
+		<Preset name="fs25_colorMainLight" value="0.89627 0.92158 0.81485 1"/>
 		<Preset name="fs25_colorMainHighlight" value="0.22323 0.40724 0.00368 1"/>
 		<Preset name="fs25_colorMainHighlight_40" value="0.22323 0.40724 0.00368 0.4"/>
 		<Preset name="fs25_colorGreyLight" value="0.20156 0.20156 0.20156 1"/>
@@ -180,6 +181,37 @@
 	<Profile name="BCactiveNpc" extends="BCsortNpc" with="buttonActive" />
 	<Profile name="BCactiveProf" extends="BCsortProf" with="buttonActive" />
 	<Profile name="BCactivepMin" extends="BCsortpMin" with="buttonActive" />
+
+	<!-- Vehicle Select  - - - - - - - - - - - - - - - - - - - - - -  -->
+	<Profile name="BClistContainer" extends="emptyPanel" with="anchorStretchingYLeft pivotTopLeft" >
+	</Profile>
+	<Profile name="BCvListItem" extends="baseReference" with="anchorTopStretchingX">
+		<height value="50px"/>
+		<imageSliceId value="gui.gamepadBindingsBox_middle"/>
+		<imageColor value="$preset_fs25_colorGreyListItem"/>
+		<imageSelectedColor value="$preset_fs25_colorMainHighlight"/>
+		<startImageSize value="8px 0"/>
+		<startImageSliceId value="gui.gamepadBindingsBox_left"/>
+		<startImageColor value="$preset_fs25_colorGreyListItem"/>
+		<startImageSelectedColor value="$preset_fs25_colorMainHighlight"/>
+		<endImageSize value="8px 0"/>
+		<endImageSliceId value="gui.gamepadBindingsBox_right"/>
+		<endImageColor value="$preset_fs25_colorGreyListItem"/>
+		<endImageSelectedColor value="$preset_fs25_colorMainHighlight"/>
+	</Profile>
+	<Profile name="BCvGroup" extends="fs25_textDarkHighlight" with="anchorMiddleLeft" >
+		<textSelectedBold value="true"/>
+		<textMaxWidth value="560px"/>
+		<textMaxNumLines value="2"/>	
+	</Profile>
+	<Profile name="BCvFirst" extends="BCvGroup" >
+		<width value="140px"/>
+		<textSize value="16px"/>  
+		<textBold value="true"/>
+		<textAlignment value="center"/>
+		<textMaxWidth value="140px"/>
+		<textMaxNumLines value="2"/>	
+	</Profile>
 
 	<!-- Filterbox Buttons - - - - - - - - - - - - - - - - - - - - -  -->
 	<Profile name="myFilterOptionPage" extends="emptyPanel" with="anchorMiddleLeft">

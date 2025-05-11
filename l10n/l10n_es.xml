@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <l10n>
-  <texts>
+	<texts>
+		<!-- updates v1.2.0.0 -->
+		<text name="bc_vehicleBox" text="Vehicle Selection" />
 		<!-- updates v1.1.1.3 -->
-		<text name="bc_stayNew" text="Stay on NEW contracts list" />
-		<text name="bc_stayNew_tooltip" text="Do not switch to ACTIVE contracts list when a new contract is accepted." />
-		<text name="bc_finishField" text="Complete contract field" />
-		<text name="bc_finishField_tooltip" text="Allow to complete 100% of a field after contract finishes." />
-		<text name="bc_hideMission" text="Hide inactive contracts" />
-		<text name="bc_hideMission_tooltip" text="Hide accepted contracts with 0% completion from right side hud." />
+		<text name="bc_stayNew" text="Permanecer en la lista de contratos NUEVOS" />
+		<text name="bc_stayNew_tooltip" text="No cambiar a la lista de contratos ACTIVOS cuando se acepta un nuevo contrato." />
+		<text name="bc_finishField" text="Completar campo del contrato" />
+		<text name="bc_finishField_tooltip" text="Permitir completar el 100% de un campo después de finalizar el contrato." />
+		<text name="bc_hideMission" text="Ocultar contratos inactivos" />
+		<text name="bc_hideMission_tooltip" text="Ocultar contratos aceptados con 0% de progreso del HUD lateral derecho." />
 		<!-- updates v1.1.1.2 -->
 		<text name="global_bc_name" text="Better Contracts" />
-		<text name="bc_settingsNoPermission" text="You don&apos;t have the permission to change Better Contracts settings!" />
+		<text name="bc_settingsNoPermission" text="¡No tienes permiso para cambiar la configuración de Better Contracts!" />
 	<!-- Keys -->
-	<text name = "input_MENU_EXTRA_3" text = "Contratos mejorados: Detalles on/off"/>
+	<text name = "input_MENU_EXTRA_3" text = "Better Contracts: Detalles on/off"/>
 	<text name = "input_BC_MTOGGLE" text = "BC: Alternar visualización de contratos agrícolas activos"/>
 	<text name = "bc_actionFerment" text = "Paca fermentada"/>
 	<!-- Gui Buttons -->
@@ -72,7 +74,7 @@
 
 	<!-- Sort button help text -->
 	<text name="SC_sortCat" text="tipo de misión" />
-      <text name="SC_sortRev" text="beneficio" />
+			<text name="SC_sortRev" text="beneficio" />
 	<text name="SC_sortNpc" text="granjero" />
 	<text name="SC_sortProf" text="beneficio neto" />
 	<text name="SC_sortpMin" text="beneficio por minuto" />
@@ -150,5 +152,5 @@
 		<text name="bc_genDead_tooltip" text="Generate deadwood contracts" />
 		<text name="bc_genRock" text="Rock destruction contracts" />
 		<text name="bc_genRock_tooltip" text="Generate rock destruction contracts" />
-  </texts>
+	</texts>
 </l10n>

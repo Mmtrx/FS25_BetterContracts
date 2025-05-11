@@ -4,7 +4,7 @@
 	Purpose:	Enhance ingame contracts menu.
 	Author:		Mmtrx		
 	Changelog:
-	 v0.1		17.03.2021	initial beta
+	 v.1.1.2.0	26.02.2025	initial FS25
 ======================================================================================================-->
 <GUI name="sortContracts">
 	<!-- Sort buttons (anchor top left) pos 0 -28 -->
@@ -17,8 +17,8 @@
 			<Button profile="BCsortProf" id="sortprof" />
 			<Button profile="BCsortpMin" id="sortpmin" />
 		</BoxLayout>
-		<Text profile="betterContractsLeft" id="sort" position="5px 0px" text="$l10n_SC_sort" anchors="0 0 0.5 0.5" debugEnabled="false"/>
-		<Text profile="betterContractsLeft" id="helpsort" width="90px" position="50px 0px" anchors="0 0 0.5 0.5" debugEnabled="false"/>
+		<Text profile="betterContractsLeft" id="sort" position="5px 0px" text="$l10n_SC_sort" anchors="0 0 0.5 0.5" width="40px" textLayoutMode="clip" debugEnabled="false"/>
+		<Text profile="betterContractsLeft" id="helpsort" width="120px" position="47px 0px" anchors="0 0 0.5 0.5" textLayoutMode="clip"debugEnabled="false"/>
 	</GuiElement>
 
   <!-- active missions display (anchor top right: 1 1 1 1) 

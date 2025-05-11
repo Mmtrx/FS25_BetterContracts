@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <l10n>
 	<texts>
+		<!-- updates v1.2.0.0 -->
+		<text name="bc_vehicleBox" text="Vehicle Selection" />
 		<!-- updates v1.1.1.3 -->
 		<text name="bc_stayNew" text="Stay on NEW contracts list" />
 		<text name="bc_stayNew_tooltip" text="Do not switch to ACTIVE contracts list when a new contract is accepted." />

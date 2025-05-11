@@ -21,6 +21,12 @@
 --							Prevent FS25_RefreshContracts
 --  v1.1.1.4    22.02.2025  MP fixes: generation non-field contracts #47,
 -- 							no progress in fieldwork / deposited liters #40 
+--  v1.1.2.0    28.02.2025  extra mission vehicles. Update l10n_pl _cz _fr
+--							compat FS25_RefreshContracts #72
+--  v1.2.0.0    12.05.2025  repair FS25_Financing #78. Fix click on settings/controls #76.
+-- 							add time left for active contracts on hud #63
+-- 							add mission info to leased vehicle name #65
+--							New: leased vehicle selection dialog
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -46,30 +52,6 @@ SC = {
 	MONTH = 2,
 	-- Gui farmerBox controls:
 	CONTROLS = {
-		npcbox = "npcbox",
-		sortbox = "sortbox",
-		layout = "layout",
-		filltype = "filltype",
-		widhei = "widhei",
-		ppmin = "ppmin",
-		line3 = "line3",
-		line4a = "line4a",
-		line4b = "line4b",
-		line5 = "line5",
-		line6 = "line6",
-		field = "field",
-		dimen = "dimen",
-		etime = "etime",
-		valu4a = "valu4a",
-		valu4b = "valu4b",
-		price = "price",
-		valu6 = "valu6",
-		valu7 = "valu7",
-		sort = "sort",
-		sortcat = "sortcat", "sortrev", "sortnpc",
-		sortprof = "sortprof",
-		sortpmin = "sortpmin",
-		helpsort = "helpsort",
 		container = "container",
 		mTable = "mTable",
 		mToggle = "mToggle",
@@ -104,6 +86,7 @@ function checkOtherMods(self)
 		FS25_LimeMission = "limeMission",
 		FS25_MowBaleMission = "mowbaleMission",
 		FS25_RefreshContracts = "refreshContracts",
+		FS25_Financing = "financing",
 		--FS22_MaizePlus = "maizePlus",
 		--FS22_KommunalServices = "kommunal",
 		}
@@ -262,20 +245,6 @@ function hookFunctions(self)
 	g_messageCenter:subscribe(MessageType.HOUR_CHANGED, self.onHourChanged, self)
 	g_messageCenter:subscribe(MessageType.PERIOD_CHANGED, self.onPeriodChanged, self)
 
-	-- to load own mission vehicles:
-	Utility.overwrittenFunction(MissionManager, "loadMissionVehicles", BetterContracts.loadMissionVehicles)
-	Utility.overwrittenFunction(AbstractFieldMission, "loadNextVehicleCallback", loadNextVehicle)
-	Utility.prependedFunction(AbstractFieldMission, "removeAccess", removeAccess)
-	Utility.appendedFunction(AbstractFieldMission, "onVehicleReset", onVehicleReset)
-
-	for name, typeDef in pairs(g_vehicleTypeManager.types) do
-		-- rename mission vehicle: 
-		if typeDef ~= nil and not TableUtility.contains({"horse","pallet","locomotive"}, name) then
-			SpecializationUtil.registerOverwrittenFunction(typeDef, "getName", vehicleGetName)
-		end
-	end
-	Utility.appendedFunction(MissionManager, "loadFromXMLFile", missionManagerLoadFromXMLFile)
-
 	-- tag mission fields in map: 
 	Utility.appendedFunction(FieldHotspot, "render", renderIcon)
 
@@ -330,13 +299,14 @@ function hookFunctions(self)
 
 	-- functions for ingame menu contracts frame:
 	Utility.appendedFunction(InGameMenuContractsFrame, "onFrameOpen", onFrameOpen)
-	Utility.appendedFunction(InGameMenuContractsFrame, "onFrameClose", onFrameClose)
+	Utility.prependedFunction(InGameMenuContractsFrame, "onFrameClose", onFrameClose)
 	-- only need for Details button:
 	Utility.appendedFunction(InGameMenuContractsFrame, "setButtonsForState", setButtonsForState)
 	Utility.appendedFunction(InGameMenuContractsFrame, "populateCellForItemInSection", populateCell)
 	Utility.overwrittenFunction(InGameMenuContractsFrame, "sortList", sortList)
 	Utility.overwrittenFunction(InGameMenuContractsFrame, "startContract", startContract)
 	Utility.appendedFunction(InGameMenuContractsFrame, "updateFarmersBox", updateFarmersBox)
+	Utility.appendedFunction(InGameMenuContractsFrame, "updateDetailContents", updateDetailContents)
 	-- to stay on NEW contr list when mission accepted:
 	Utility.overwrittenFunction(InGameMenuContractsFrame, "onMissionStarted", onMissionStarted)
 	
@@ -347,6 +317,24 @@ function hookFunctions(self)
 	Utility.overwrittenFunction(AbstractMission,"update",missionUpdate)
 	-- allow mission work to continue, after mission finished
 	Utility.overwrittenFunction(AbstractFieldMission,"getIsWorkAllowed",getIsWorkAllowed)
+
+	-- to load own mission vehicles:
+	Utility.overwrittenFunction(MissionManager, "loadVehicleGroups", BetterContracts.loadMissionVehicles)
+	Utility.overwrittenFunction(AbstractMission,"start",missionStart)
+	-- allow pallets to spawn as mission vehicle:
+	Utility.prependedFunction(AbstractMission, "onSpawnedVehicle", onSpawnedVehicle)
+
+	-- to display mission vehicle names:
+	--Utility.overwrittenFunction(AbstractFieldMission, "loadNextVehicleCallback", loadNextVehicle)
+	Utility.prependedFunction(AbstractFieldMission, "removeAccess", removeAccess)
+	Utility.appendedFunction(AbstractMission, "onVehicleReset", onVehicleReset)
+	for name, typeDef in pairs(g_vehicleTypeManager.types) do
+		-- rename mission vehicle: 
+		if typeDef ~= nil and not TableUtility.contains({"horse","pallet","bigBag","locomotive"}, name) then
+			SpecializationUtil.registerOverwrittenFunction(typeDef, "getName", vehicleGetName)
+		end
+	end
+
 end
 function BetterContracts:initialize()
 	debugPrint("[%s] initialize(): %s", self.name,self.initialized)
@@ -680,7 +668,16 @@ function BetterContracts:onSetMissionInfo(missionInfo, missionDynamicInfo)
 end
 function BetterContracts:onStartMission()
 	-- check mission vehicles
-	BetterContracts:validateMissionVehicles()
+	self:validateMissionVehicles()
+
+	-- tag leased vehicles of active missions loaded from savegame
+	for _, m in ipairs(g_missionManager.missions) do
+		if m.activeMissionId and m.spawnedVehicles and m.pendingVehicleUniqueIds then 
+			for _,id in ipairs(m.pendingVehicleUniqueIds) do
+				self:vehicleTag(m, g_currentMission.vehicleSystem:getVehicleByUniqueId(id))
+			end
+		end
+	end
 end
 function BetterContracts:onPostLoadMap(mapNode, mapFile)
 	-- handle our config and optional settings
@@ -692,15 +689,14 @@ function BetterContracts:onPostLoadMap(mapNode, mapFile)
 		if self.config.discountMode then txt = txt..", discountMode" end
 		debugPrint(txt)
 	end
-	addConsoleCommand("bcPrint","Print detail stats for all available missions.","consoleCommandPrint",self)
+	--addConsoleCommand("bcPrint","Print detail stats for all available missions.","consoleCommandPrint",self)
 	addConsoleCommand("bcMissions","Print stats for other clients active missions.","bcMissions",self)
-	addConsoleCommand("bcPrintVehicles","Print all available vehicle groups for mission types.","printMissionVehicles",self)
-	if self.config.debug then
-		addConsoleCommand("bcFieldGenerateMission", "Force generating a new mission for given field", "consoleGenerateFieldMission", g_missionManager)
-		addConsoleCommand("gsMissionLoadAllVehicles", "Loading and unloading all field mission vehicles", "consoleLoadAllFieldMissionVehicles", g_missionManager)
-		addConsoleCommand("gsMissionHarvestField", "Harvest a field and print the liters", "consoleHarvestField", g_missionManager)
-		addConsoleCommand("gsMissionTestHarvests", "Run an expansive tests for harvest missions", "consoleHarvestTests", g_missionManager)
-	end
+	addConsoleCommand("bcPrintVehicles","Print all available vehicle groups for mission types.",
+		"printMissionVehicles",self,"missionType; size")
+	addConsoleCommand("bcMission", "Force generating a new mission for given field", 
+			"consoleGenerateMission", g_missionManager,"farmlandId; missionType")
+	addConsoleCommand("bcLoadVehicles", "Load a mission vehicle group", "consoleLoadVehicleSet", 
+			g_missionManager, "missionType; size; groupIndex")
 	-- init Harvest SUCCESS_FACTORs (std is harv = .93, bale = .9, abstract = .95)
 	HarvestMission.SUCCESS_FACTOR = self.config.toDeliver
 	BaleMission.FILL_SUCCESS_FACTOR = self.config.toDeliverBale 

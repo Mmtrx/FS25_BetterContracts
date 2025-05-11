@@ -2,95 +2,76 @@
 <!--=====================================================================================================
 	BetterContracts user-defined mission vehicles
 	Purpose:     Define vehicles to be used for contracts
-	Author:      RoyalModding, Mmtrx   
+	Author:      Mmtrx   
 	Usage:       You can define additional vehicle sets to use for specific contracts (aka missions).
-				 You can define mod vehicles/ tools, see requiredMod="FS22_vaderstadSpiritR300S" below.
-				 Your user-defined vehicles are added to the mission vehicles from base game (and possibly
-				 from the map definition), to choose from when a new mission is created.
+				 You can define mod vehicles/ tools, see requiredMod="FS25_lizardTardis" below.
+				 Mods that you require must be specified at the beginning of the file, and are
+				 referenced by the assigned id during processing of the rest of the file.
+				 Your user-defined vehicles are added to the mission vehicles from the map 
+				 definition (base game or mod map), and possibly from other mods.
 
 				 To make the mod read in your vehicle definitions, copy this file to directory 
-				 ../modSettings/FS22_BetterContracts/<mapName>/.
+				 ../modSettings/FS25_BetterContracts/<mapName>/.
 				 This allows for map-specific userDefined.xml files. If the mod cannot find a userDefined.xml
-				 in the map-specific directory, it will also look for it in ../modSettings/FS22_BetterContracts/.
+				 in the map-specific directory, it will also look for it in ../modSettings/FS25_BetterContracts/.
 
 				 You can delete any base game or map-defined mission vehicles (and thus use only those
 				 that you defined) by setting overwrite="true" in the <missionVehicles> tag. If you want to try 
 				 this, use extreme
-
-				 CAUTION: You must be sure that you specify a vehicle group for every mission type / fieldsize / 
+				 CAUTION: You must be sure that you specify a vehicle group for every mission type / size / 
 						  variant combination possible. For mods, specify the correct modname and filename. 
 						  BetterContracts will try to check this, and issue warnings in the log 
 	Changelog:
-	 v0.1        17.03.2021  initial by Royal-Modding
-	 v1.1.0.4    07.07.2021  (Mmtrx) add user-defined missionVehicles.xml, allow missions with no vehicles
-	 v1.2.0.0    18.01.2022  adapt for FS22
-	 v1.2.6.3    18.01.2023  add seed / fertilizer / herbicide
-	 v1.2.7.5	 28.02.2023	 Read userDefined missions from "BCuserDefined.xml" in modSettings/ dir
-	 v1.2.7.6	 21.03.2023	Read userDefined from modSettings/FS22_BetterContracts/<mapName>/ (issue #115)
+	 v1.1.2.0   24.02.2025  initial FS25
 =======================================================================================================-->
+
 <missionVehicles overwrite="false">
-	<mission type="sow">
+	<requiredMods>
+		<mod name="FS25_lizardTardis" id="1"/>
+		<mod name="FS25_poettingerMowerPack" id="2" />
+		<mod name="FS25_vaderstadRapidA800S" id="3" />
+	</requiredMods>
+	<mission type="sowMission">
 		<!-- grainMission -->
-		<group fieldSize="small" variant="GRAIN">
-			<vehicle filename="$data/vehicles/masseyFerguson/series3700AL/series3700AL.xml">
-				<!-- tractor -->
-				<configuration name="motor" id="2" />
-				<configuration name="wheel" id="3" />
-			</vehicle>
-			<vehicle filename="spiritR300S.xml" requiredMod="FS22_vaderstadSpiritR300S"/> <!-- seeder -->
-			<vehicle filename="$data/vehicles/agco/weight650/weight650.xml">
-				<!-- weight -->
-				<configuration name="baseMaterial" id="7" />
-			</vehicle>
+		<group size="small" variant="GRAIN">
+			<vehicle filename="$data/vehicles/deutzFahr/series7/series7.xml"/>
+			<vehicle filename="$data/vehicles/kuhn/btfr6030/btfr6030.xml"/> 	<!-- seeder -->
+			<vehicle filename="$data/vehicles/kuhn/tf1512/tf1512.xml"/> 	<!-- frontTank -->
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/> <!-- seeds -->
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/>
 		</group>
 
-		<group fieldSize="medium" variant="GRAIN" >
+		<group size="medium" variant="GRAIN" >
 			<vehicle filename="$data/vehicles/caseIH/magnumT4B/magnumT4B.xml">
-				<!-- tractor -->
-				<configuration name="wheel" id="3" />
+				<configuration name="motor" id="3"/>
 			</vehicle>
-			<vehicle filename="$data/vehicles/kuhn/venta4030/venta4030.xml"/> <!-- seeder -->
-			<vehicle filename="$data/vehicles/kuhn/HR4040/HR4040.xml"/> 	<!-- cultivator -->
-			<vehicle filename="$data/vehicles/kuhn/TF1512/TF1512.xml"/> 	<!-- frontTank -->
+			<vehicle filename="rapidA800S.xml" requiredMod="3"/> <!-- seeder -->
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/> <!-- seeds -->
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/>
 		</group>
 
-		<group fieldSize="large" variant="GRAIN">
+		<group size="large" variant="GRAIN">
 			<vehicle filename="$data/vehicles/johnDeere/series8R/series8R.xml">
 				<!-- tractor -->
 				<configuration name="motor" id="4" />
-				<configuration name="fillUnit" id="1" />
-				<configuration name="wheel" id="3" />
 			</vehicle>
-			<vehicle filename="data/vehicles/lemken/solitair12/solitair12.xml" /> <!-- seeder -->
-			<vehicle filename="$data/vehicles/johnDeere/pickUp1800/pickUp1800.xml" /> <!-- weight -->
+			<vehicle filename="$data/vehicles/lemken/solitair12/solitair12.xml" /> <!-- seeder -->
+			<vehicle filename="$data/vehicles/johnDeere/pickUp1150/pickUp1150.xml" /> <!-- weight -->
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/> <!-- seeds -->
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/>
 		</group>
 
 		<!-- maizeMission -->
-		<group fieldSize="small" variant="MAIZE">
-			<vehicle filename="$data/vehicles/valtra/gSeries/gSeries.xml">
-				<!-- tractor -->
-				<configuration name="motor" id="2" />
-				<configuration name="wheel" id="4" />
-				<configuration name="baseMaterial" id="23" />
-				<configuration name="rimColor" id="9" />
-				<configuration name="design" id="2" />
-			</vehicle>
+		<group size="small" variant="MAIZE">
+			<vehicle filename="$data/vehicles/valtra/sSeries/sSeries.xml"/>
 			<vehicle filename="$data/vehicles/amazone/precea4500/precea4500.xml"/> <!-- seeder -->
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/> <!-- seeds -->
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/>
 		</group>
 
-		<group fieldSize="medium" variant="MAIZE" >
+		<group size="medium" variant="MAIZE" >
 			<vehicle filename="$data/vehicles/fendt/vario700/vario700.xml">
 				<!-- tractor -->
-				<configuration name="baseMaterial" id="2" />
-				<configuration name="wheel" id="3" />
 				<configuration name="motor" id="2" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/kverneland/optimaRS9m/optimaRS9m.xml" /> <!-- seeder -->
@@ -99,42 +80,29 @@
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/>
 		</group>
 
-		<group fieldSize="large" variant="MAIZE">
+		<group size="large" variant="MAIZE">
 			<vehicle filename="$data/vehicles/caseIH/magnumT4B/magnumT4B.xml">
 				<!-- tractor -->
-				<configuration name="wheel" id="3" />
 				<configuration name="motor" id="2" />
 			</vehicle>
-			<vehicle filename="$data/vehicles/vaderstad/tempoL16/tempoL16.xml" /> <!-- seeder -->
-			<vehicle filename="$data/vehicles/agco/weight1500/weight1500.xml">
-				<!-- weight -->
-				<configuration name="baseMaterial" id="7" />
-			</vehicle>
+			<vehicle filename="$data/vehicles/horsch/maestro2450SV/maestro2450SV.xml"/>
+			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml"/>
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/> <!-- seeds -->
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/>
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/>
 		</group>
 
 		<!-- sugarbeet Mission -->
-		<group fieldSize="small" variant="SUGARBEET">
-			<vehicle filename="$data/vehicles/valtra/gSeries/gSeries.xml">
-				<!-- tractor -->
-				<configuration name="motor" id="2" />
-				<configuration name="wheel" id="4" />
-				<configuration name="baseMaterial" id="23" />
-				<configuration name="rimColor" id="9" />
-				<configuration name="design" id="2" />
-			</vehicle>
+		<group size="small" variant="SUGARBEET">
+			<vehicle filename="$data/vehicles/deutzFahr/series7/series7.xml"/>
 			<vehicle filename="$data/vehicles/amazone/precea4500/precea4500.xml"/> <!-- seeder -->
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/> <!-- seeds -->
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/>
 		</group>
 
-		<group fieldSize="medium" variant="SUGARBEET" >
+		<group size="medium" variant="SUGARBEET" >
 			<vehicle filename="$data/vehicles/fendt/vario700/vario700.xml">
 				<!-- tractor -->
-				<configuration name="baseMaterial" id="2" />
-				<configuration name="wheel" id="3" />
 				<configuration name="motor" id="2" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/kverneland/optimaRS9m/optimaRS9m.xml" /> <!-- seeder -->
@@ -143,144 +111,110 @@
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/>
 		</group>
 
-		<group fieldSize="large" variant="SUGARBEET">
+		<group size="large" variant="SUGARBEET">
 			<vehicle filename="$data/vehicles/caseIH/magnumT4B/magnumT4B.xml">
 				<!-- tractor -->
-				<configuration name="wheel" id="3" />
 				<configuration name="motor" id="2" />
 			</vehicle>
-			<vehicle filename="$data/vehicles/vaderstad/tempoL16/tempoL16.xml" /> <!-- seeder -->
-			<vehicle filename="$data/vehicles/agco/weight1500/weight1500.xml">
-				<!-- weight -->
-				<configuration name="baseMaterial" id="7" />
-			</vehicle>
+			<vehicle filename="$data/vehicles/horsch/maestro2450SV/maestro2450SV.xml"/>
+			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml"/>
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/> <!-- seeds -->
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/>
 			<vehicle filename="$data/objects/bigBag/seeds/bigBag_seeds.xml"/>
 		</group>
 		
 		<!-- potatoMission -->
-		<group fieldSize="medium" variant="POTATO">
-			<vehicle filename="$data/vehicles/johnDeere/series6M/series6M.xml">
-				<!-- tractor -->
-				<configuration name="motor" id="2" />
-				<configuration name="wheel" id="2" />
-				<configuration name="design" id="5" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/grimme/GL420/GL420.xml" /> <!-- seeder -->
+		<group size="medium" variant="POTATO">
+			<vehicle filename="$data/vehicles/masseyFerguson/series7S/series7S.xml"/>
+			<vehicle filename="$data/vehicles/grimme/gl420/gl420.xml" /> <!-- seeder -->
 		</group>
 
-		<group fieldSize="large" variant="POTATO" >
-			<vehicle filename="$data/vehicles/valtra/series8750/series8750.xml">
-				<!-- tractor -->
-				<configuration name="baseMaterial" id="9" />
-				<configuration name="rimColor" id="22" />
-				<configuration name="wheel" id="3" />
+		<group size="large" variant="POTATO" >
+			<vehicle filename="$data/vehicles/valtra/tSeries/tSeries.xml">
+				<configuration name="motor" id="11"/>
 			</vehicle>
 			<vehicle filename="$data/vehicles/grimme/GL860/GL860.xml" /> <!-- seeder -->
-			<vehicle filename="$data/vehicles/agco/weight1500/weight1500.xml">
-				<!-- weight -->
-				<configuration name="baseMaterial" id="22" />
-			</vehicle>
+			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml"/>
 		</group>
 	</mission>
-	<mission type="fertilize">
-		<group fieldSize="small">
-			<vehicle filename="$data/vehicles/fendt/favorit500/favorit500.xml" > <!-- tractor -->
-				<configuration name="wheel" id="7" />
-			</vehicle>
+	<mission type="fertilizeMission">
+		<group size="small">
+			<vehicle filename="$data/vehicles/fendt/vario700/vario700.xml"/>
 			<vehicle filename="$data/vehicles/amazone/zats3200/zats3200.xml" /> <!-- spreader -->
-			<vehicle filename="$data/vehicles/tenwinkel/weight1500/weight1500.xml" /> <!-- weight -->
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> <!-- fertilizer -->
+			<vehicle filename="$data/vehicles/tenwinkel/weight750/weight750.xml"/> <!-- weight -->
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> <!-- fertilizer -->
 		</group>
-		<group fieldSize="small">
-			<vehicle filename="$data/vehicles/valtra/nSeries/nSeries.xml" > <!-- tractor -->
-				<configuration name="design" id="2"/>
-				<configuration name="motor" id="7"/>
-				<configuration name="wheel" id="13"/>
-				<configuration name="design3" id="2"/>
-				<configuration name="design2" id="2"/>
-				<configuration name="rimColor" id="2"/>
+		<group size="small">
+			<vehicle filename="$data/vehicles/agco/series8000/series8000.xml">
+				<configuration name="design" id="3"/>
+				<configuration name="attacherJoint" id="6"/>
 			</vehicle>
 			<vehicle filename="$data/vehicles/amazone/zats3200/zats3200.xml" /> <!-- spreader -->
-			<vehicle filename="$data/vehicles/tenwinkel/weight1500/weight1500.xml" /> <!-- weight -->
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> <!-- fertilizer -->
+			<vehicle filename="$data/vehicles/tenwinkel/weight750/weight750.xml" /> <!-- weight -->
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> <!-- fertilizer -->
 		</group>
 
-		<group fieldSize="medium">
-			<vehicle filename="$data/vehicles/newHolland/t6/t6.xml" > <!-- tractor -->
-				<configuration name="motor" id="3" />
-				<configuration name="wheel" id="7" />
+		<group size="medium">
+			<vehicle filename="$data/vehicles/johnDeere/series8RX/series8RX.xml">
+				<configuration name="attacherJoint" id="2"/>
 			</vehicle>
 			<vehicle filename="$data/vehicles/bredal/k105/k105.xml" /> <!-- spreader -->
-			<vehicle filename="$data/vehicles/tenwinkel/weight1500/weight1500.xml" /> <!-- weight -->
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> <!-- fertilizer -->
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> 
+			<vehicle filename="$data/vehicles/tenwinkel/weight750/weight750.xml" /> <!-- weight -->
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> <!-- fertilizer -->
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> 
 		</group>
-		<group fieldSize="medium">
+		<group size="medium">
 			<vehicle filename="$data/vehicles/valtra/tSeries/tSeries.xml" > <!-- tractor -->
-				<configuration name="motor" id="3" />
-				<configuration name="wheel" id="5" />
+				<configuration name="motor" id="11" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/bredal/k105/k105.xml" /> <!-- spreader -->
-			<vehicle filename="$data/vehicles/tenwinkel/weight1500/weight1500.xml" /> <!-- weight -->
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> <!-- fertilizer -->
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> 
+			<vehicle filename="$data/vehicles/tenwinkel/weight750/weight750.xml" /> <!-- weight -->
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> <!-- fertilizer -->
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> 
 		</group>
 
-		<group fieldSize="large">
-			<vehicle filename="$data/vehicles/mcCormick/x7VTDrive/x7VTDrive.xml" > <!-- tractor -->
-				<configuration name="wheel" id="5" />
-			</vehicle>
+		<group size="large">
+			<vehicle filename="$data/vehicles/mcCormick/x8VTDrive/x8VTDrive.xml" /> <!-- tractor -->
 			<vehicle filename="$data/vehicles/amazone/zgts10001/zgts10001.xml" /> <!-- spreader -->
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> <!-- fertilizer -->
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> 
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> 
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> <!-- fertilizer -->
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> 
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> 
 		</group>
-		<group fieldSize="large">
-			<vehicle filename="$data/vehicles/masseyFerguson/series8S/series8S.xml" > <!-- tractor -->
+		<group size="large">
+			<vehicle filename="$data/vehicles/masseyFerguson/series7S/series7S.xml" > <!-- tractor -->
 				<configuration name="motor" id="3" />
-				<configuration name="wheel" id="9" />
 			</vehicle>
-			<vehicle filename="$data/vehicles/bredal/k165/k165.xml" /> <!-- spreader -->
+			<vehicle filename="$data/vehicles/bredal/k105/k105.xml" > <!-- spreader -->
+				<configuration name="fillUnit" id="3"/>
+				<configuration name="cover" id="2"/>
+				<configuration name="fillVolume" id="3"/>
+				<configuration name="folding" id="2"/>
+			</vehicle>
 			<vehicle filename="$data/vehicles/tenwinkel/weight600/weight600.xml" /> <!-- weight -->
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> <!-- fertilizer -->
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> 
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> 
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> 
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> 
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> 
 		</group>
-		<group fieldSize="large">
+		<group size="large">
 			<vehicle filename="$data/vehicles/valtra/tSeries/tSeries.xml" > <!-- tractor -->
 				<configuration name="motor" id="3" />
-				<configuration name="wheel" id="5" />
 			</vehicle>
 			<vehicle filename="$data/vehicles/amazone/zgts10001/zgts10001.xml" /> <!-- spreader -->
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> <!-- fertilizer -->
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> 
-			<vehicle filename="$data/objects/bigBag/fertilizer/bigBag_fertilizer.xml"/> 
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> <!-- fertilizer -->
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> 
+			<vehicle filename="$data/objects/bigBag/fertilizer/bigBagHelm_fertilizer.xml"/> 
 		</group>
 	</mission>
-	<mission type="spray">
-		<group fieldSize="small">
-			<vehicle filename="$data/vehicles/newHolland/t6/t6.xml" > <!-- tractor -->
-				<configuration name="motor" id="3" />
-				<configuration name="wheel" id="7" />
-			</vehicle>
+	<mission type="herbicideMission">
+		<group size="small">
+			<vehicle filename="$data/vehicles/deutzFahr/series7/series7.xml"/>
 			<vehicle filename="$data/vehicles/hardi/mega1200L/mega1200L.xml" /> <!-- sprayer -->
 			<vehicle filename="$data/vehicles/hardi/mega1200L/mega1200LTank.xml" /> <!-- tank -->
 			<vehicle filename="$data/objects/pallets/liquidTank/herbicideTankHelm.xml"/> <!-- herbicide -->
 		</group>
-		<group fieldSize="small">
-			<vehicle filename="$data/vehicles/mcCormick/x7VTDrive/x7VTDrive.xml" > <!-- tractor -->
-				<configuration name="wheel" id="5" />
-			</vehicle>
-			<vehicle filename="$data/vehicles/hardi/commander4500DF/commander4500DF.xml" /> <!-- sprayer -->
-			<vehicle filename="$data/objects/pallets/liquidTank/herbicideTankHelm.xml"/> <!-- herbicide -->
-		</group>
 
-		<group fieldSize="medium">
-			<vehicle filename="$data/vehicles/fendt/vario700/vario700.xml" > <!-- tractor -->
-				<configuration name="wheel" id="7" />
-			</vehicle>
+		<group size="medium">
+			<vehicle filename="$data/vehicles/fendt/vario700/vario700.xml" /> <!-- tractor -->
 			<vehicle filename="$data/vehicles/hardi/aeon5200/aeon5200.xml" > <!-- sprayer -->
 				<configuration name="folding" id="3" />
 				<configuration name="variableWorkWidth" id="3" />
@@ -290,24 +224,23 @@
 			<vehicle filename="$data/objects/pallets/liquidTank/herbicideTankHelm.xml"/> <!-- herbicide -->
 			<vehicle filename="$data/objects/pallets/liquidTank/herbicideTankHelm.xml"/> 
 		</group>
-		<group fieldSize="medium">
-			<vehicle filename="$data/vehicles/claas/arion600/arion600.xml" > <!-- tractor -->
-				<configuration name="motor" id="4" />
-				<configuration name="wheel" id="5" />
+		<group size="medium">
+			<vehicle filename="$data/vehicles/claas/arion400/arion400.xml" > <!-- tractor -->
+				<configuration name="motor" id="7" />
 			</vehicle>
-			<vehicle filename="$data/vehicles/berthoud/vantage4300/vantage4300.xml" /> <!-- sprayer -->
+			<vehicle filename="$data/vehicles/amazone/ux5201Super/ux5201Super.xml"/>
 			<vehicle filename="$data/objects/pallets/liquidTank/herbicideTankHelm.xml"/> <!-- herbicide -->
 			<vehicle filename="$data/objects/pallets/liquidTank/herbicideTankHelm.xml"/> 
 		</group>
 
-		<group fieldSize="large">
-			<vehicle filename="$data/vehicles/berthoud/bruin4200/bruin4200.xml" /> <!-- sprayer -->
+		<group size="large">
+			<vehicle filename="$data/vehicles/agrio/dinoII/dinoII.xml"/>
 			<vehicle filename="$data/objects/pallets/liquidTank/herbicideTankHelm.xml"/> <!-- herbicide -->
 			<vehicle filename="$data/objects/pallets/liquidTank/herbicideTankHelm.xml"/> 
 			<vehicle filename="$data/objects/pallets/liquidTank/herbicideTankHelm.xml"/> 
 		</group>
-		<group fieldSize="large">
-			<vehicle filename="$data/vehicles/hardi/rubicon9000/rubicon9000.xml" /> <!-- sprayer -->
+		<group size="large">
+			<vehicle filename="$data/vehicles/agrifac/condorEndurance2/condorEndurance2.xml"/>
 			<vehicle filename="$data/objects/pallets/liquidTank/herbicideTankHelm.xml"/> <!-- herbicide -->
 			<vehicle filename="$data/objects/pallets/liquidTank/herbicideTankHelm.xml"/> 
 			<vehicle filename="$data/objects/pallets/liquidTank/herbicideTankHelm.xml"/> 
