@@ -2,9 +2,10 @@
 -- BetterContracts SCRIPT
 --
 -- Purpose:     Enhance ingame contracts menu.
--- Author:      Royal-Modding / Mmtrx
+-- Author:      Mmtrx
 -- Changelog:
 --  v1.0.0.0    28.10.2024  1st port to FS25
+--  v1.2.0.0    12.05.2025  New: leased vehicle selection dialog
 --=======================================================================================================
 
 ---------------------- mission vehicle loading functions --------------------------------------------
@@ -339,26 +340,106 @@ end
 ---------------------- mission vehicle enhancement functions ------------------------
 function onSpawnedVehicle(self, vehicles, loadState)
 	-- prepended to AbstractMission:onSpawnedVehicle(vehicles, loadState, loadInfo)
+	-- Server only
 	if loadState ~= VehicleLoadingState.OK then return end 
 
     for _, vehicle in ipairs(vehicles) do
-        --local configNameClean = vehicle.configFileNameCl
+        -- if we spawned "leased" materials:
         if vehicle.typeName == "pallet" or vehicle.typeName == "bigBag" then
             vehicle.addWearAmount = function() end
             vehicle.setOperatingTime = function() end
-        else
-			vehicle.activeMissionId = self.activeMissionId
-			-- save mission type / field for vehicle name
-			BetterContracts:vehicleTag(self, vehicle)
         end
     end
 end
-function BetterContracts:vehicleTag(m, vehicle)
-	-- save txt to append to vehicle name
+function finishedPreparing(self)
+	-- appended to AbstractMission:finishedPreparing() / Server only
+
+	if self.isServer and self.spawnedVehicles then
+	-- inform client about spawned leasing vehicles
+		LeasedVecsEvent.sendEvent(self, self.vehicles)
+	end
+end
+function BetterContracts:getVehicles(m)
+	-- tag all spawned vecs for mission m. Called on update
+	--debugPrint("**getVehicles, m: %s %s", m, m.getTitle and m:getTitle() or "nil")
+
+	if self.vehicleTags[m] == nil or self.vehicleTags[m].vecIds == nil then
+		return m  -- cannot yet resolve vehicles
+	end
+	local spGame = type(self.vehicleTags[m].vecIds[1]) == "table" 
+	-- in single player, vecIds[] already contain the vehicle objects
+
+	local txt = self.vehicleTags[m].txt
+	for _, id in ipairs(self.vehicleTags[m].vecIds) do
+		local vec = spGame and id or NetworkUtil.getObject(id)
+		if vec ~= nil then  
+			if self.missionVecs[vec] == nil then
+				vec.activeMissionId = m.activeMissionId
+				self.missionVecs[vec] = txt
+				local item = g_storeManager:getItemByXMLFilename(vec.configFileName)
+				debugPrint("** vehicle tagged: %s - %s",vec:getFullName(), txt)
+			end
+		else 
+			return m -- there is still 1 vehicle not yet synced from server
+		end
+	end
+	return nil
+end
+function BetterContracts:vehicleTag(m, vehicleIds)
+	-- save mission txt to append to leased vehicle names
 	local fieldNo = m.field and  m.field:getName() or ""
 	local txt =  string.format(" (%.8s %s)", m:getTitle(), fieldNo)
-	self.missionVecs[vehicle] = txt 
+
+	self.vehicleTags[m] = {
+		txt = txt,
+		vecIds = vehicleIds,
+		} 
+	self.vehicleTagsDirty = m 
 end
+function missionManagerLoadFromXMLFile(self,xmlFilename)
+	-- appended to MissionManager:loadFromXMLFile()
+	-- MP only: we inform clients about active missions with leased vecs
+	assert(g_currentMission:getIsServer(),
+		"BetterContracts.missionManagerLoadFromXMLFile should run on Server only")
+	local isMP = g_currentMission.missionDynamicInfo.isMultiplayer
+	debugPrint("* missionManagerLoadFromXMLFile, MP %s", isMP)
+
+	for _, m in ipairs(self.missions) do
+		debugPrint("** %s %s %s %s",m:getTitle(), m.field and m:getField():getName(),
+			m.spawnedVehicles and "spawned, activeId " or "",
+			m.activeMissionId or "" )
+		if m.activeMissionId ~= nil and m.spawnedVehicles then 
+			m.sendLeasedVecs = true
+			if not isMP then checkMissionVecs(m)		
+			end
+		end
+	end
+	return xmlFilename ~= nil
+end
+function checkMissionVecs(m, connection)
+	-- if mission vecs loaded, send to client, otherwise delay
+	if #m.vehicles > 0 then  
+		LeasedVecsEvent.sendEvent(m, m.vehicles, connection)
+		m.sendLeasedVecs = nil
+	else
+		table.insert(BetterContracts.activeMissions, m)
+		BetterContracts.frameCounter = 0
+	end
+end
+
+FSBaseMission.onConnectionFinishedLoading = Utils.appendedFunction(
+	FSBaseMission.onConnectionFinishedLoading, 
+function(self, connection)
+	-- a new client connected. Inform them about active mission vehicles
+	for _, m in ipairs(g_missionManager.missions) do
+		if m.sendLeasedVecs then 
+			debugPrint("* onConnectionFinishedLoading %s %s, vehicles: %d", m:getTitle(), 
+				m.field:getName(), #m.vehicles)
+			checkMissionVecs(m, connection)		
+		end
+	end
+end)
+
 function removeAccess(self)
 	-- prepend to AbstractFieldMission:removeAccess()
 	if not self.isServer then return end 
@@ -374,11 +455,13 @@ function removeAccess(self)
 	for _, vehicle in ipairs(toDelete) do
 		table.removeElement(self.vehicles, vehicle)
 	end
+	BetterContracts.vehicleTags[self] = nil
 end
 function onVehicleReset(self, oldv, newv)
 	-- appended to AbstractMission:onVehicleReset
 	if oldv.activeMissionId ~= self.activeMissionId then return end
 
+	debugPrint("* onVehicleReset %s %s", oldv:getFullName(), newv:getFullName())
 	BetterContracts:vehicleTag(self, newv)
 	BetterContracts.missionVecs[oldv] = nil  
 end
@@ -394,30 +477,44 @@ end
 ---------------------- mission start with select lease vehicles ------------------------
 function missionStart(self,superf,spawnVehicles)
 	-- overwrites AbstractMission:start()
-	local bc = BetterContracts
-	if self.isServer and bc.isOn and spawnVehicles then  
+	if self.isServer and self.waitForStart then  
 		-- a client has opened the lease vehicle selection dialog. Make mission 
 		-- unavail for all other clients 
 		g_server:broadcastEvent(MissionStartedEvent.new(self))
-	
 		self:setStatus(MissionStatus.PREPARING)
-		bc.waitVecSelect = true
 		return true
 	end
 		return superf(self, spawnVehicles)
 end
 
+MissionStartEvent.writeStream = Utils.prependedFunction(MissionStartEvent.writeStream, 
+function(self, streamId, connection)
+	if connection:getIsServer() then
+		streamWriteBool(streamId, self.wait or false)
+	end	
+end)
+
+MissionStartEvent.readStream = Utils.prependedFunction(MissionStartEvent.readStream, 
+function(self, streamId, connection)
+	if not connection:getIsServer() then
+		self.wait = streamReadBool(streamId)
+	end	
+end)
+
 -- delay mission start event sent from server to client accepting the mission
 MissionStartEvent.run = Utils.overwrittenFunction(MissionStartEvent.run, 
 function(self, superf, connection)
-	if connection:getIsServer() or not self.spawnVehicles then
+	local bc = BetterContracts
+	debugPrint("* MissionStartEvent.run, %s %s", self.wait and "wait" or "go",
+		self.spawnVehicles and "leased" or "")
+	if connection:getIsServer() or not self.wait then
 		return superf(self, connection)
 	end
-	local bc = BetterContracts
 	local user = g_currentMission.userManager:getUserIdByConnection(connection)
 	if g_currentMission:getHasPlayerPermission("manageContracts", connection, g_farmManager:getFarmByUserId(user).farmId) then
+		self.mission.waitForStart = true
 		local startState = g_missionManager:startMission(self.mission, self.farmId, self.spawnVehicles)
-		if (startState == MissionStartState.OK) and bc.waitVecSelect then 
+		if (startState == MissionStartState.OK) then 
 			-- wait for ChangeVecEvent ..
 		else
 			connection:sendEvent(MissionStartEvent.newServerToClient(startState, self.spawnVehicles))
@@ -425,7 +522,6 @@ function(self, superf, connection)
 	else
 		connection:sendEvent(MissionStartEvent.newServerToClient(MissionStartState.NO_PERMISSION, self.spawnVehicles))
 	end
-
 end)
 ---------------------- mission vehicle selection Gui --------------------------------
 
@@ -453,7 +549,6 @@ function VehicleSelect:init(m)
 		end
 	end
 	self.vehicleTemplate:unlinkElement()
-	--self:onGuiSetupFinished()
 end
 function VehicleSelect:getGroups(m)
 	-- get all possible vehicle groups for mission m
@@ -484,7 +579,7 @@ function VehicleSelect:populateCellForItemInSection(list, section, index, cell)
 	cell:getAttribute("vGroup"):setText(group)
 end
 function VehicleSelect:onListSelectionChanged(list, sec, index)
-	debugPrint("**onListSelectionChanged: index %d", index)
+	--debugPrint("**onListSelectionChanged: index %d", index)
 	local grp = self.groups[index]
 	if grp ~= nil then
 		self:updateVehicleBox(grp.vehicles)
@@ -492,8 +587,6 @@ function VehicleSelect:onListSelectionChanged(list, sec, index)
 end
 function VehicleSelect:updateVehicleBox(vecs)
 	local frCon = BetterContracts.frCon
-	--local m = frCon.lastStartedMission
-	--m.vehiclesToLoad = vecs -- VehicleSelect:setVehicles()
 	for _, image in pairs(self.vehicleElements) do
 		image:delete()
 	end
@@ -531,9 +624,10 @@ function VehicleSelect:updateVehicleBox(vecs)
 	end
 	self.vehiclesBox:setPosition(0)
 end
+--[[
 function VehicleSelect:onOpen()
 	debugPrint("** VehicleSelect:onOpen()")
-end
+end]]
 function VehicleSelect:onClickButton(button)
 	-- callback from our Vec selection dialog. Esc doesn't change the vec group
 	debugPrint("** VehicleSelect: Click %s", button.id)

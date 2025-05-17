@@ -4,7 +4,7 @@
 	Purpose:     Define vehicles to be used for contracts
 	Author:      Mmtrx   
 	Usage:       You can define additional vehicle sets to use for specific contracts (aka missions).
-				 You can define mod vehicles/ tools, see requiredMod="FS25_lizardTardis" below.
+				 You can define mod vehicles/ tools, see requiredMods section below.
 				 Mods that you require must be specified at the beginning of the file, and are
 				 referenced by the assigned id during processing of the rest of the file.
 				 Your user-defined vehicles are added to the mission vehicles from the map 
@@ -23,6 +23,7 @@
 						  BetterContracts will try to check this, and issue warnings in the log 
 	Changelog:
 	 v1.1.2.0   24.02.2025  initial FS25
+	 v1.2.0.0 	15.05.2025  added tag "requiredMods", see example below
 =======================================================================================================-->
 
 <missionVehicles overwrite="false">

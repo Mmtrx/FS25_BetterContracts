@@ -283,8 +283,8 @@ function hookFunctions(self)
 	Utility.appendedFunction(AbstractMission, "readStream", missionReadStream)
 	Utility.appendedFunction(AbstractMission, "writeUpdateStream", missionWriteUpdateStream)
 	Utility.appendedFunction(AbstractMission, "readUpdateStream", missionReadUpdateStream)
-	Utility.appendedFunction(HarvestMission, "writeStream", harvestWriteStream)
-	Utility.appendedFunction(HarvestMission, "readStream", harvestReadStream)
+	Utility.prependedFunction(HarvestMission, "writeStream", harvestWriteStream)
+	Utility.prependedFunction(HarvestMission, "readStream", harvestReadStream)
 	Utility.appendedFunction(HarvestMission, "onSavegameLoaded", onSavegameLoaded)
 	-- flexible mission limit: 
 	Utility.overwrittenFunction(MissionManager, "hasFarmReachedMissionLimit", hasFarmReachedMissionLimit)
@@ -323,9 +323,11 @@ function hookFunctions(self)
 	Utility.overwrittenFunction(AbstractMission,"start",missionStart)
 	-- allow pallets to spawn as mission vehicle:
 	Utility.prependedFunction(AbstractMission, "onSpawnedVehicle", onSpawnedVehicle)
+	-- save name tags for mission vehicle:
+	Utility.appendedFunction(AbstractMission, "finishedPreparing", finishedPreparing)
+	Utility.appendedFunction(MissionManager, "loadFromXMLFile", missionManagerLoadFromXMLFile)
 
 	-- to display mission vehicle names:
-	--Utility.overwrittenFunction(AbstractFieldMission, "loadNextVehicleCallback", loadNextVehicle)
 	Utility.prependedFunction(AbstractFieldMission, "removeAccess", removeAccess)
 	Utility.appendedFunction(AbstractMission, "onVehicleReset", onVehicleReset)
 	for name, typeDef in pairs(g_vehicleTypeManager.types) do
@@ -380,6 +382,8 @@ function BetterContracts:initialize()
 	}
 	self.NPCAllowWork = false 		-- npc should not work before noon of last 2 days in month
 	self.missionVecs = {} 			-- holds names of active mission vehicles
+	self.vehicleTags = {} 			-- connects newly started mission with vehicle ids
+	self.activeMissions = {} 		-- active missions loaded from savegame, for MP only
 
 	g_missionManager.missionMapNumChannels = 6
 	self.missionUpdTimeout = 15000
@@ -749,6 +753,34 @@ function BetterContracts:onUpdate(dt)
 	if self.transportMission and g_server == nil then 
 		updateTransportTimes(dt)
 	end 
+	-- try to resolve leased vehicle object ids
+	if g_currentMission:getIsClient() and self.vehicleTagsDirty ~= nil then  
+		--debugPrint("* onUpdate, %s %s", self.vehicleTagsDirty, self.vehicleTagsDirty:getTitle())
+		-- self.vehicleTagsDirty is the mission to process
+		self.vehicleTagsDirty = self:getVehicles(self.vehicleTagsDirty)
+	end
+	if self.frameCounter then self.frameCounter = self.frameCounter +1 end
+
+	-- on Server: wait for vehicles loaded for active missions
+	if g_currentMission:getIsServer() and #self.activeMissions > 0 then  
+		if self.frameCounter and self.frameCounter > 60 then 
+			for i = #self.activeMissions,1,-1 do 
+				local m = self.activeMissions[i]
+				if #m.vehicles > 0 then 
+					LeasedVecsEvent.sendEvent(m, m.vehicles, connection)
+					m.sendLeasedVecs = nil
+					table.remove(self.activeMissions, i)
+				end
+			end
+			if #self.activeMissions == 0 then 
+				-- we have sent all active mission vecs
+				self.frameCounter = nil
+			else
+				-- try again in about 1 sec
+				self.frameCounter = 0
+			end
+		end
+	end
 end
 
 function BetterContracts:updateGeneration()
@@ -855,10 +887,10 @@ function missionWriteStream(self, streamId, connection)
 	-- appended to AbstractMission.writeStream
 	if self.field ~= nil then
 		local info = self.info
-		streamWriteFloat32(streamId, info.worktime)
-		streamWriteFloat32(streamId, info.profit)
-		streamWriteFloat32(streamId, info.usage)
-		streamWriteFloat32(streamId, info.perMin)
+		streamWriteFloat32(streamId, info.worktime or 0)
+		streamWriteFloat32(streamId, info.profit or 0)
+		streamWriteFloat32(streamId, info.usage or 0)
+		streamWriteFloat32(streamId, info.perMin or 0)
 	end
 end
 function missionReadStream(self, streamId, connection)
@@ -868,8 +900,8 @@ function missionReadStream(self, streamId, connection)
 		info.profit = streamReadFloat32(streamId)
 		info.usage = streamReadFloat32(streamId)
 		info.perMin = streamReadFloat32(streamId)
-		debugPrint("* read %s from stream. Worktime %d,profit %d ,usage %d, perMin %d",
-			self.type.name, info.worktime,info.profit,info.usage,info.perMin)
+		--debugPrint("* read %s from stream. Worktime %d,profit %d ,usage %d, perMin %d",
+		--	self.type.name, info.worktime,info.profit,info.usage,info.perMin)
 	end
 end
 function harvestWriteStream(self, streamId, connection)
@@ -881,6 +913,8 @@ function harvestReadStream(self, streamId, connection)
 	self.expectedLiters = streamReadFloat32(streamId)
 	self.depositedLiters = streamReadFloat32(streamId)
 	self.info.keep = streamReadFloat32(streamId)
+	--debugPrint("* read expected %d, deposit %d ,keep %d",self.expectedLiters, 
+	--	self.depositedLiters, self.info.keep)
 end
 function missionWriteUpdateStream(self, streamId, connection, dirtyMask)
 	-- appended to AbstractMission.writeUpdateStream

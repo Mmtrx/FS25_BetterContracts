@@ -8,7 +8,12 @@
 	<description>
 		<en>
 			<![CDATA[
-Port of FS22_BetterContracts
+Changelog v1.1.2.0
+- repair FS25_Financing #78. 
+- fix click on settings/controls #76.
+- add time left for active contracts on hud #63
+- add mission info to leased vehicle name #65
+- New: leased vehicle selection dialog
 
 This version enables following features:
 
@@ -29,7 +34,12 @@ I plan to implement additional functions in next releases of the mod.
 		</en>
 		<de>
 			<![CDATA[
-Portierung von FS22_BetterContracts
+Changelog v1.1.2.0
+- fix für FS25_Financing #78. 
+- fix Klick auf Einstellungen/Steuerung #76.
+- Anzeige verbleibender Zeit im Hud Fortschrittsbalken #63
+- Missionsanzeige beim Fahrzeugnamen #65
+- Neu: Auswahldialog für Leasing-Fahrzeuge bei Verträgen
 
 Diese Version enthält folgende Funktionen:
 
@@ -50,7 +60,12 @@ GitHub link: https://github.com/Mmtrx/FS25_BetterContracts
 		</de>
 		<fr>
 			<![CDATA[
-Portage de FS22_BetterContracts
+Changelog v1.1.2.0
+- repair FS25_Financing #78. 
+- fix click on settings/controls #76.
+- add time left for active contracts on hud #63
+- add mission info to leased vehicle name #65
+- New: leased vehicle selection dialog
 
 Cette version permet les fonctionnalités suivantes :
 

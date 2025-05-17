@@ -11,6 +11,7 @@
 --  v1.1.0.0    08.01.2025  UI settings page, discount mode
 --  v1.1.1.3    14.02.2025  fix generation non-field contracts #47. Prevent FS25_RefreshContracts
 --							new settings switches: hideMission, stayNew, finishField 
+--  v1.2.0.0    12.05.2025  New: leased vehicle selection dialog
 --=======================================================================================================
 -- calculate real size from pixel value: 140*g_pixelSizeScaledX
 function loadIcons(self)
@@ -81,11 +82,10 @@ function loadGUI(self, guiPath)
 		--self.my.vehiclesList = parent:getDescendantById("vehiclesList")
 		--self.my.vehiclesList:onGuiSetupFinished()
 
-		self.my.progressBox = parent:getDescendantById("bcProgressBox")
-		fixPosition(self.my.progressBox)
-		for _,id in ipairs({"box1","box2"}) do
+		for _,id in ipairs({"box1","box2","progressBox"}) do
 			self.my[id] = parent:getDescendantById(id)
-			fixPosition(self.my[id], true)
+			fixPosition(self.my[id], id ~= "progressBox")
+			self.my[id]:setVisible(false)
 		end
 		end)
 	end
@@ -124,7 +124,7 @@ function initGui(self)
 	else
 		Logging.info("%s: -------- gui loaded -----------",self.name)
 	end
-	FocusManager.DEBUG = true
+	--FocusManager.DEBUG = true
 	-- init our settings page controller
 	self.settingsMgr = SettingsManager.new()
 	self.settingsMgr:init()
@@ -295,9 +295,10 @@ function onFrameClose(self)
 end
 function onMissionStarted(self,superf,state,lease)
 	-- overwritten to InGameMenuContractsFrame:onMissionStarted()
-	-- prevent switch to ACTIVE contracts list
 	local bc = BetterContracts
-	if state == MissionStartState.OK and bc.config.stayNew then
+	local ok = state == MissionStartState.OK
+	if ok and bc.config.stayNew then
+	-- prevent switch to ACTIVE contracts list
 		if lease then
 			InfoDialog.show(g_i18n:getText("contract_vehiclesAtShop"), nil, nil, DialogElement.TYPE_INFO)
 		else
@@ -671,21 +672,38 @@ end
 function missionUpdate(self, superf)
 	-- overwrites AbstractMission:update()
 	local hide = BetterContracts.config.hideMission
+	local isActive = self.status == MissionStatus.RUNNING
+	--[[
+	if isActive and g_currentMission:getIsServer() then  
+		debugPrint("* upd %s %s: %s", self:getTitle(), self.field:getName(),
+			self.sendLeasedVecs or false)
+	end
+	if g_currentMission:getIsServer() and g_currentMission.missionDynamicInfo.isMultiplayer 
+		and isActive and self.sendLeasedVecs 
+		and not self.tryToAddMissingVehicles then 
+	-- we inform clients about active missions with leased vecs
+		LeasedVecsEvent.sendEvent(self, self.vehicles)
+		self.sendLeasedVecs = nil 
+	end]]
 
-	if (self.status == MissionStatus.RUNNING) --or self.status == MissionStatus.FINISHED) 
-		and (g_localPlayer ~= nil and g_localPlayer.farmId == self.farmId) then
-
+	if isActive and --or self.status == MissionStatus.FINISHED) 
+		(g_localPlayer ~= nil and g_localPlayer.farmId == self.farmId) then
+		-- customize progress bar on hud:
 		if self.progressBar == nil then
 			self.progressBar = g_currentMission.hud:addSideNotificationProgressBar(
 				g_i18n:getText("contract_title"), self.progressTitle, self.completion)
 		end
-		if not hide or self.completion > 0.01 then
 		-- add time left to progress title:
-			local time = g_i18n:formatMinutes(self:getMinutesLeft())
-			self.progressBar.progress = self.completion
-			self.progressBar.text = string.format("%s  /  %s", self.progressTitle, time)
-			g_currentMission.hud:markSideNotificationProgressBarForDrawing(self.progressBar)
-			self:raiseActive()
+		local time = g_i18n:formatMinutes(self:getMinutesLeft())
+		self.progressBar.progress = self.completion
+		self.progressBar.text = string.format("%s  /  %s", self.progressTitle, time)
+
+		if hide and self.completion < 0.005 then
+			self.farmId = nil 	-- prevent superf from adding a progress bar
+		end
+		superf(self)
+		if self.farmId == nil then  
+			self.farmId = g_localPlayer.farmId
 		end
 	else 
 		superf(self)

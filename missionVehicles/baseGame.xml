@@ -7,10 +7,13 @@
 				sowing, and mow-bale for small/ medium fields
 	Changelog:
 	 v1.1.2.0   24.02.2025  initial FS25
+	 v1.2.0.0 	15.05.2025  added tag "requiredMods", see example below
 
 ======================================================================================================-->
 <missionVehicles overwrite="false">
 	<variants/>
+
+	<!-- Test Mods: -->
 	<requiredMods>
 		<mod name="FS25_lizardTardis" id="1"/>
 		<mod name="FS25_poettingerMowerPack" id="2" />
@@ -19,6 +22,11 @@
 	<mission type="harvestMission" >
 		<!-- grainMission -->
 		<group size="small" variant="GRAIN" rewardScale="1.2">
+		<!-- Test Mod: -->
+			<vehicle filename="lizardTrailer.xml" requiredMod="1"/> 
+			<vehicle filename="novacat301/novacat301.xml" requiredMod="2"/> 
+		<!-- remove 2 lines above to avoid log warnings (or: install those 2 mods :)-->
+
 			<vehicle filename="$data/vehicles/caseIH/axialFlow150/axialFlow150.xml"/>
 			 <!-- combine -->
 			<vehicle filename="$data/vehicles/caseIH/terraFlex3020/terraFlex3020.xml"/> <!-- header -->
@@ -27,9 +35,6 @@
 				<!-- trailer -->
 				<configuration name="cover" id="2" />
 			</vehicle>
-		<!-- Test Mod: -->
-			<vehicle filename="lizardTrailer.xml" requiredMod="1"/> 
-			<vehicle filename="novacat301/novacat301.xml" requiredMod="2"/> 
 		</group>
 		<group size="medium" variant="GRAIN">
 			<vehicle filename="$data/vehicles/claas/lexion6900/lexion6900.xml"/>

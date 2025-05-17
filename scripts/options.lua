@@ -7,6 +7,7 @@
 -- Changelog:
 --  v1.0.0.0    28.10.2024  1st port to FS25
 --  v1.1.0.0    08.01.2025  UI settings page, discount mode
+--  v1.2.0.0    12.05.2025  New: leased vehicle selection dialog (startContract())
 --=======================================================================================================
 
 --------------------- lazyNPC --------------------------------------------------------------------------- 
@@ -384,13 +385,13 @@ function startContract(frCon, superf, wantsLease)
 		local m = frCon:getSelectedContract().mission
 		bc.vehicleSelect:init(m)
 		g_gui:showDialog("VehicleSelect")
-		-- do we need subscribe?
 		g_messageCenter:subscribe(MissionStartEvent, frCon.onMissionStarted, frCon)
-		g_client:getServerConnection():sendEvent(MissionStartEvent.new(m, farmId, wantsLease))
+		local event = MissionStartEvent.new(m, farmId, wantsLease)
+		event.wait = true
+		g_client:getServerConnection():sendEvent(event)
 	else
 		superf(frCon, wantsLease)
 	end
-
 end
 function BetterContracts:resetJobsLeft()
 	-- recalc jobs left per farm
