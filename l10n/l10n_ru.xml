@@ -2,7 +2,7 @@
 <l10n>
 	<texts>
 		<!-- updates v1.2.0.0 -->
-		<text name="bc_vehicleBox" text="Vehicle Selection" />
+		<text name="bc_vehicleBox" text="Выбор транспортного средства" />
 		<!-- updates v1.1.1.3 -->
 		<text name="bc_stayNew" text="Оставатся в списке новых контрактов" />
 		<text name="bc_stayNew_tooltip" text="Не переключайтесь на список АКТИВНЫХ контрактов при принятии нового контракта." />

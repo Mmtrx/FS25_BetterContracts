@@ -78,11 +78,11 @@ function BetterContracts:checkExtraMissionVehicles(xmlFilename, baseDir)
 			Logging.xmlError(xmlFile, "Duplicate id \'%s\' for mod - \'%s\'", id, name)
 			ok = false
 		elseif not g_modIsLoaded[name] then 
-			Logging.xmlWarning(xmlFile, "Mod \'%s\' is not loaded", name)
+			debugPrint("[checkExtraMissionVehicles] Mod %s \'%s\' is not loaded", id, name)
 			ok = false
 		else
 			modVehicles[id] = name
-			debugPrint("%s: modVehicles[%d] set to %s", self.name,id,name)
+			debugPrint("[checkExtraMissionVehicles] modVehicles[%d] set to %s", id,name)
 		end
 	end
 
@@ -97,7 +97,7 @@ function BetterContracts:checkExtraMissionVehicles(xmlFilename, baseDir)
 					if modVehicles[index] then
 						dir = g_modNameToDirectory[modVehicles[index]]
 					else
-						Logging.warning("[%s] required Mod Index %s not found, ignoring mission vehicle %s",
+						debugPrint("[%s] required Mod Index %s not found, ignoring mission vehicle %s",
 						self.name, index, filename)
 						ignore = true
 						ok = false
@@ -120,7 +120,7 @@ function BetterContracts:checkExtraMissionVehicles(xmlFilename, baseDir)
 	end
 	xmlFile:delete()
 	if not ok then 
-		Logging.warning("[%s] ignoring some groups in mission vehicles file '%s'",self.name,xmlFilename)
+		debugPrint("[%s] ignoring some groups in mission vehicles file '%s'",self.name,xmlFilename)
 	end
 	return ok
 end
@@ -146,7 +146,7 @@ function BetterContracts:loadExtraMissionVehicles(xmlFilename, baseDir)
 		elseif modVehicles[id] ~= nil then 
 			Logging.xmlError(xmlFile, "Duplicate id \'%s\' for mod - \'%s\'", id, name)
 		elseif not g_modIsLoaded[name] then 
-			Logging.xmlWarning(xmlFile, "Mod \'%s\' is not loaded", name)
+			debugPrint("Mod %s \'%s\' is not loaded", id, name)
 		else
 			modVehicles[id] = name
 			debugPrint("%s: modVehicles[%d] set to %s", self.name,id,name)
@@ -183,7 +183,7 @@ function BetterContracts:loadExtraMissionVehicles(xmlFilename, baseDir)
 						if modVehicles[index] then
 							dir = g_modNameToDirectory[modVehicles[index]]
 						else
-							Logging.warning("[%s] required Mod Index %s not found, ignoring mission vehicle %s",
+							debugPrint("[%s] required Mod Index %s not found, ignoring mission vehicle %s",
 							self.name, index, filename)
 							ok = false
 							break

@@ -27,6 +27,7 @@
 -- 							add time left for active contracts on hud #63
 -- 							add mission info to leased vehicle name #65
 --							New: leased vehicle selection dialog
+--  v1.2.0.1    18.05.2025  disable warnings for missing mods in missionVehicles\baseGame.xml
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index

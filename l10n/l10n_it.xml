@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--=====================================================================================================
+	BetterContracts l10n translations
+	Changelog:
+	  v1.0.0.0    28.10.2024  1st port to FS25
+	  v1.1.0.0    08.01.2025  UI settings page, discount mode
+	  v1.1.1.2    09.02.2025  compatible FS25_additionalGameSettings
+	  v1.2.0.0    12.05.2025  new vehicle selection dialog
+=======================================================================================================-->
 <l10n>
 	<texts>
 		<!-- updates v1.2.0.0 -->
-		<text name="bc_vehicleBox" text="Vehicle Selection" />
+		<text name="bc_vehicleBox" text="Selezione del veicolo" />
 		<!-- updates v1.1.1.3 -->
 		<text name="bc_stayNew" text="Rimani nell'elenco dei NUOVI contratti" />
 		<text name="bc_stayNew_tooltip" text="Non passare all'elenco dei contratti ATTIVI quando viene accettato un nuovo contratto" />
@@ -15,7 +23,7 @@
 		<text name="bc_settingsNoPermission" text="Non hai il permesso di modificare le impostazioni di Better Contracts!" />
 		<!-- Keys -->
 		<text name = "input_MENU_EXTRA_3" text = "Better Contracts: Dettagli on/off"/>
-		<text name = "bc_actionFerment" text = "Ferment Bale"/>
+		<text name = "bc_actionFerment" text = "Fermentazione Balla"/>
 		<text name = "input_BC_MTOGGLE" text = "BC: Alterna la visualizzazione dei contratti agricoli attivi" />
 		<!-- Gui Buttons -->
 		<text name="bc_hidden" text="Nascosto: %d" />
@@ -26,7 +34,7 @@
 		<text name="bc_detailsOn" text="BC on" />
 
 		<!-- Hard mode -->
-		<text name="bc_penalty" text="Penalty" />
+		<text name="bc_penalty" text="Penalità" />
 		<text name="bc_warnTimeout" text="Completa i tuoi %d contratti entro la prossima ora, per evitare penalizzazioni." />
 		<text name="bc_warnCancel" text="La penalità del contratto sarà di almeno " />
 		<text name="bc_leaseNotEnough" text="È necessario completare altri %d lavori per %s con le proprie attrezzature, prima di poter prendere in prestito le macchine." />
@@ -44,7 +52,7 @@
 		<text name="bc_chaff" text="Tagliare %s" />
 		<text name="bc_jobType_chaff" text="Foraggio" />
 		<text name="bc_harvest" text="Raccogli. %s" />
-		<text name="bc_leased" text="/ Leased" />
+		<text name="bc_leased" text="/ In locazione" />
 		<text name="bc_enoughMissions" text="La tua fattoria ha già il numero massimo di contratti." />
 		<text name="bc_monthlyLimit" text="La vostra fattoria ha raggiunto il numero massimo di contratti per questo mese." />
 
@@ -103,7 +111,7 @@
 		<text name="bc_debug_tooltip" text="Stampa messaggi informativi nel registro se attivo. Può aiutare a trovare i bug." />
 
 		<text name="bc_lazyNPCTitle" text="Agricoltori Pigri" />
-
+		<text name="bc_lazyNPC" text="Attivato" />
 		<text name="bc_lazyNPC_tooltip" text="Se attivo, i contadini PNG saltano più spesso il lavoro nei campi. Quindi possono essere offerti più contratti." />
 		<text name="bc_npcHarvest_tooltip" text="Se attivo, i contadini PNG non raccolgono affatto. Questo potrebbe comportare molto lavoro per voi." />
 		<text name="bc_npcSow_tooltip" text="Se attivo, i contadini NPC eseguono i lavori di semina più raramente e li offrono invece sotto forma di contratti." />
@@ -124,7 +132,7 @@
 		<text name="bc_hardLimit" text="Contratti al mese" />
 		<text name="bc_hardLimit_tooltip" text="Numero massimo di contratti che possono essere accettati in un mese. (-1: nessun limite, 0: nessun contratto)."/>
 
-		<text name="bc_discountTitle" text="Campo Sconto Acquisto" />
+		<text name="bc_discountModeTitle" text="Acquisto del Campo Scontato" />
 		<text name="bc_discountMode" text="Attivato" />
 		<text name="bc_discountMode_tooltip" text="Se attivo, un PNG agricoltore offre uno sconto sull'acquisto di terreni agricoli. Lo sconto aumenta con il numero di lavori completati da questo agricoltore." />
 		<text name="bc_discPerJob" text="Sconto per ogni contratto completato" />

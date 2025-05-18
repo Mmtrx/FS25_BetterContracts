@@ -1,14 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="96">
 	<author>Mmtrx</author>
-	<version>1.1.2.0</version>
+	<version>1.1.2.1</version>
 	<title>
 		<en>Better Contracts</en>
 	</title>
 	<description>
 		<en>
 			<![CDATA[
-Changelog v1.1.2.0
+Changelog v1.1.2.1
+- disable warnings about missing mission vehicle mods #87
 - repair FS25_Financing #78. 
 - fix click on settings/controls #76.
 - add time left for active contracts on hud #63
@@ -34,7 +35,8 @@ I plan to implement additional functions in next releases of the mod.
 		</en>
 		<de>
 			<![CDATA[
-Changelog v1.1.2.0
+Changelog v1.1.2.1
+- Warnungen wg fehlender Mission-Fahrzeuge Mods entfernt #87
 - fix für FS25_Financing #78. 
 - fix Klick auf Einstellungen/Steuerung #76.
 - Anzeige verbleibender Zeit im Hud Fortschrittsbalken #63
@@ -60,7 +62,8 @@ GitHub link: https://github.com/Mmtrx/FS25_BetterContracts
 		</de>
 		<fr>
 			<![CDATA[
-Changelog v1.1.2.0
+Changelog v1.1.2.1
+- disable warnings about missing mission vehicle mods #87
 - repair FS25_Financing #78. 
 - fix click on settings/controls #76.
 - add time left for active contracts on hud #63
