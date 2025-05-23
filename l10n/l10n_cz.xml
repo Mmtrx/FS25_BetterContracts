@@ -9,7 +9,7 @@
 <l10n>
 	<texts>
 		<!-- updates v1.2.0.0 -->
-		<text name="bc_vehicleBox" text="Vehicle Selection" />
+		<text name="bc_vehicleBox" text="Výběr vozidla" />
 		<!-- updates v1.1.1.3 -->
 		<text name="bc_stayNew" text="Zůstat na seznamu NOVÝCH zakázek" />
 		<text name="bc_stayNew_tooltip" text="Nepřepínejte na seznam AKTIVNÍ zakázky, když je přijata nová zakázka." />
