@@ -166,15 +166,21 @@ function farmRead(self, streamId)
 		debugPrint("  jobs[%d] = %d (farm %d)", npcIndex, jobs[npcIndex],self.farmId)
 	end
 end
+BCFinish = {
+	"none","success","failed","timed out","cancelled"
+}
 function finish(self, success )
-	-- appended to AbstractFieldMission:finish(success)
-	debugPrint("** finish() %s %s on field %s",success,self.type.name, self.field:getName())
+	-- appended to AbstractMission:finish(success)
+
+	debugPrint("** finish() %s %s %s",BCFinish[success],self.type.name, 
+		self.field and "on field ".. self.field:getName() or "")
+
 	local farm =  g_farmManager:getFarmById(self.farmId)
 	if farm.stats.npcJobs == nil then 
 		farm.stats.npcJobs = {}
 	end
 	local jobs = farm.stats.npcJobs
-	local npcIndex = self.field.farmland.npcIndex
+	local npcIndex = self:getNPC().index
 
 	if success == MissionFinishState.SUCCESS then
 		-- (always) count as valid job for this npc:

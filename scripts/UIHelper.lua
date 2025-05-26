@@ -26,6 +26,51 @@ function UIHelper.createSection(settingsPage, i18nTitleId)
 	end
 	return sectionTitle
 end
+function UIHelper.createSpecial(page, id, i18nTextId, min, max, step, unit, target, callbackFunc)
+ ---Creates a new special MTO container, with 2 MTOs
+	local elementBox = page.doublePrefab:clone(page.settingsLayout)
+
+	UIHelper.updateFocusIds(elementBox)
+	elementBox.id = id .. "Box"
+	-- Assign the object which shall receive change events
+	for i = 1,2 do
+		local elementOption = elementBox.elements[i] 		-- 1: multiTextOption left
+		elementOption.focusOnHighlight = true
+		elementOption.target = target
+		elementOption:setCallback("onClickCallback", callbackFunc)
+		target.name = g_inGameMenu.pageSettings.name
+		-- Change generic values
+		elementOption.id = string.format("%s%d",id,i)
+		elementOption:setDisabled(false)
+
+		local texts,digits,tmpStep = {}, 0, step
+		while tmpStep < 1 do
+			digits = digits + 1
+			tmpStep = tmpStep * 10
+		end
+		local formatTemplate = (".%df"):format(digits)
+		if i == 2 then  
+			min, max = max, 2*max
+		end
+		for k = min, max, step do
+			local text = ("%" .. formatTemplate):format(k)
+			if unit then
+				text = ("%s %s"):format(text, unit)
+			end
+			table.insert(texts, text)
+		end
+		elementOption:setTexts(texts)
+	end
+	-- Change the text element
+	local textElement = elementBox.elements[3]  			-- MultiTextOption Title
+	textElement:setText(g_i18n:getText(i18nTextId))
+	-- Change the tooltip
+	local toolTip = elementBox.elements[2].elements[1]
+	toolTip:setText(g_i18n:getText(id .. "_tooltip"))
+
+	table.insert(target.controls, elementBox)
+	return elementBox
+end
 
 function UIHelper.updateFocusIds(element)
 	--Sets the focusId properties of the element and any children to a new unique ID each
@@ -165,7 +210,16 @@ function UIHelper.createControlsDynamically(settingsPage, owningTable, controlPr
 			local callback = "on_" .. controlProps.name .. "_changed"
 			local setting = BCcontrol.new(controlProps.name)
 
-			if controlProps.min ~= nil then
+			if controlProps.special ~= nil then 
+				uiControl = UIHelper.createSpecial(settingsPage, id, title,
+				controlProps.min, controlProps.max, controlProps.step, controlProps.unit,
+				owningTable, callback)
+	
+				uiControl.min = controlProps.min
+				uiControl.max = controlProps.max
+				uiControl.step = controlProps.step
+
+			elseif controlProps.min ~= nil then
 				-- number range control
 				uiControl = UIHelper.createRangeElement(
 				settingsPage, id, title, 

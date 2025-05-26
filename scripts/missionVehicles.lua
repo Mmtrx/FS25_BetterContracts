@@ -6,6 +6,7 @@
 -- Changelog:
 --  v1.0.0.0    28.10.2024  1st port to FS25
 --  v1.2.0.0    12.05.2025  New: leased vehicle selection dialog
+--  v1.2.0.2 	25.05.2025  added tag "fieldSize" in userDefined.xml
 --=======================================================================================================
 
 ---------------------- mission vehicle loading functions --------------------------------------------
@@ -21,9 +22,7 @@ function BetterContracts.loadMissionVehicles(missionManager, superFunc, xmlFilen
 	if superFunc(missionManager, xmlFilename, baseDir) then 
 		if self.loadedVehicles then return true end -- we already loaded our extra missionVehicles
 
-		if self.debug then
-			self:checkExtraMissionVehicles(self.directory .. "missionVehicles/baseGame.xml",baseDir)
-		end
+		self:checkExtraMissionVehicles(self.directory .. "missionVehicles/baseGame.xml",baseDir)
 		self:loadExtraMissionVehicles(self.directory.."missionVehicles/baseGame.xml", baseDir)
 		self.loadedVehicles = true
 
@@ -43,16 +42,22 @@ function BetterContracts.loadMissionVehicles(missionManager, superFunc, xmlFilen
 			found = fileExists(userdef)
 		end
 		-- we found a userdef file:
-		if found and self:checkExtraMissionVehicles(userdef,baseDir) then 
+		if found then
+			if self:checkExtraMissionVehicles(userdef,baseDir) then 
 			-- check for other mod:
-			if g_modIsLoaded.FS25_DynamicMissionVehicles then
-				Logging.warning("[%s] Mod FS25_DynamicMissionVehicles detected. Make sure '%s' contains 'variant definitions'",self.name, userdef)
-				local dmv = FS25_DynamicMissionVehicles.DynamicMissionVehicles
-				dmv.variants = {}
-				dmv:loadVariants(userdef)
+				if g_modIsLoaded.FS25_DynamicMissionVehicles then
+					Logging.warning("[%s] Mod FS25_DynamicMissionVehicles detected. Make sure '%s' contains 'variant definitions'",self.name, userdef)
+					local dmv = FS25_DynamicMissionVehicles.DynamicMissionVehicles
+					dmv.variants = {}
+					dmv:loadVariants(userdef)
+				end
+				debugPrint("[%s] loading user mission vehicles from '%s'.",self.name, userdef)
+				self.overwrittenVehicles = self:loadExtraMissionVehicles(userdef, baseDir, true)
+			else
+				Logging.warning(
+				"[%s] userDefined.xml not loaded, please remove errors.",
+				self.name)
 			end
-			debugPrint("[%s] loading user mission vehicles from '%s'.",self.name, userdef)
-			self.overwrittenVehicles = self:loadExtraMissionVehicles(userdef, baseDir)
 		end    
 		return true
 	end
@@ -63,26 +68,45 @@ function BetterContracts:checkExtraMissionVehicles(xmlFilename, baseDir)
 	local ok = true 
 	local xmlFile = XMLFile.load("loadExtraMissionVehicles", xmlFilename)
 	if xmlFile == nil then return false end
+	local fnam = Utils.getFilenameFromPath(xmlFilename)
+
+	-- check field sizes
+	local fkey = "missionVehicles.fieldSize" 
+	if xmlFile:hasProperty(fkey) then  
+		local medium =xmlFile:getFloat(fkey.."#medium")
+		local large = xmlFile:getFloat(fkey.."#large")
+		if not (medium and large) then  
+			Logging.error(
+			"[check %s]: Both 'medium' and 'large' values mut be given for property 'fieldSize'",
+				fnam)
+			ok = false
+		elseif medium > large then  
+			Logging.error(
+			"[check %s]: 'medium' value (%.1f) must be smaller than 'large' (%.1f)",
+				fnam, medium, large)
+			ok = false
+		end
+	end
 	-- "requiredMods" section
-	local modVehicles = {}
+	self.modVehicles = {}
 	for _, key in xmlFile:iterator("missionVehicles.requiredMods.mod") do
 		local name = xmlFile:getString(key .. "#name")
 		local id = xmlFile:getInt(key .. "#id")
 		if name == nil then
-			Logging.xmlError(xmlFile, "Property name must exist on each mod - \'%s\'", key)
+			Logging.error("[check %s]: Property name must exist on each mod - \'%s\'", fnam, key)
 			ok = false
 		elseif id == nil then 
-			Logging.xmlError(xmlFile, "Property id is missing for mod - \'%s\'", name)
+			Logging.error("[check %s]: Property id is missing for mod - \'%s\'", fnam, name)
 			ok = false
-		elseif modVehicles[id] ~= nil then 
-			Logging.xmlError(xmlFile, "Duplicate id \'%s\' for mod - \'%s\'", id, name)
+		elseif self.modVehicles[id] ~= nil then 
+			Logging.error("[check %s]: Duplicate id \'%s\' for mod - \'%s\'", fnam, id, name)
 			ok = false
 		elseif not g_modIsLoaded[name] then 
-			debugPrint("[checkExtraMissionVehicles] Mod %s \'%s\' is not loaded", id, name)
+			debugPrint("[check %s]: Mod %s \'%s\' is not loaded", fnam, id, name)
 			ok = false
 		else
-			modVehicles[id] = name
-			debugPrint("[checkExtraMissionVehicles] modVehicles[%d] set to %s", id,name)
+			self.modVehicles[id] = name
+			debugPrint("[check %s] modVehicles[%d] set to %s", fnam, id,name)
 		end
 	end
 
@@ -94,11 +118,11 @@ function BetterContracts:checkExtraMissionVehicles(xmlFilename, baseDir)
 				local index = xmlFile:getInt(vec.."#requiredMod")
 				local dir = baseDir
 				if index ~= nil then 
-					if modVehicles[index] then
-						dir = g_modNameToDirectory[modVehicles[index]]
+					if self.modVehicles[index] then
+						dir = g_modNameToDirectory[self.modVehicles[index]]
 					else
-						debugPrint("[%s] required Mod Index %s not found, ignoring mission vehicle %s",
-						self.name, index, filename)
+						debugPrint("[check %s] required Mod Index %s not found, ignoring mission vehicle %s",
+						fnam, index, filename)
 						ignore = true
 						ok = false
 					end
@@ -106,7 +130,7 @@ function BetterContracts:checkExtraMissionVehicles(xmlFilename, baseDir)
 				if not ignore then  
 					local vecFilename = Utils.getFilename(filename, dir)
 					if vecFilename == nil then
-						Logging.xmlError(xmlFile, "Missing \'filename\' attribute forvehicle %q", vec)
+						Logging.error("[check %s] Missing \'filename\' attribute for vehicle %q", fnam, vec)
 						ok = false
 					end
 					-- try to load from store item
@@ -114,45 +138,40 @@ function BetterContracts:checkExtraMissionVehicles(xmlFilename, baseDir)
 						Logging.xmlError(xmlFile, "Unable to load store item for xmlfilename \'%q at %q", vecFilename, vec)
 						ok = false
 					end
+					if not ok and index ~= nil then  -- the mod could not be loaded
+						self.modVehicles[index] = nil 
+					end
 				end
 			end
 		end
 	end
 	xmlFile:delete()
 	if not ok then 
-		debugPrint("[%s] ignoring some groups in mission vehicles file '%s'",self.name,xmlFilename)
+		debugPrint("[check %s]: ignoring some groups in mission vehicles file",fnam)
 	end
 	return ok
 end
 function BetterContracts:loadExtraMissionVehicles(xmlFilename, baseDir)
+	-- modVehicles[] has been ckecked, contains only valid mods
 	local xmlFile = XMLFile.load("loadExtraMissionVehicles", xmlFilename)
 	if xmlFile == nil then return false end
-	debugPrint("%s loadExtraVehicles(%s, %s)", self.name, xmlFilename, baseDir)
+	local fname = Utils.getFilenameFromPath(xmlFilename)
+	debugPrint("%s loadExtraVehicles(%s)", self.name, xmlFilename)
 	local mgr = g_missionManager
 	local overwriteStd = Utils.getNoNil(xmlFile:getBool("missionVehicles#overwrite"), false)
 	if overwriteStd then 
 	   g_missionManager.missionVehicles = {}
 	end
-	local modVehicles = {}
-
-	-- "requiredMods" section
-	for _, key in xmlFile:iterator("missionVehicles.requiredMods.mod") do
-		local name = xmlFile:getString(key .. "#name")
-		local id = xmlFile:getInt(key .. "#id")
-		if name == nil then
-			Logging.xmlError(xmlFile, "Property name must exist on each mod - \'%s\'", key)
-		elseif id == nil then 
-			Logging.xmlError(xmlFile, "Property id is missing for mod - \'%s\'", name)
-		elseif modVehicles[id] ~= nil then 
-			Logging.xmlError(xmlFile, "Duplicate id \'%s\' for mod - \'%s\'", id, name)
-		elseif not g_modIsLoaded[name] then 
-			debugPrint("Mod %s \'%s\' is not loaded", id, name)
-		else
-			modVehicles[id] = name
-			debugPrint("%s: modVehicles[%d] set to %s", self.name,id,name)
-		end
+	-- load field sizes (userDefined.xml)
+	local fkey = "missionVehicles.fieldSize" 
+	if xmlFile:hasProperty(fkey) then  
+		AbstractFieldMission.FIELD_SIZE_MEDIUM =
+		 xmlFile:getFloat(fkey.."#medium")
+		AbstractFieldMission.FIELD_SIZE_LARGE = 
+		 xmlFile:getFloat(fkey.."#large")
 	end
-	local hasRequiredMods = #modVehicles > 0 
+
+	local hasRequiredMods = #self.modVehicles > 0 
 
 	for _, key in xmlFile:iterator("missionVehicles.mission") do
 		local type = xmlFile:getString(key .. "#type")
@@ -180,11 +199,9 @@ function BetterContracts:loadExtraMissionVehicles(xmlFilename, baseDir)
 					local dir = baseDir
 					local vecFilename
 					if index ~= nil then 
-						if modVehicles[index] then
-							dir = g_modNameToDirectory[modVehicles[index]]
+						if self.modVehicles[index] then
+							dir = g_modNameToDirectory[self.modVehicles[index]]
 						else
-							debugPrint("[%s] required Mod Index %s not found, ignoring mission vehicle %s",
-							self.name, index, filename)
 							ok = false
 							break
 						end
@@ -240,23 +257,20 @@ function BetterContracts:validateMissionVehicles()
 	local ok = true
 	local type 
 	for _,mt in ipairs(g_missionManager.missionTypes) do
-		if mt.category == MissionManager.CATEGORY_FIELD or 
-		   mt.category == MissionManager.CATEGORY_GRASS_FIELD then
-			type = mt.name
-			for _,f in ipairs({"small","medium","large"}) do
-				if g_missionManager.missionVehicles[type] == nil or 
-				 	g_missionManager.missionVehicles[type][f] == nil or 
-					#g_missionManager.missionVehicles[type][f] == 0 then
-						if type ~= "deadwoodMission" and type ~= "destructibleRockMission" 
-							and f ~= "small" then 
-						Logging.warning("[%s] No missionVehicles for %s missions on %s fields",
-						self.name, type, f)
-						ok = false
-					end
+		type = mt.name
+		if type == "supplyTransportMission" then continue end
+		local smallOnly = type == "deadwoodMission" or type == "destructibleRockMission"
+		for _,f in ipairs({"small","medium","large"}) do
+			if smallOnly and f ~= "small" then continue end
+			if g_missionManager.missionVehicles[type] == nil or 
+			 	g_missionManager.missionVehicles[type][f] == nil or 
+				#g_missionManager.missionVehicles[type][f] == 0 then
+					Logging.warning("[%s] No missionVehicles for %s missions on %s fields",
+					self.name, type, f)
+					ok = false
 				end
 			end
 		end
-	end
 	return ok
 end
 function BetterContracts:printGroup(group, menu)
@@ -364,7 +378,7 @@ function BetterContracts:getVehicles(m)
 	--debugPrint("**getVehicles, m: %s %s", m, m.getTitle and m:getTitle() or "nil")
 
 	if self.vehicleTags[m] == nil or self.vehicleTags[m].vecIds == nil then
-		return m  -- cannot yet resolve vehicles
+		return false  -- cannot yet resolve vehicles
 	end
 	local spGame = type(self.vehicleTags[m].vecIds[1]) == "table" 
 	-- in single player, vecIds[] already contain the vehicle objects
@@ -377,24 +391,25 @@ function BetterContracts:getVehicles(m)
 				vec.activeMissionId = m.activeMissionId
 				self.missionVecs[vec] = txt
 				local item = g_storeManager:getItemByXMLFilename(vec.configFileName)
-				debugPrint("** vehicle tagged: %s - %s",vec:getFullName(), txt)
+				debugPrint("** vehicle tagged: %s",vec:getFullName())
 			end
 		else 
-			return m -- there is still 1 vehicle not yet synced from server
+			return false -- there is still 1 vehicle not yet synced from server
 		end
 	end
-	return nil
+	return true
 end
 function BetterContracts:vehicleTag(m, vehicleIds)
-	-- save mission txt to append to leased vehicle names
+	-- save mission txt to append to leased vehicle names. Client only
 	local fieldNo = m.field and  m.field:getName() or ""
 	local txt =  string.format(" (%.8s %s)", m:getTitle(), fieldNo)
 
 	self.vehicleTags[m] = {
 		txt = txt,
 		vecIds = vehicleIds,
+		tagged = false
 		} 
-	self.vehicleTagsDirty = m 
+	table.insert(self.tagMissions, m) -- we need to tag vecs for this mission
 end
 function missionManagerLoadFromXMLFile(self,xmlFilename)
 	-- appended to MissionManager:loadFromXMLFile()
@@ -405,10 +420,8 @@ function missionManagerLoadFromXMLFile(self,xmlFilename)
 	debugPrint("* missionManagerLoadFromXMLFile, MP %s", isMP)
 
 	for _, m in ipairs(self.missions) do
-		debugPrint("** %s %s %s %s",m:getTitle(), m.field and m:getField():getName(),
-			m.spawnedVehicles and "spawned, activeId " or "",
-			m.activeMissionId or "" )
 		if m.activeMissionId ~= nil and m.spawnedVehicles then 
+		debugPrint("** %s %s activeId %s",m:getTitle(), m.field and m:getField():getName(), m.activeMissionId or "")
 			m.sendLeasedVecs = true
 			if not isMP then checkMissionVecs(m)		
 			end
@@ -437,6 +450,10 @@ function(self, connection)
 				m.field:getName(), #m.vehicles)
 			checkMissionVecs(m, connection)		
 		end
+	end
+	-- debug for server mission groups:
+	if BetterContracts.config.debug then
+		BetterContracts:printMissionVehicles()
 	end
 end)
 
@@ -541,13 +558,17 @@ function VehicleSelect:init(m)
 	self.mission = m
 	self:getGroups(m)
 	self.vehiclesList:reloadData()
+	self.originalGroup = 0
 	for i= 1,#self.groups do
+		debugPrint("** id %s", self.groups[i].identifier)
 		if self.groups[i].identifier == m.vehicleGroupIdentifier then 
 			self.vehiclesList:setSelectedItem(1, i)
 			self.originalGroup = i
 			break
 		end
 	end
+	assert(self.originalGroup > 0,
+		"BetterContracts: Non-matching vehicle groups.")
 	self.vehicleTemplate:unlinkElement()
 end
 function VehicleSelect:getGroups(m)
@@ -556,6 +577,7 @@ function VehicleSelect:getGroups(m)
 	local size = m:getVehicleSize()
 	local variant = m:getVehicleVariant()
 	local typeGroups = g_missionManager.missionVehicles[typeName]
+	debugPrint("* getGroups: %s %s",size,variant)
 	self.groups = {}
 	if typeGroups ~= nil then
 		local sizeGroups = typeGroups[size]

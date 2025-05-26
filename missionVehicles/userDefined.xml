@@ -15,6 +15,8 @@
 				 This allows for map-specific userDefined.xml files. If the mod cannot find a userDefined.xml
 				 in the map-specific directory, it will also look for it in ../modSettings/FS25_BetterContracts/.
 
+				 MP-Game: Since the missionVehicles files are only read once during he map loading phase (on both server and clients), you must make sure that server and clients have the exact same copy of userDefined.xml.
+
 				 You can delete any base game or map-defined mission vehicles (and thus use only those
 				 that you defined) by setting overwrite="true" in the <missionVehicles> tag. If you want to try 
 				 this, use extreme
@@ -24,9 +26,14 @@
 	Changelog:
 	 v1.1.2.0   24.02.2025  initial FS25
 	 v1.2.0.0 	15.05.2025  added tag "requiredMods", see example below
+	 v1.2.0.2 	25.05.2025  added tag "fieldSize"
 =======================================================================================================-->
 
 <missionVehicles overwrite="false">
+
+	<!-- field size thresholds (basegame default values) -->
+	<fieldSize medium="1.5" large="4."/>
+
 	<requiredMods>
 		<mod name="FS25_lizardTardis" id="1"/>
 		<mod name="FS25_poettingerMowerPack" id="2" />

@@ -30,6 +30,14 @@
 			</MultiTextOption>
 			<Text profile="fs25_settingsMultiTextOptionTitle" />
 		</Bitmap>
+		<!-- new double multitext, for field size thresholds -->
+		<Bitmap profile="fs25_multiTextOptionContainer" id="doublePrefab">
+			<MultiTextOption profile="BCsettingsMultiTextLeft" size="200px 36px" onClick="onClickMultiOption" id="multiTextLeft" debugEnabled="true"/>
+			<MultiTextOption profile="fs25_settingsMultiTextOption" size="200px 36px" onClick="onClickMultiOption" id="multiTextRight" debugEnabled="false">
+				<Text profile="fs25_multiTextOptionTooltip" name="ignore" />
+			</MultiTextOption>
+			<Text profile="fs25_settingsMultiTextOptionTitle" />
+		</Bitmap>
 	</ScrollingLayout>
 	<Bitmap profile="fs25_settingsTooltipSeparator" id="bcSeparator"/>
 	</GuiElement>

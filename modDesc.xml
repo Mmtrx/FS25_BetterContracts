@@ -1,13 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="96">
 	<author>Mmtrx</author>
-	<version>1.1.2.1</version>
+	<version>1.2.0.2</version>
 	<title>
 		<en>Better Contracts</en>
 	</title>
 	<description>
 		<en>
 			<![CDATA[
+
+Changelog v1.2.0.2
+- adjustable small/med/large field size thresholds in userDefined.xml #45
+- increase reward/ha for earth fruit types #71
+- count non-field jobs for discount #80
+- remove surplus "progress" text from list #92
+- fix MP vehicle select for vegetable harvest #94
+- remove vehicle warn for supplyTransportMission #98
+
 Changelog v1.1.2.1
 - disable warnings about missing mission vehicle mods #87
 - repair FS25_Financing #78. 

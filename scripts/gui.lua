@@ -82,9 +82,9 @@ function loadGUI(self, guiPath)
 		--self.my.vehiclesList = parent:getDescendantById("vehiclesList")
 		--self.my.vehiclesList:onGuiSetupFinished()
 
-		for _,id in ipairs({"box1","box2","progressBox"}) do
+		for _,id in ipairs({"box1","box2","bcProgressBox"}) do
 			self.my[id] = parent:getDescendantById(id)
-			fixPosition(self.my[id], id ~= "progressBox")
+			fixPosition(self.my[id], id ~= "bcProgressBox")
 			self.my[id]:setVisible(false)
 		end
 		end)
@@ -580,7 +580,7 @@ function updateFarmersBox(self, field, npc)
 		return
 	end
 	-- show # of completed jobs
-	if field ~= nil and npc ~= nil then 
+	if npc ~= nil then 
 		local farm =  g_farmManager:getFarmById(g_localPlayer.farmId)
 		if farm.stats.npcJobs == nil then 
 			farm.stats.npcJobs = {}

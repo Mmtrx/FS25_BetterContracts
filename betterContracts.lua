@@ -28,6 +28,12 @@
 -- 							add mission info to leased vehicle name #65
 --							New: leased vehicle selection dialog
 --  v1.2.0.1    18.05.2025  disable warnings for missing mods in missionVehicles\baseGame.xml
+--  v1.2.0.2    23.05.2025  count non-field jobs for discount #80
+--							adjustable small/med/large field size thresholds #45
+--							increase reward/ha for earth fruit types #71
+--							remove surplus "progress" text from list #92
+--							fix MP vehicle select for vegetable harvest #94
+--							remove vehicle warn for supplyTransportMission #98
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -260,7 +266,7 @@ function hookFunctions(self)
 	Utility.prependedFunction(HarvestMission, "completeField", harvestCompleteField)
 
 	-- to count and save/load # of jobs per farm per NPC
-	Utility.appendedFunction(AbstractFieldMission,"finish",finish)
+	Utility.appendedFunction(AbstractMission,"finish",finish)
 	Utility.appendedFunction(FarmStats,"saveToXMLFile",saveToXML)
 	Utility.appendedFunction(FarmStats,"loadFromXMLFile",loadFromXML)
 	Utility.appendedFunction(Farm,"writeStream",farmWrite)
@@ -357,6 +363,7 @@ function BetterContracts:initialize()
 		toDeliver = 0.94,			-- HarvestMission.SUCCESS_FACTOR
 		toDeliverBale = 0.90,		-- BaleMission.FILL_SUCCESS_FACTOR
 		fieldCompletion = 0.95,		-- AbstractMission.SUCCESS_FACTOR
+		fieldSize = 0.5,			-- threshold from "small" to "med" size field
 		generationInterval = 1, 	-- MissionManager.MISSION_GENERATION_INTERVAL
 			genGrain = true,  		-- grain harvest missions allowed
 			genRoot = true,  		-- 
@@ -384,7 +391,8 @@ function BetterContracts:initialize()
 	self.NPCAllowWork = false 		-- npc should not work before noon of last 2 days in month
 	self.missionVecs = {} 			-- holds names of active mission vehicles
 	self.vehicleTags = {} 			-- connects newly started mission with vehicle ids
-	self.activeMissions = {} 		-- active missions loaded from savegame, for MP only
+	self.activeMissions = {} 		-- active missions loaded from savegame, for server only
+	self.tagMissions = {} 			-- active missions to be tagged, for client only
 
 	g_missionManager.missionMapNumChannels = 6
 	self.missionUpdTimeout = 15000
@@ -668,21 +676,29 @@ function harvestGetDetails(self, superf)
 end
 
 function BetterContracts:onSetMissionInfo(missionInfo, missionDynamicInfo)
-	PlowMission.REWARD_PER_HA = 2800 	-- tweak plow reward (#137)
+	PlowMission.REWARD_PER_HA = 2900 	-- tweak plow reward (#137)
+
 	self:updateGeneration()
 end
 function BetterContracts:onStartMission()
+	-- set up fruit specific rewards/ha for harvest:
+	local data = g_missionManager:getMissionTypeDataByName(HarvestMission.NAME)
+	data.rewardPerFruitHa = {
+		[FruitType.POTATO] = 		3200,
+		[FruitType.SUGARBEET] = 	3200,
+		[FruitType.RICE] = 			3600,
+		[FruitType.RICELONGGRAIN] = 3600,
+
+		[FruitType.BEETROOT] = 		3400,
+		[FruitType.CARROT] = 		3400,
+		[FruitType.PARSNIP] = 		3400,
+		[FruitType.GREENBEAN] = 	3400,
+		[FruitType.PEA] = 			3400,
+		[FruitType.SPINACH] = 		3400,
+	}
+
 	-- check mission vehicles
 	self:validateMissionVehicles()
-
-	-- tag leased vehicles of active missions loaded from savegame
-	for _, m in ipairs(g_missionManager.missions) do
-		if m.activeMissionId and m.spawnedVehicles and m.pendingVehicleUniqueIds then 
-			for _,id in ipairs(m.pendingVehicleUniqueIds) do
-				self:vehicleTag(m, g_currentMission.vehicleSystem:getVehicleByUniqueId(id))
-			end
-		end
-	end
 end
 function BetterContracts:onPostLoadMap(mapNode, mapFile)
 	-- handle our config and optional settings
@@ -754,12 +770,6 @@ function BetterContracts:onUpdate(dt)
 	if self.transportMission and g_server == nil then 
 		updateTransportTimes(dt)
 	end 
-	-- try to resolve leased vehicle object ids
-	if g_currentMission:getIsClient() and self.vehicleTagsDirty ~= nil then  
-		--debugPrint("* onUpdate, %s %s", self.vehicleTagsDirty, self.vehicleTagsDirty:getTitle())
-		-- self.vehicleTagsDirty is the mission to process
-		self.vehicleTagsDirty = self:getVehicles(self.vehicleTagsDirty)
-	end
 	if self.frameCounter then self.frameCounter = self.frameCounter +1 end
 
 	-- on Server: wait for vehicles loaded for active missions
@@ -781,6 +791,15 @@ function BetterContracts:onUpdate(dt)
 				self.frameCounter = 0
 			end
 		end
+	end
+	-- try to resolve leased vehicle object ids
+	if g_currentMission:getIsClient() and #self.tagMissions > 0 then  
+		for i = #self.tagMissions,1,-1 do 
+			if self:getVehicles(self.tagMissions[i]) then
+				-- could successfully retrieve and tag all vecs of this mission
+				table.remove(self.tagMissions, i)
+			end
+		end 
 	end
 end
 
@@ -892,17 +911,23 @@ function missionWriteStream(self, streamId, connection)
 		streamWriteFloat32(streamId, info.profit or 0)
 		streamWriteFloat32(streamId, info.usage or 0)
 		streamWriteFloat32(streamId, info.perMin or 0)
+
+		streamWriteUInt8(streamId, self.fruitTypeIndex or 0)
 	end
 end
 function missionReadStream(self, streamId, connection)
+	debugPrint("* read %s from stream. VehicleGroup %s",self.type.name,
+		self.vehicleGroupIdentifier )
 	if self.field ~= nil then
 		local info = self.info
 		info.worktime = streamReadFloat32(streamId)
 		info.profit = streamReadFloat32(streamId)
 		info.usage = streamReadFloat32(streamId)
 		info.perMin = streamReadFloat32(streamId)
-		--debugPrint("* read %s from stream. Worktime %d,profit %d ,usage %d, perMin %d",
-		--	self.type.name, info.worktime,info.profit,info.usage,info.perMin)
+		--debugPrint("*  Worktime %d, profit %d ,usage %d, perMin %d",
+		--	info.worktime,info.profit,info.usage,info.perMin)
+		local index = streamReadUInt8(streamId)
+		self.fruitTypeIndex = index >0 and index or nil
 	end
 end
 function harvestWriteStream(self, streamId, connection)

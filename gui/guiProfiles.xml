@@ -48,7 +48,7 @@
 		</Trait>
 	</Traits>
 
-	<!-- Larger Details List  - - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- Larger Details List  - - - - - - - - - - - - - - - - - - - - - -  -->
 	<Profile name="BC_contractsFarmerBox" extends="emptyPanel" with="anchorTopLeft">
 		<size value="470px 300px"/>
 	</Profile>
@@ -79,7 +79,7 @@
 		<position value="0px -120px"/>
 	</Profile>
 
-	<!-- Display Text  - - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- Display Text  - - - - - - - - - - - - - - - - - - - - - -  -->
 	<Profile name="BCnpcJobs" extends="BC_contractsFarmerName" >
 		<textSize value="16px"/>
 		<textBold value="false"/>
@@ -103,7 +103,7 @@
 		<textAlignment value="right" />
 	</Profile>
 
-	<!-- Farmland Box: Owner, Discount - - - - - - - - - - - - - -  -->
+<!-- Farmland Box: Owner, Discount - - - - - - - - - - - - - -  -->
 	<Profile name="BC_ownerTitle" extends="fs25_mapContextFarmlandTitle" >
 		<position value="0 -132px"/>
 	</Profile>
@@ -135,7 +135,7 @@
 		<position value="0px -214px"/>
 	</Profile>
 	
-	<!-- Sortbox Frame   - - - -0 1px 1px 0dp- - - - - - - - - - -  -->
+<!-- Sortbox Frame   - - - -0 1px 1px 0dp- - - - - - - - - - -  -->
 	<Profile name="BCSortbox" extends="emptyPanel">
 		<hasFrame value="true" />
 		<size value="360px 30px" />
@@ -147,7 +147,7 @@
 		<height value="30px"/>
 		<imageColor value="$preset_colorTransparent"/>
  	</Profile>
-	<!-- Sortbox Buttons - - with="pivotMiddleRight" - - - - - - - -  -->
+<!-- Sortbox Buttons - - with="pivotMiddleRight" - - - - - - - -  -->
 	<Profile name="BCsortCat" extends="buttonBase" >
 		<handleFocus value="true" />
 		<size value="29px 29px" />
@@ -182,7 +182,7 @@
 	<Profile name="BCactiveProf" extends="BCsortProf" with="buttonActive" />
 	<Profile name="BCactivepMin" extends="BCsortpMin" with="buttonActive" />
 
-	<!-- Vehicle Select  - - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- Vehicle Select  - - - - - - - - - - - - - - - - - - - - - -  -->
 	<Profile name="BClistContainer" extends="emptyPanel" with="anchorStretchingYLeft pivotTopLeft" >
 	</Profile>
 	<Profile name="BCvListItem" extends="baseReference" with="anchorTopStretchingX">
@@ -213,7 +213,13 @@
 		<textMaxNumLines value="2"/>	
 	</Profile>
 
-	<!-- Filterbox Buttons - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- Special element for settings page - - - - - - - - - - - - -  -->
+	<Profile name="BCsettingsMultiTextLeft" extends="fs25_settingsMultiTextOption" >
+		<position value="-230px 0px"/>
+		<size value="200px 36px"/>
+	</Profile>
+
+<!-- Filterbox Buttons - - - - - - - - - - - - - - - - - - - - -  -->
 	<Profile name="myFilterOptionPage" extends="emptyPanel" with="anchorMiddleLeft">
 		<alignmentY value="bottom"/>
 		<handleFocus value="true"/>
@@ -248,6 +254,7 @@
 	</Profile>
 	<Profile name="myFilterDynamicTextInactive" extends="myFilterDynamicText" with="myFilterButtonInactive"/>
 	
+<!-- Smaller vehicles - - - - - - - - - - - - - - - - - - - - -  -->
 	<Profile name="missionVehicleText" extends="ingameMenuMapContextText" >
 		<textColor value="$preset_colorWhite" />
 	</Profile>
@@ -257,7 +264,6 @@
 		<flowDirection value="horizontal"/>
 	</Profile>
 	
-	<!-- Smaller vehicles - - - - - - - - - - - - - - - - - - - - -  -->
 	<Profile name="myVehiclesItem" extends="ingameMenuContractsVehiclesItem">
 		<size value="104px 104px"/>
 		<margin value="1px 0 2px 0"/>
@@ -266,7 +272,7 @@
 		<size value="856px 104px" />
 	</Profile>
 
-	<!-- general table - - - - - - - - - - - - - - - - - - - - -  -->
+<!-- general table - - - - - - - - - - - - - - - - - - - - -  -->
 	<Profile name="myRow" extends="ingameMenuStatisticsRow">
 		<size value="$preset_rowSize"/>
 	</Profile>

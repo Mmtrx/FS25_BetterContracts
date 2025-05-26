@@ -70,6 +70,7 @@ function SettingsManager:insertSettingsPage()
 	bcPage:getDescendantById("subTitlePrefab"):delete()
 	bcPage:getDescendantById("binaryPrefab"):delete()
 	bcPage:getDescendantById("multiPrefab"):delete()
+	bcPage:getDescendantById("doublePrefab"):delete()
 
 	pageSettings.subCategoryPages[pos] = bcPage
 	pageSettings.subCategoryTabs[pos] = bcTab
@@ -91,15 +92,6 @@ function SettingsManager:init()
 	self.populateAutoBindControls() 			-- Apply initial values	
 	self.refreshMP:setVisible(g_currentMission.missionDynamicInfo.isMultiplayer)
 
-	 -- make controls in development invisible:
-	for _, name in ipairs(ControlDevelop) do
-		self[name]:setVisible(bc.config.debug)
-		if ControlDep[name] then 
-			for _, nam in ipairs(ControlDep[name]) do
-				self[nam]:setVisible(bc.config.debug)
-			end
-		end
-	end
 	-- Update the focus manager:
 	FocusManager:setGui(pageSettings.name)
 	FocusManager:removeElement(bcPage)
@@ -123,15 +115,6 @@ function SettingsManager:init()
 	Utility.overwrittenFunction(pageSettings.subCategoryPaging, 
 		"onClickCallback", updateSubCategoryPages) 		
 	
-	--[[ adjust Controls tab callback:
-	local button = pageSettings.subCategoryBox:getFirstDescendant(function(e)
-		return e.onClickCallback == InGameMenuSettingsFrame.onClickControls
-		end)
-	Utility.overwrittenFunction(button, "onClickCallback", function()
-		-- set to last but one state
-		pageSettings.subCategoryPaging:setState(#pageSettings.subCategoryPaging.texts -1, true)
-	end) 
-	]]
 	debugPrint("** SettingsManager:initiated")
 end
 function onSettingsFrameOpen(self)
@@ -145,6 +128,16 @@ function onSettingsFrameOpen(self)
 
 	-- our mod button should always be the last one in subCategoryPaging MTO
 	settingsMgr.modState = #g_inGameMenu.pageSettings.subCategoryPaging.texts
+	
+	-- make controls in development invisible:
+	for _, name in ipairs(ControlDevelop) do
+		settingsMgr[name]:setVisible(bc.config.debug)
+		if ControlDep[name] then 
+			for _, nam in ipairs(ControlDep[name]) do
+				settingsMgr[nam]:setVisible(bc.config.debug)
+			end
+		end
+	end
 
 	if isMultiplayer and not (g_inGameMenu.isServer or g_inGameMenu.isMasterUser) then  
 		modPage.settingsLayout:setVisible(false)

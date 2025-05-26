@@ -9,6 +9,9 @@
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.2.0.2 -->
+		<text name="bc_fieldSize" text="Field Sizes" />
+		<text name="bc_fieldSize_tooltip" text="Sets the threshols between small/med and Med/large field sizes in ha, field class small/med/large is used for allocation of contract leasing vehicles." />
 		<!-- updates v1.2.0.0 -->
 		<text name="bc_vehicleBox" text="Vehicle Selection" />
 		<!-- updates v1.1.1.3 -->

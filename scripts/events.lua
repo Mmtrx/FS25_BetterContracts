@@ -228,7 +228,7 @@ end
 function LeasedVecsEvent:run(connection)
 	if g_client ~= nil and connection:getIsServer() then
 		local m = self.mission
-		debugPrint("** received mission %s with %d vehicle Ids", 
+		debugPrint("* received mission %s with %d vehicle Ids", 
 			m.getTitle and m:getTitle() or "nil", #self.vehicles)
 		-- save mission type / field for vehicle name
 		BetterContracts:vehicleTag(m, self.vehicles)

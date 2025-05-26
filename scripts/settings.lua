@@ -29,10 +29,11 @@ ControlProperties = {
     { name = "stayNew", autoBind = true },
     { name = "finishField", autoBind = true },
     { name = "debug", autoBind = true },
+    --{ special= "double", name ="fieldSize", min=0.5, max=1.5, step=0.1,autoBind=true },
 
 	{title = "bc_discountModeTitle"},
     { name = "discountMode", autoBind = true },
-    { name = "discPerJob", min= .01, max= .14, step= .01, unit= "%", autoBind = true },  --
+    { name = "discPerJob", min= .01, max= .14, step= .01, unit= "%", autoBind = true },  
     { name = "discMaxJobs", min= 1, max= 20, step= 1, autoBind = true },
 
 	{title = "bc_missionGeneration"},
