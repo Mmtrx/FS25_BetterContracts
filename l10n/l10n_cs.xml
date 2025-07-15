@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <l10n>
-	<texts>
+		<texts>
 		<!-- updates v1.2.0.0 -->
-		<text name="bc_vehicleBox" text="Vehicle Selection" />
+		<text name="bc_vehicleBox" text="车辆选择" />
 		<!-- updates v1.1.1.3 -->
-		<text name="bc_stayNew" text="Stay on NEW contracts list" />
-		<text name="bc_stayNew_tooltip" text="Do not switch to ACTIVE contracts list when a new contract is accepted." />
-		<text name="bc_finishField" text="Complete contract field" />
-		<text name="bc_finishField_tooltip" text="Allow to complete 100% of a field after contract finishes." />
-		<text name="bc_hideMission" text="Hide inactive contracts" />
-		<text name="bc_hideMission_tooltip" text="Hide accepted contracts with 0% completion from right side hud." />
+		<text name="bc_stayNew" text="保留在新合同列表" />
+		<text name="bc_stayNew_tooltip" text="接受新合同时不切换至已完成合同列表" />
+		<text name="bc_finishField" text="完成田地合同" />
+		<text name="bc_finishField_tooltip" text="允许在合同结束后完成100%田地工作量" />
+		<text name="bc_hideMission" text="隐藏未激活合同" />
+		<text name="bc_hideMission_tooltip" text="从右侧HUD隐藏已接受但0%进度的合同" />
 		<!-- updates v1.1.1.2 -->
-		<text name="global_bc_name" text="Better Contracts" />
-		<text name="bc_settingsNoPermission" text="You don&apos;t have the permission to change Better Contracts settings!" />
+		<text name="global_bc_name" text="优化合同系统" />
+		<text name="bc_settingsNoPermission" text="您无权修改优化合同系统设置！" />
 		<!-- Keys -->
-		<text name = "input_MENU_EXTRA_3" text = "更好的合同：开启/关闭详情"/>
-		<text name = "input_BC_MTOGGLE" text = "BC: 切换活动农场合同的显示"/>
-		<text name = "bc_actionFerment" text = "青贮捆"/>
+		<text name="input_MENU_EXTRA_3" text="优化合同：开关详情显示" />
+		<text name="input_BC_MTOGGLE" text="BC: 切换活跃农场合同显示" />
+		<text name="bc_actionFerment" text="制作青贮饲料" />
 		<!-- Gui Buttons -->
-		<text name="bc_hidden" text="隐藏的：%d" />
+		<text name="bc_hidden" text="隐藏：%d" />
 		<text name="bc_other" text="其他" />
 		<text name="bc_new_contracts" text="新合同" />
 		<text name="bc_clear_contracts" text="清除合同" />
@@ -26,129 +26,129 @@
 		<text name="bc_detailsOn" text="开启详情" />
 
 		<!-- Display texts -->
-		<text name="bc_mowed" text="Mowed:" />
-		<text name="bc_tomow" text="To mow:" />
-		<text name="bc_chaff" text="Cut %s" />
+		<text name="bc_mowed" text="已刈割：" />
+		<text name="bc_tomow" text="待刈割：" />
+		<text name="bc_chaff" text="收割：%s" />
 		<text name="bc_jobType_chaff" text="饲料" />
-		<text name="bc_harvest" text="收割 %s" />
-		<text name="bc_leased" text="/租借" />
-		<text name="bc_enoughMissions" text="你的农场承接的合同已达到最大数量。 " />
-		<text name="bc_jobsCompleted" text="完成的工作：%d" />
-		<text name="bc_monthlyLimit" text="您的农场已达到本月的最大合同数。" />
+		<text name="bc_harvest" text="收割：%s" />
+		<text name="bc_leased" text="/租赁" />
+		<text name="bc_enoughMissions" text="您的农场已达到最大合同承载量" />
+		<text name="bc_jobsCompleted" text="已完成工作：%d" />
+		<text name="bc_monthlyLimit" text="本月农场合同配额已满" />
 
 		<!-- Hard mode -->
-		<text name="bc_penalty" text="罚金" />
-		<text name="bc_warnTimeout" text="请在午夜之前完成你的%d个合同，从而避免支付任务失败导致的罚金。" />
-		<text name="bc_warnCancel" text="合同的罚金将至少为" />
-		<text name="bc_leaseNotEnough" text="在租借机器之前，你需要用你自己的设备再完成%d个任务。" />
+		<text name="bc_penalty" text="违约金" />
+		<text name="bc_warnTimeout" text="请在午夜前完成%d项合同以避免违约金" />
+		<text name="bc_warnCancel" text="违约金最低为" />
+		<text name="bc_leaseNotEnough" text="租赁设备前需自行完成%d项任务" />
 
 		<!-- discount mode -->
-		<text name="bc_maxJobs" text="你的折扣已经达到了最大值：s%。" />
+		<text name="bc_maxJobs" text="折扣已达上限：%s%" />
 		<text name="bc_discount" text="%%折扣" />
-		<text name="bc_discValue" text="%s授予你%d%%折扣用于未来的田地购买。" />
-		<text name="bc_owner" text="所有者：" />
+		<text name="bc_discValue" text="%s授予你%d%%未来田地购买折扣" />
+		<text name="bc_owner" text="拥有者：" />
 
 		<!-- npc details box -->
-		<text name="SC_widhei" text="最大宽度/高度：" />
-		<text name="SC_worktim" text="预计工作事件：" />
+		<text name="SC_widhei" text="最大尺寸：" />
+		<text name="SC_worktim" text="预计耗时：" />
 		<text name="SC_price" text="价格：" />
-		<text name="SC_profpmin" text="每分钟利润：" />
+		<text name="SC_profpmin" text="每分钟收益：" />
 		<text name="SC_sort" text="排序" />
 
 		<text name="SC_field" text="田地%d/%s" />
 		<text name="SC_fillType" text="货物类型：" />
-		<text name="SC_worked" text="已工作的田地：" />
-		<text name="SC_delivered" text="已运输：" />
-		<text name="SC_deliver" text="必须运输：" />
-		<text name="SC_keep" text="可以保留：" />
-		<text name="SC_profit" text="收割利润：" />
-		<text name="SC_profitSupply" text="利润：" />
-		<text name="SC_usage" text="用量：" />
-		<text name="SC_cost" text="材料花费：" />
-		<text name="SC_togo" text="未完成：" />
+		<text name="SC_worked" text="已作业田地：" />
+		<text name="SC_delivered" text="已交付：" />
+		<text name="SC_deliver" text="需交付：" />
+		<text name="SC_keep" text="可保留：" />
+		<text name="SC_profit" text="收割收益：" />
+		<text name="SC_profitSupply" text="收益：" />
+		<text name="SC_usage" text="消耗量：" />
+		<text name="SC_cost" text="材料成本：" />
+		<text name="SC_togo" text="剩余：" />
 		<text name="SC_timeleft" text="剩余时间：" />
 
 		<!-- progress bars -->
 		<text name="bc_progField" text="合同进度" />
-		<text name="bc_progDeliver" text="合同完成进度" />
+		<text name="bc_progDeliver" text="交付进度" />
 
 		<!-- Sort button help text -->
 		<text name="SC_sortCat" text="任务类型" />
-		<text name="SC_sortRev" text="收入" />
+		<text name="SC_sortRev" text="收益" />
 		<text name="SC_sortNpc" text="农户" />
-		<text name="SC_sortProf" text="净利润" />
-		<text name="SC_sortpMin" text="每分钟利润" />
+		<text name="SC_sortProf" text="纯利润" />
+		<text name="SC_sortpMin" text="每分钟收益" />
 
 		<!-- Settings Page -->
-		<text name="bc_rewardMultiplier" text="奖励" />
-		<text name="bc_rewardMultiplier_tooltip" text="调整合同所提供的奖励。" />
-		<text name="bc_rewardMultiplierMow" text="割草和扎捆奖励" />
-		<text name="bc_rewardMultiplierMow_tooltip" text="调整所提供合同的割草和捆奖励。" />
-		<text name="bc_leaseMultiplier" text="租借花费" />
-		<text name="bc_leaseMultiplier_tooltip" text="调整合同中租借设备的花费。" />
-		<text name="bc_maxActive" text="同时生效的合同" />
-		<text name="bc_maxActive_tooltip" text="同时生效的合同的最大数量。" />
-		<text name="bc_toDeliver" text="收割合同交付" />
-		<text name="bc_toDeliver_tooltip" text="完成收割合同必须交付的估计总产量的百分比。" />
-		<text name="bc_toDeliverBale" text="打包合同交付" />
-		<text name="bc_toDeliverBale_tooltip" text="完成收割合同必须交付的估计总产量的百分比。" />
-		<text name="bc_fieldCompletion" text="Fieldwork complete" />
-		<text name="bc_fieldCompletion_tooltip" text="Min percentage of field area worked, to count as fieldwork complete." />
-		<text name="bc_refreshMP" text="合同权限列表" />
-		<text name="bc_refreshMP_tooltip" text="谁可以在多人游戏中删除/刷新合同。" />
+		<text name="bc_rewardMultiplier" text="奖励系数" />
+		<text name="bc_rewardMultiplier_tooltip" text="调整合同奖励额度" />
+		<text name="bc_rewardMultiplierMow" text="刈割/打包奖励" />
+		<text name="bc_rewardMultiplierMow_tooltip" text="调整刈割类合同奖励" />
+		<text name="bc_leaseMultiplier" text="租赁费用" />
+		<text name="bc_leaseMultiplier_tooltip" text="调整合同设备租赁费用" />
+		<text name="bc_maxActive" text="最大并发合同" />
+		<text name="bc_maxActive_tooltip" text="同时生效的合同最大数量" />
+		<text name="bc_toDeliver" text="收割合同交付比例" />
+		<text name="bc_toDeliver_tooltip" text="收割合同必须达到的交付量百分比" />
+		<text name="bc_toDeliverBale" text="打包合同交付比例" />
+		<text name="bc_toDeliverBale_tooltip" text="打包合同必须达到的交付量百分比" />
+		<text name="bc_fieldCompletion" text="田地工作完成度" />
+		<text name="bc_fieldCompletion_tooltip" text="视为田地完工的最小作业面积比例" />
+		<text name="bc_refreshMP" text="合同权限管理" />
+		<text name="bc_refreshMP_tooltip" text="设置多人模式中合同删除/刷新权限" />
 		<text name="bc_ferment" text="快速发酵" />
-		<text name="bc_ferment_tooltip" text="允许玩家从F1菜单中安装发酵包好的草捆。" />
-		<text name="bc_forcePlow" text="根茎作物翻耕" />
-		<text name="bc_forcePlow_tooltip" text="每次收获玉米/土豆/甜菜都需要随后翻耕。" />
-		<text name="bc_debug" text="Debug模式" />
-		<text name="bc_debug_tooltip" text="打印信息到日志。可以帮助寻找Bug。" />
+		<text name="bc_ferment_tooltip" text="允许从F1菜单直接安装发酵草捆" />
+		<text name="bc_forcePlow" text="强制翻耕" />
+		<text name="bc_forcePlow_tooltip" text="每次收获根茎作物后必须翻耕土地" />
+		<text name="bc_debug" text="调试模式" />
+		<text name="bc_debug_tooltip" text="输出调试信息到日志（便于排查问题）" />
 
-		<text name="bc_lazyNPCTitle" text="勤劳的农户" />
+		<text name="bc_lazyNPCTitle" text="勤劳农户系统" />
 
 		<text name="bc_lazyNPC" text="开启" />
-		<text name="bc_lazyNPC_tooltip" text="如果开启, 农户NPC会更加频繁地为他们的田地跳过工作，从而提供更多的合同。" />
-		<text name="bc_npcHarvest_tooltip" text="如果开启, 农户NPC从来不进行收割。将会为你产生大量的工作。" />
-		<text name="bc_npcSow_tooltip" text="如果开启, 农户NPC将会很少进行播种工作，反而向你提供合同任务。" />
-		<text name="bc_npcPlowCultivate" text="犁地和耕田" />
-		<text name="bc_npcPlowCultivate_tooltip" text="如果开启，农户NPC将更少地自己犁地或耕田。" />
-		<text name="bc_npcFertilize_tooltip" text="如果开启，农户NPC将会很少进行施肥工作，反而向你提供合同任务。" />
-		<text name="bc_npcWeed_tooltip" text="如果开启，农户NPC将会很少进行除草，反而向你提供喷洒除草剂和除草合同任务。" />
+		<text name="bc_lazyNPC_tooltip" text="开启后农户会更频繁跳过田地工作，提供更多合同" />
+		<text name="bc_npcHarvest_tooltip" text="开启后农户从不亲自收割，专注提供收割合同" />
+		<text name="bc_npcSow_tooltip" text="开启后农户减少播种，更多依赖合同任务" />
+		<text name="bc_npcPlowCultivate" text="犁地/耕作" />
+		<text name="bc_npcPlowCultivate_tooltip" text="开启后农户减少耕地操作，更多依赖合同" />
+		<text name="bc_npcFertilize_tooltip" text="开启后农户减少施肥，更多依赖合同任务" />
+		<text name="bc_npcWeed_tooltip" text="开启后农户减少除草，更多依赖喷洒合同" />
 
-		<text name="bc_hardModeTitle" text="更高难度" />
+		<text name="bc_hardModeTitle" text="困难模式" />
 		<text name="bc_hardMode" text="开启" />
-		<text name="bc_hardMode_tooltip" text="如果开启，所有生效的合同最迟必须在月底完成。取消合同需要支付罚金。租借设备只有在完成一定的任务后才解锁。" />
-		<text name="bc_hardPenalty" text="罚金" />
-		<text name="bc_hardPenalty_tooltip" text="取消合同的罚金总额（占合同报酬的百分比）。" />
-		<text name="bc_hardLease" text="解锁设备租借" />
-		<text name="bc_hardLease_tooltip" text="在农户NPC租借他们的设备给你之前，你需要完成的任务数量。" />
-		<text name="bc_hardExpire" text="最后期限" />
-		<text name="bc_hardExpire_tooltip" text="在什么时候截止，所有生效的合同必须被完成。" />
+		<text name="bc_hardMode_tooltip" text="开启后合同需在月底前完成，取消需支付违约金，设备租赁需完成任务解锁" />
+		<text name="bc_hardPenalty" text="违约金比例" />
+		<text name="bc_hardPenalty_tooltip" text="取消合同时需支付的违约金比率（基于合同报酬）" />
+		<text name="bc_hardLease" text="租赁解锁条件" />
+		<text name="bc_hardLease_tooltip" text="租赁设备前需完成的最低任务数量" />
+		<text name="bc_hardExpire" text="合同截止日期" />
+		<text name="bc_hardExpire_tooltip" text="所有生效合同的最晚完成期限" />
 
 		<text name="bc_discountModeTitle" text="田地购买折扣" />
 		<text name="bc_discountMode" text="开启" />
-		<text name="bc_discountMode_tooltip" text="如果开启，一个农户NPC将会给你田地购买的折扣。折扣将会随着你为该农户NPC完成的任务数量增加。" />
-		<text name="bc_discPerJob" text="每个已完成合同的折扣" />
-		<text name="bc_discPerJob_tooltip" text="每完成一项任务，农户NPC就会增加相应的折扣。最高折扣不能超过50%。" />
-		<text name="bc_discMaxJobs" text="影响折扣的任务数量" />
-		<text name="bc_discMaxJobs_tooltip" text="将会减少最大的折扣，例如：每个合同的折扣为11%，任务的数量为3，则最大折扣为33%。注意：在购买农田时，当前完成的工作数量将被这个值减少。" />
+		<text name="bc_discountMode_tooltip" text="开启后农户会根据任务完成量提供田地购买折扣" />
+		<text name="bc_discPerJob" text="每任务折扣率" />
+		<text name="bc_discPerJob_tooltip" text="每完成一项任务增加的折扣率（最高50%）" />
+		<text name="bc_discMaxJobs" text="折扣上限任务数" />
+		<text name="bc_discMaxJobs_tooltip" text="影响最大折扣计算（如：11%/任务 × 3任务 = 33%折扣）" />
 		
-		<text name="bc_missionGeneration" text="生成合同" />
-		<text name="bc_generationInterval" text="生成合同的间隔" />
-		<text name="bc_generationInterval_tooltip" text="Amount of in-game 6-minute intervals to wait before generating new contracts." />
+		<text name="bc_missionGeneration" text="合同生成" />
+		<text name="bc_generationInterval" text="生成间隔" />
+		<text name="bc_generationInterval_tooltip" text="生成新合同的6分钟游戏间隔数" />
 
-		<text name="bc_genGrain" text="Grain harvest" />
-		<text name="bc_genGrain_tooltip" text="Generate grain harvest contracts (possibly including maize, cotton)" />
-		<text name="bc_genVegetable" text="Vegetable harvest" />
-		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, and parsnip" />
-		<text name="bc_genGreen" text="Green crop harvest" />
-		<text name="bc_genGreen_tooltip" text="Generate harvest contracts for peas, beans, and spinach" />
-		<text name="bc_genRoot" text="Root crop harvest" />
-		<text name="bc_genRoot_tooltip" text="Generate harvest contracts for potatoes, sugarbeet" />
-		<text name="bc_genTree" text="Tree transport contracts" />
-		<text name="bc_genTree_tooltip" text="Generate tree transport contracts" />
-		<text name="bc_genDead" text="Deadwood contracts" />
-		<text name="bc_genDead_tooltip" text="Generate deadwood contracts" />
-		<text name="bc_genRock" text="Rock destruction contracts" />
-		<text name="bc_genRock_tooltip" text="Generate rock destruction contracts" />
+		<text name="bc_genGrain" text="谷物收割" />
+		<text name="bc_genGrain_tooltip" text="生成小麦/玉米/棉花收割合同" />
+		<text name="bc_genVegetable" text="蔬菜收割" />
+		<text name="bc_genVegetable_tooltip" text="生成胡萝卜/甜菜/菠菜收割合同" />
+		<text name="bc_genGreen" text="绿叶作物收割" />
+		<text name="bc_genGreen_tooltip" text="生成豌豆/豆类/菠菜收割合同" />
+		<text name="bc_genRoot" text="根茎作物收割" />
+		<text name="bc_genRoot_tooltip" text="生成土豆/甜菜收割合同" />
+		<text name="bc_genTree" text="木材运输" />
+		<text name="bc_genTree_tooltip" text="生成树木运输合同" />
+		<text name="bc_genDead" text="枯木清理" />
+		<text name="bc_genDead_tooltip" text="生成枯木清理合同" />
+		<text name="bc_genRock" text="岩石清除" />
+		<text name="bc_genRock_tooltip" text="生成岩石清除合同" />
 	</texts>
 </l10n>
