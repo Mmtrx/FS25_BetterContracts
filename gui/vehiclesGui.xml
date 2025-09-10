@@ -42,10 +42,10 @@
 		</GuiElement>
 	</GuiElement>
 
-	<BoxLayout profile="fs25_dialogButtonBox" id="buttonsPC">
-	<Button profile="buttonBack" text="$l10n_button_back" onClick="onClickButton" id="noButton"/>
+	<BoxLayout profile="fs25_dialogButtonBox" >
+	<Button profile="buttonBack" text="$l10n_button_back" onClick="vehicleClickButton" id="noButton"/>
 	<Bitmap profile="fs25_dialogButtonBoxSeparator"/>
-	<Button profile="buttonOK" text="$l10n_button_ok" onClick="onClickButton" id="yesButton"/>
+	<Button profile="buttonOK" text="$l10n_button_ok" onClick="vehicleClickButton" id="yesButton"/>
 	</BoxLayout>
 </GuiElement>
 </GUI>

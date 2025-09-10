@@ -8,6 +8,8 @@
 	Changelog:
 	 v1.1.2.0   24.02.2025  initial FS25
 	 v1.2.0.0 	15.05.2025  added tag "requiredMods", see example below
+	 v1.2.0.4 	29.08.2025  remove wrong spreader for large fertilizing #91
+	 						add seeder at medium sowing #105
 
 ======================================================================================================-->
 <missionVehicles overwrite="false">
@@ -224,6 +226,7 @@
 			<vehicle filename="$data/vehicles/caseIH/magnumT4B/magnumT4B.xml"/>
 				<!-- tractor -->
 			<vehicle filename="$data/vehicles/kuhn/tf1512/tf1512.xml"/><!-- frontTank -->
+			<vehicle filename="$data/vehicles/kuhn/btfr6030/btfr6030.xml"/>	<!-- seeder -->
 		</group>
 		<group size="large" variant="GRAIN">
 			<vehicle filename="$data/vehicles/johnDeere/series8R/series8R.xml">
@@ -378,12 +381,6 @@
 			</vehicle>
 			 <!-- spreader -->
 			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml" /> <!-- weight -->
-		</group>
-		<group size="large">
-			<vehicle filename="$data/vehicles/fendt/vario1000/vario1000.xml"/> <!-- tractor -->
-			 <!-- spreader -->
-			<vehicle filename="$data/vehicles/samsonAgro/sbh4_36/sbh4_36.xml"/>
-			<vehicle filename="$data/vehicles/agco/weight1100/weight1100.xml"/>
 		</group>
 	</mission>
 

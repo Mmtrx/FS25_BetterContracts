@@ -9,6 +9,9 @@
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.2.0.3 -->
+		<text name="bc_balesTotal" text="Erwartete Ballen:" />
+		<text name="bc_balesDone" text="Fertige Ballen:" />
 		<!-- updates v1.2.0.0 -->
 		<text name="bc_vehicleBox" text="Maschinen-Auswahl" />
 		<!-- updates v1.1.1.3 -->

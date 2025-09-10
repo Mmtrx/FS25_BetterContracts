@@ -136,6 +136,7 @@ function SettingsEvent.sendEvent(setting)
 end
 
 --------------------- Change Vehicles Event ------------------------------------------------------------- 
+--[[
 ChangeVecEvent = {}
 ChangeVecEvent_mt = Class(ChangeVecEvent, Event)
 InitEventClass(ChangeVecEvent, "ChangeVecEvent")
@@ -185,7 +186,7 @@ function ChangeVecEvent.sendEvent(m, groupId)
 		g_client:getServerConnection():sendEvent(event)
 	end
 end
-
+]]
 --------------------- LeasedVecsEvent ------------------------------------------------------------------------- 
 -- MP only: inform client about leased mission vehicles, when a new mission starts,
 -- or an active mission with spawned vehicles was loaded from savegame

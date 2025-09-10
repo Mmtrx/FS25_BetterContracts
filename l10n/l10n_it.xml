@@ -9,6 +9,9 @@
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.2.0.3 -->
+		<text name="bc_balesTotal" text="Bales expected:" />
+		<text name="bc_balesDone" text="Already baled:" />
 		<!-- updates v1.2.0.0 -->
 		<text name="bc_vehicleBox" text="Selezione del veicolo" />
 		<!-- updates v1.1.1.3 -->

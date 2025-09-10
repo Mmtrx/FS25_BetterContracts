@@ -128,7 +128,7 @@
 
 	<Profile name="BC_mapContextBoxBgFarmland" extends="fs25_mapContextBoxBgFarmland">
 		<absoluteSizeOffset value="-29px 0px"/>
-		<position value="-10px -20px"/>
+		<position value="-0px -20px"/>
 	</Profile>
 	<Profile name="BC_mapContextButtonList" extends="fs25_mapContextButtonList">
 		<height value="200px"/>

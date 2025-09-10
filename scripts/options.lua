@@ -390,13 +390,21 @@ function startContract(frCon, superf, wantsLease)
 	 -- show vehicle selector list:
 		local m = frCon:getSelectedContract().mission
 		bc.vehicleSelect:init(m)
-		g_gui:showDialog("VehicleSelect")
-		g_messageCenter:subscribe(MissionStartEvent, frCon.onMissionStarted, frCon)
-		local event = MissionStartEvent.new(m, farmId, wantsLease)
-		event.wait = true
-		g_client:getServerConnection():sendEvent(event)
+		g_gui:showDialog("VehicleSelect")  -- if yes button, start leasing mission
 	else
 		superf(frCon, wantsLease)
+	end
+end
+function startLeasing(frCon, m, ix)
+	-- called from VehicleSelect dialog on yes button
+
+	if not m:isSpawnSpaceAvailable() then
+		InfoDialog.show(g_i18n:getText("warning_noFreeMissionSpace"), nil, nil, DialogElement.TYPE_WARNING)
+	else
+		g_messageCenter:subscribe(MissionStartEvent, frCon.onMissionStarted, frCon)
+		local event = MissionStartEvent.new(m, g_currentMission:getFarmId(), true)
+		event.vehicleGroup = ix
+		g_client:getServerConnection():sendEvent(event)
 	end
 end
 function BetterContracts:resetJobsLeft()
@@ -634,6 +642,7 @@ function farmlandManagerSaveToXMLFile(self, superf, xmlFilename)
 			local id = xmlFile:getInt(key.."#id")
 			local farmland = self.farmlands[id]
 			if farmland ~= nil then 
+				assert(farmland.npcIndex ~= nil, "*** farmland id %d has no NPC", id)
 				xmlFile:setInt(key.."#npcIndex", farmland.npcIndex)
 			end
 		end)
@@ -643,6 +652,22 @@ function farmlandManagerSaveToXMLFile(self, superf, xmlFilename)
 		return true
 	end
 	return false
+end
+function farmlandManagerLoadFromXMLFile(self, xmlFilename)
+	-- appended to FarmlandManager:loadFromXMLFile()
+	if xmlFilename == nil then return false end
+	local xmlFile = XMLFile.load("farmlandXML", xmlFilename)
+	if xmlFile == 0 then return false end
+
+	xmlFile:iterate("farmlands.farmland", function(index,  key)
+		local id = xmlFile:getInt(key.."#id")
+		local farmland = self.farmlands[id]
+		if farmland ~= nil and xmlFile:hasProperty(key.."#npcIndex") then 
+			farmland.npcIndex = xmlFile:getInt(key.."#npcIndex")
+		end
+	end)
+	xmlFile:delete()
+	return true
 end
 ----------------------------------------
 function renderIcon(self, x, y, rot)

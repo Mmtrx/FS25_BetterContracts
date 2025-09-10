@@ -1,13 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<modDesc descVersion="96">
+<modDesc descVersion="101">
 	<author>Mmtrx</author>
-	<version>1.2.0.2</version>
+	<version>1.2.0.4</version>
 	<title>
 		<en>Better Contracts</en>
 	</title>
 	<description>
 		<en>
 			<![CDATA[
+
+Changelog v1.2.0.4
+- Leased Vehicle Selection: Esc doesn't start contract #107, #113
+- remove fertilize level on finished harvest missions
+- don't set npc to nil when reading farmlands w/o npcIndex #96
+- fix mission vehicles for large fertilizing #91, medium sowing #105
 
 Changelog v1.2.0.2
 - adjustable small/med/large field size thresholds in userDefined.xml #45

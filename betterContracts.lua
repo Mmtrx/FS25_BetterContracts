@@ -34,6 +34,16 @@
 --							remove surplus "progress" text from list #92
 --							fix MP vehicle select for vegetable harvest #94
 --							remove vehicle warn for supplyTransportMission #98
+--  v1.2.0.3    30.05.2025  remove fertilize level on finished harvest missions
+--							read NPC field owners from savegame #96
+--							compatible patch for KommunalServices
+--							details for bale, balewrap missions
+--  v1.2.0.4    10.09.2025  farmlandManagerLoadFromXMLFile: don't set npc to nil when 
+--							reading farmlands w/o npcIndex #96
+--							adjust backgd box for farmland info. Allow max 2 wood transp missions
+--							Leased Vehicle Selection: Esc doesn't start contract #107, #113
+--							userDefined.xml: fix vehicles for large fertilizing #91, 
+--							medium sowing #105
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -94,11 +104,15 @@ function checkOtherMods(self)
 		FS25_MowBaleMission = "mowbaleMission",
 		FS25_RefreshContracts = "refreshContracts",
 		FS25_Financing = "financing",
-		--FS22_MaizePlus = "maizePlus",
-		--FS22_KommunalServices = "kommunal",
+		--FS25_MaizePlus = "maizePlus",
+		FS25_KommunalServices = "kommunal",
+		FS25_SupplyTransportContracts = "supply",
+		FS25_extendedMissionInfo = "extendedInfo",
+		FS25_AdditionalContracts = "additional",
 		}
 	for mod, switch in pairs(mods) do
 		if g_modIsLoaded[mod] then
+			debugPrint("[BC] registered %s", mod)
 			self[switch] = true
 		end
 	end
@@ -272,6 +286,7 @@ function hookFunctions(self)
 	Utility.appendedFunction(Farm,"writeStream",farmWrite)
 	Utility.appendedFunction(Farm,"readStream",farmRead)
 	Utility.overwrittenFunction(FarmlandManager, "saveToXMLFile", farmlandManagerSaveToXMLFile)
+	Utility.appendedFunction(FarmlandManager, "loadFromXMLFile", farmlandManagerLoadFromXMLFile)
 	-- to display discount if farmland selected / on buy dialog
 	Utility.appendedFunction(InGameMenuMapUtil, "showContextBox", showContextBox)
 
@@ -284,6 +299,7 @@ function hookFunctions(self)
 	--Utility.overwrittenFunction(BaleMission,"getCompletion",baleCompletion)
 	Utility.overwrittenFunction(AbstractFieldMission,"getReward",getReward)
 	Utility.overwrittenFunction(AbstractMission,"getVehicleCosts",calcLeaseCost)
+	Utility.overwrittenFunction(AbstractMission,"init",abstractInit)
 
 	-- get addtnl mission values from server:
 	Utility.appendedFunction(AbstractMission, "writeStream", missionWriteStream)
@@ -303,6 +319,10 @@ function hookFunctions(self)
 	Utility.overwrittenFunction(AbstractFieldMission,"getLocation",getLocation)
 	Utility.overwrittenFunction(AbstractFieldMission,"getDetails",fieldGetDetails)
 	Utility.overwrittenFunction(HarvestMission,"getDetails",harvestGetDetails)
+	Utility.overwrittenFunction(BaleWrapMission,"getDetails",wrapGetDetails)
+	Utility.overwrittenFunction(BaleMission,"getDetails",baleGetDetails)
+	-- reset spray level when finished
+	Utility.overwrittenFunction(HarvestMission, "getFieldFinishTask", getFieldFinishTask)
 
 	-- functions for ingame menu contracts frame:
 	Utility.appendedFunction(InGameMenuContractsFrame, "onFrameOpen", onFrameOpen)
@@ -327,7 +347,7 @@ function hookFunctions(self)
 
 	-- to load own mission vehicles:
 	Utility.overwrittenFunction(MissionManager, "loadVehicleGroups", BetterContracts.loadMissionVehicles)
-	Utility.overwrittenFunction(AbstractMission,"start",missionStart)
+	--Utility.overwrittenFunction(AbstractMission,"start",missionStart)
 	-- allow pallets to spawn as mission vehicle:
 	Utility.prependedFunction(AbstractMission, "onSpawnedVehicle", onSpawnedVehicle)
 	-- save name tags for mission vehicle:
@@ -350,7 +370,7 @@ function BetterContracts:initialize()
 	if self.initialized ~= nil then return end -- run only once
 	self.initialized = false
 	self.config = {
-		debug = false, 				-- debug mode
+		debug = true, 				-- debug mode
 		ferment = false, 			-- allow insta-fermenting wrapped bales by player
 		forcePlow = false, 			-- force plow after root crop harvest
 		hideMission = false, 		-- hide missions not begun from hud
@@ -537,7 +557,7 @@ function addMission(self, mission)
 	local info =  mission.info 					-- store our additional info
 	if mission.field ~= nil then
 		--debugPrint("** add %s on field %s", mission.type.name, mission.field:getName())
-		local size = mission.field:getAreaHa()
+		local size = mission.field.getAreaHa and mission.field:getAreaHa() or 1
 		info.worktime = size * 600  	-- (sec) 10 min/ha, TODO: make better estimate
 		info.profit = 0
 		info.usage = 0
@@ -612,7 +632,8 @@ function fieldGetDetails(self, superf)
 		})
 	end
 	-- field percentage only for active missions
-	if self.status == MissionStatus.RUNNING then
+	if self.status == MissionStatus.RUNNING and 
+		self:getMissionTypeName() ~= BaleWrapMission.NAME then
 		table.insert(list, {
 			["title"] = g_i18n:getText("SC_worked"),
 			["value"] = string.format("%.1f%%", self.fieldPercentageDone * 100)
@@ -674,31 +695,64 @@ function harvestGetDetails(self, superf)
 
 	return list
 end
+function wrapGetDetails(self, superf)
+	--overwrites BaleWrapMission:getDetails()
+
+	local list = superf(self)
+	if not BetterContracts.isOn then  
+		return list
+	end
+	-- add our values to show in contract details list
+	if self.status == MissionStatus.RUNNING then
+		local numWrapped = 0
+		for _, bale in ipairs(self.bales) do
+			numWrapped = numWrapped + bale.wrappingState
+		end
+		table.insert(list, {
+			["title"] = g_i18n:getText("ui_loading_finished"):sub(1,-2),
+			["value"] = g_i18n:formatNumber(numWrapped)
+		})
+		table.insert(list, {
+			["title"] = g_i18n:getText("SC_togo"),
+			["value"] = g_i18n:formatNumber(self.numOfBales - numWrapped)
+		})
+	end
+	return list
+end
+function baleGetDetails(self, superf)
+	--overwrites BaleWrapMission:getDetails()
+
+	local list = superf(self)
+	if not BetterContracts.isOn or
+	 #self.bales <= 0 then  
+		return list
+	end
+	-- add our values to show in contract details list
+	if self.status == MissionStatus.RUNNING then
+		if self.expectedBales == nil then  
+			self.expectedBales = self.spawnedLiters/ self.bales[1]:getFillLevel()
+		end
+		local numBaled = #self.bales
+		table.insert(list, {
+			["title"] = g_i18n:getText("bc_balesTotal"),
+			["value"] = g_i18n:formatNumber(self.expectedBales,1)
+		})
+		table.insert(list, {
+			["title"] = g_i18n:getText("bc_balesDone"),
+			["value"] = g_i18n:formatNumber(numBaled)
+		})
+		table.insert(list, {
+			["title"] = g_i18n:getText("SC_togo"),
+			["value"] = g_i18n:formatNumber(self.expectedBales - numBaled)
+		})
+	end
+	return list
+end
 
 function BetterContracts:onSetMissionInfo(missionInfo, missionDynamicInfo)
 	PlowMission.REWARD_PER_HA = 2900 	-- tweak plow reward (#137)
 
 	self:updateGeneration()
-end
-function BetterContracts:onStartMission()
-	-- set up fruit specific rewards/ha for harvest:
-	local data = g_missionManager:getMissionTypeDataByName(HarvestMission.NAME)
-	data.rewardPerFruitHa = {
-		[FruitType.POTATO] = 		3200,
-		[FruitType.SUGARBEET] = 	3200,
-		[FruitType.RICE] = 			3600,
-		[FruitType.RICELONGGRAIN] = 3600,
-
-		[FruitType.BEETROOT] = 		3400,
-		[FruitType.CARROT] = 		3400,
-		[FruitType.PARSNIP] = 		3400,
-		[FruitType.GREENBEAN] = 	3400,
-		[FruitType.PEA] = 			3400,
-		[FruitType.SPINACH] = 		3400,
-	}
-
-	-- check mission vehicles
-	self:validateMissionVehicles()
 end
 function BetterContracts:onPostLoadMap(mapNode, mapFile)
 	-- handle our config and optional settings
@@ -753,6 +807,47 @@ function BetterContracts:onPostLoadMap(mapNode, mapFile)
 
 	initGui(self) 			-- setup my gui additions
 	self.initialized = true
+end
+function BetterContracts:onStartMission()
+	-- set up fruit specific rewards/ha for harvest:
+	local data = g_missionManager:getMissionTypeDataByName(HarvestMission.NAME)
+	data.rewardPerFruitHa = {
+		[FruitType.POTATO] = 		3200,
+		[FruitType.SUGARBEET] = 	3200,
+		[FruitType.RICE] = 			3600,
+		[FruitType.RICELONGGRAIN] = 3600,
+
+		[FruitType.BEETROOT] = 		3400,
+		[FruitType.CARROT] = 		3400,
+		[FruitType.PARSNIP] = 		3400,
+		[FruitType.GREENBEAN] = 	3400,
+		[FruitType.PEA] = 			3400,
+		[FruitType.SPINACH] = 		3400,
+	}
+	-- check mission vehicles
+	self:validateMissionVehicles()
+
+	-- Reduce # of active supplyTransport missions:
+	if self.supply then  
+		local data = g_missionManager:getMissionTypeDataByName("supplyTransportMission")
+		debugPrint("[BC] reducing maxNumInstances for SupplyTransport contracts from %s to 2", 
+			data and data.maxNumInstances or "data nil")
+		if data then data.maxNumInstances = 2 end
+	end
+	-- patch for bug in KommunalServices:
+	if self.kommunal then  
+		self.genContracts.kommunalMission = true
+		local data = g_missionManager:getMissionTypeDataByName("kommunalMission")
+		data.maxNumInstances = 2
+	end
+	-- reduce maxNum for non-field missions, ExtendedMissionInfo sets all to 8:
+	if self.extendedInfo then  
+		for _,name in ipairs({"treeTransportMission","deadwoodMission","destructibleRockMission"}) do
+			local data = g_missionManager:getMissionTypeDataByName(name)
+			debugPrint("** %s num Instances is %d, max set to 2", name, data.numInstances)
+			data.maxNumInstances = 2
+		end
+	end
 end
 function BetterContracts:onWriteStream(streamId)
 	-- write settings to a client when it joins
@@ -981,4 +1076,10 @@ function harvestCompleteField(self)
 	if string.find("MAIZE POTATO SUGARBEET", ft.name) then 
 		self.fieldPlowFactor = 0 -- force plowing after root crop harvest
 	end
+end
+function getFieldFinishTask(self, superf)
+	-- overwrites HarvestMission:getFieldFinishTask
+	local state = self.field:getFieldState()
+	state.sprayLevel = 0  -- remove fertilizer level
+	return superf(self)
 end

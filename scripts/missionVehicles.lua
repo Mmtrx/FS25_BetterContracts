@@ -7,6 +7,7 @@
 --  v1.0.0.0    28.10.2024  1st port to FS25
 --  v1.2.0.0    12.05.2025  New: leased vehicle selection dialog
 --  v1.2.0.2 	25.05.2025  added tag "fieldSize" in userDefined.xml
+--  v1.2.0.4    17.08.2025  Leased Vehicle Selection: Esc doesn't start contract
 --=======================================================================================================
 
 ---------------------- mission vehicle loading functions --------------------------------------------
@@ -413,13 +414,17 @@ function BetterContracts:vehicleTag(m, vehicleIds)
 end
 function missionManagerLoadFromXMLFile(self,xmlFilename)
 	-- appended to MissionManager:loadFromXMLFile()
-	-- MP only: we inform clients about active missions with leased vecs
+	-- MP only: 
 	assert(g_currentMission:getIsServer(),
 		"BetterContracts.missionManagerLoadFromXMLFile should run on Server only")
 	local isMP = g_currentMission.missionDynamicInfo.isMultiplayer
 	debugPrint("* missionManagerLoadFromXMLFile, MP %s", isMP)
 
 	for _, m in ipairs(self.missions) do
+		-- append possible vehicle groups to mission
+		m.groups = getGroups(m)
+
+		-- we inform clients about active missions with leased vecs
 		if m.activeMissionId ~= nil and m.spawnedVehicles then 
 		debugPrint("** %s %s activeId %s",m:getTitle(), m.field and m:getField():getName(), m.activeMissionId or "")
 			m.sendLeasedVecs = true
@@ -452,9 +457,8 @@ function(self, connection)
 		end
 	end
 	-- debug for server mission groups:
-	if BetterContracts.config.debug then
-		BetterContracts:printMissionVehicles()
-	end
+	--if BetterContracts.config.debug then BetterContracts:printMissionVehicles()
+	--end
 end)
 
 function removeAccess(self)
@@ -492,54 +496,74 @@ function vehicleGetName(self, super)
 	return name
 end
 ---------------------- mission start with select lease vehicles ------------------------
-function missionStart(self,superf,spawnVehicles)
-	-- overwrites AbstractMission:start()
-	if self.isServer and self.waitForStart then  
-		-- a client has opened the lease vehicle selection dialog. Make mission 
-		-- unavail for all other clients 
-		g_server:broadcastEvent(MissionStartedEvent.new(self))
-		self:setStatus(MissionStatus.PREPARING)
-		return true
-	end
-		return superf(self, spawnVehicles)
-end
-
 MissionStartEvent.writeStream = Utils.prependedFunction(MissionStartEvent.writeStream, 
 function(self, streamId, connection)
 	if connection:getIsServer() then
-		streamWriteBool(streamId, self.wait or false)
+		streamWriteUInt8(streamId, self.vehicleGroup or 0)
 	end	
 end)
 
 MissionStartEvent.readStream = Utils.prependedFunction(MissionStartEvent.readStream, 
 function(self, streamId, connection)
 	if not connection:getIsServer() then
-		self.wait = streamReadBool(streamId)
+		self.vehicleGroup = streamReadUInt8(streamId)
 	end	
 end)
 
--- delay mission start event sent from server to client accepting the mission
-MissionStartEvent.run = Utils.overwrittenFunction(MissionStartEvent.run, 
-function(self, superf, connection)
+-- augment mission start event sent from server to client accepting the mission
+MissionStartEvent.run = Utils.prependedFunction(MissionStartEvent.run, 
+function(self, connection)
 	local bc = BetterContracts
-	debugPrint("* MissionStartEvent.run, %s %s", self.wait and "wait" or "go",
-		self.spawnVehicles and "leased" or "")
-	if connection:getIsServer() or not self.wait then
-		return superf(self, connection)
-	end
-	local user = g_currentMission.userManager:getUserIdByConnection(connection)
-	if g_currentMission:getHasPlayerPermission("manageContracts", connection, g_farmManager:getFarmByUserId(user).farmId) then
-		self.mission.waitForStart = true
-		local startState = g_missionManager:startMission(self.mission, self.farmId, self.spawnVehicles)
-		if (startState == MissionStartState.OK) then 
-			-- wait for ChangeVecEvent ..
+	local fromServer = connection:getIsServer()
+	if bc.config.debug then
+		if fromServer then
+			print(string.format("[BC] MissionStartEvent.run on client, startState %s", 
+				self.startState))
 		else
-			connection:sendEvent(MissionStartEvent.newServerToClient(startState, self.spawnVehicles))
+			print(string.format("[BC] MissionStartEvent.run on server%s %s", 
+			self.spawnVehicles and ", leased group" or "", self.vehicleGroup or "" ))
 		end
-	else
-		connection:sendEvent(MissionStartEvent.newServerToClient(MissionStartState.NO_PERMISSION, self.spawnVehicles))
+	end
+	if self.spawnVehicles and not fromServer then 
+		-- set the mission vehicles on the server
+		local m = self.mission
+		local ix = self.vehicleGroup
+		m.vehiclesToLoad = m.groups[ix].vehicles
+		m.vehicleGroupIdentifier = m.groups[ix].identifier
 	end
 end)
+
+function getGroups(m)
+	-- get all possible vehicle groups for mission m
+	local typeName = m:getMissionTypeName()
+	local size = m:getVehicleSize()
+	local variant = m:getVehicleVariant()
+	local typeGroups = g_missionManager.missionVehicles[typeName]
+	debugPrint("* getGroups: %s %s %s",typeName,size,variant)
+	local groups = {}
+	if typeGroups ~= nil then
+		local sizeGroups = typeGroups[size]
+		if sizeGroups ~= nil then 
+			groups = table.ifilter(sizeGroups, function(e)
+			return variant == nil and true or e.variant == variant
+			end)
+		end
+	end
+	for i=1,#groups do
+		debugPrint("%2d %s ..",groups[i].identifier, groups[i].vehicles[1].filename)
+	end
+	return groups
+end
+function abstractInit(self)
+	-- overwrites AbstractMission:init() to save all possible vec groups
+	self.groups = getGroups(self)
+	local g = table.getRandomElement(self.groups)
+	Assert.isNotNil(g, "** Error: no vehicle group found for %s",self.title)
+	self.vehiclesToLoad = g.vehicles
+	self.vehicleGroupIdentifier = g.identifier
+	return true
+end
+
 ---------------------- mission vehicle selection Gui --------------------------------
 
 VehicleSelect = {}
@@ -556,7 +580,7 @@ function VehicleSelect:init(m)
 	-- body
 	self.marqueeTime = 0
 	self.mission = m
-	self:getGroups(m)
+	self.groups = getGroups(m)
 	self.vehiclesList:reloadData()
 	self.originalGroup = 0
 	for i= 1,#self.groups do
@@ -564,29 +588,11 @@ function VehicleSelect:init(m)
 		if self.groups[i].identifier == m.vehicleGroupIdentifier then 
 			self.vehiclesList:setSelectedItem(1, i)
 			self.originalGroup = i
-			break
 		end
 	end
 	assert(self.originalGroup > 0,
 		"BetterContracts: Non-matching vehicle groups.")
 	self.vehicleTemplate:unlinkElement()
-end
-function VehicleSelect:getGroups(m)
-	-- get all possible vehicle groups for mission m
-	local typeName = m.type.name
-	local size = m:getVehicleSize()
-	local variant = m:getVehicleVariant()
-	local typeGroups = g_missionManager.missionVehicles[typeName]
-	debugPrint("* getGroups: %s %s",size,variant)
-	self.groups = {}
-	if typeGroups ~= nil then
-		local sizeGroups = typeGroups[size]
-		if sizeGroups ~= nil then 
-			self.groups = table.ifilter(sizeGroups, function(e)
-			return variant == nil and true or e.variant == variant
-			end)
-		end
-	end
 end
 function VehicleSelect:getNumberOfSections(list)
 	return 1
@@ -650,14 +656,15 @@ end
 function VehicleSelect:onOpen()
 	debugPrint("** VehicleSelect:onOpen()")
 end]]
-function VehicleSelect:onClickButton(button)
-	-- callback from our Vec selection dialog. Esc doesn't change the vec group
+function VehicleSelect:vehicleClickButton(button)
+	-- callback from our Vec selection dialog. Esc doesn't start mission
 	debugPrint("** VehicleSelect: Click %s", button.id)
 	local ix = self.originalGroup
 	if button.id == "yesButton" then
 		_, ix = self.vehiclesList:getSelectedPath()
+		-- start leasing mission:
+		startLeasing(BetterContracts.frCon, self.mission, ix)
 	end
-	ChangeVecEvent.sendEvent(self.mission, ix)
 	self:close()
 end
 function VehicleSelect:update(dt)
