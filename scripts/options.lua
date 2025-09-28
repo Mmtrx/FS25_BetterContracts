@@ -239,22 +239,40 @@ function loadFromXML(self, xmlFile, key)
 	self.jobsLeft = xmlFile:getInt(key..".jobsLeft", BetterContracts.config.hardLimit)
 end
 
---------------------- hard mode ------------------------------------------------------------------------- 
-function AbstractFieldMission:calculateStealingCost()
-	-- calc penalty for canceled field mission
-	if BetterContracts.config.hardMode and not self.success and self.reward then
-		return self:getReward() * BetterContracts.config.hardPenalty 
+--------------------- progress bars, vehicles for active missions --------------------------------------- 
+function makeMarquee(vBox, template, vehicles)
+	-- make a marquee display of vehicles in vBox
+	local totalWidth = 0 
+	local vehicleElements = {}
+	for _, vec in ipairs(vehicles) do
+		local storeItem = g_storeManager:getItemByXMLFilename(vec.filename)
+		Assert.isNotNil(storeItem)
+		local imageFile = storeItem.imageFilename
+		if vec.configurations ~= nil and storeItem.configurations ~= nil then
+			for configName, _ in pairs(storeItem.configurations) do
+				local configId = vec.configurations[configName]
+				local config = storeItem.configurations[configName][configId]
+				if config ~= nil and (config.vehicleIcon ~= nil and config.vehicleIcon ~= "") then
+					imageFile = config.vehicleIcon
+					break
+				end
+			end
+		end
+		local element = template:clone(vBox)
+		element:setImageFilename(imageFile)
+		element:setImageColor(nil,nil,nil,nil, 1)
+		totalWidth = totalWidth + element.absSize[1] + element.margin[1] + element.margin[3]
+		table.insert(vehicleElements, element)
 	end
-	return 0
-end
-function harvestCalcStealing(self,superf)
-	local steal = superf(self)
-	local penal = 0
-	if BetterContracts.config.hardMode then 
-		penal = HarvestMission:superClass().calculateStealingCost(self)
-		debugPrint("BC: harvest steal/ penalty is %.1f / %.1f", steal, penal)
+	vBox:setSize(totalWidth)
+	vBox:invalidateLayout()
+	if vBox.maxFlowSize > vBox.parent.absSize[1] and vBox.pivot[1] ~= 0 then
+		vBox:setPivot(0, 0.5)
+	elseif vBox.maxFlowSize <= vBox.parent.absSize[1] and vBox.pivot[1] ~= 0.5 then
+		vBox:setPivot(0.5, 0.5)
 	end
-	return steal + penal
+	vBox:setPosition(0)
+	return vehicleElements
 end
 function updateDetailContents(self, sect, index)
 	-- appended to InGameMenuContractsFrame:updateDetailContents()
@@ -264,36 +282,25 @@ function updateDetailContents(self, sect, index)
 	local contract = self.currentContract
 	local m = contract.mission
 
-	--bc.my.vehicleBox:setVisible(true)
-	--bc.frCon.mapBox:setVisible(false)
-	--bc.frCon:invalidateLayout()	-- reorder elements in focus manager
-
-
  -- toggle standard / enhanced progress bars
 	local noActive = not contract.active or not bc.isOn
-	--bc:showProgressBars(contract, not noActive and 
-	--	table.hasElement({"harvestMission","mow_baleMission", "chaffMission"}, m.type.name))
+	local show = not noActive and 
+		table.hasElement({"harvestMission","mow_baleMission", "chaffMission"}, m.type.name)
+	bc:showProgressBars(contract, show)
 	if noActive then return end 
 
-	--[[ update display for active contracts
 	if m:hasLeasableVehicles() and m.spawnedVehicles then
 		-- show leased vecs for active contract
-		local totalWidth = 0 
-		-- smaller vehiclesBox to not interfere with 2nd progress bar
-		self.vehicleTemplate:applyProfile("myVehiclesItem")
-		self.vehiclesBox:applyProfile("myVehiclesBox")
-		for _, v in ipairs(m.vehiclesToLoad) do
-			local storeItem = g_storeManager:getItemByXMLFilename(v.filename)
-			local element = self.vehicleTemplate:clone(self.vehiclesBox)
-			element:setImageFilename(storeItem.imageFilename)
-			element:setImageColor(nil,nil,nil,nil, 1)
-			totalWidth = totalWidth + element.absSize[1] + element.margin[1] + element.margin[3]
-			table.insert(self.vehicleElements, element)
+		bc.my.bcProgressBox:setVisible(true)
+		bc.my.bcProgressBars:setVisible(show)
+
+		if self.updateTime ~= g_currentMission.time +5000 then
+			-- we were not called from InGameMenuContractsFrame:update(dt)
+			bc.my.marqueeTime = 0
 		end
-		self.vehiclesBox:setVisible(true)
-		self.vehiclesBox:setPosition(0)
-		self.vehiclesBox:setSize(totalWidth)
-		self.vehiclesBox:invalidateLayout()
+		-- smaller vehiclesBox to not interfere with 2nd progress bar
+		self.vehicleElements = makeMarquee(bc.my.vehiclesBox,
+			bc.my.bcVehicleTemplate, m.vehiclesToLoad)
 	end
  -- hard Mode: vehicle lease cost also for canceled mission
 	if bc.config.hardMode and contract.finished and not m.success then 
@@ -311,38 +318,62 @@ function updateDetailContents(self, sect, index)
 		self.tallyBox:getDescendantByName("stealing"):setText(g_i18n:formatMoney(penal, 0, true, true))
 		self.tallyBox:getDescendantByName("total"):setText(g_i18n:formatMoney(total, 0, true, true))
 	end
-]]
 end
+Utility.appendedFunction(InGameMenuContractsFrame,"update",
+	function(self, dt)
+		-- needs: my.vehiclesBox, my.marqueeTime
+		self.updateMarqueeAnimation(BetterContracts.my, dt)
+end)
+
 function BetterContracts:showProgressBars(contract, on)
-	-- hide standard progress bar
-	local off = not on 
-	local cbox = self.frCon
-	cbox.progressText:setVisible(off and contract.active)
-	cbox.progressTitleText:setVisible(off and contract.active)
-	cbox.extraProgressText:setVisible(off and contract.active)
-	cbox.progressBarBg:setVisible(off and contract.active)
+	-- switch on/ off my progress box:
+	self.my.bcProgressBars:setVisible(true)
+	self.my.bcProgressBox:setVisible(on)
+	if not on then return end
 
-	-- show my progress bars
-	self.my.box1:setVisible(on)
-	self.my.box2:setVisible(on)
-	if off then return end 
-
-	local fullWidth = self.my.progressBarBg.size[1] - self.my.progressBar1.margin[1] * 2
-	local fieldPercent = math.min(self.fieldPercent, 1)
-	local deliverPercent = math.min(self.deliverPercent, 1)
-	self.my.prog1:setText(string.format("  %.0f%%", fieldPercent * 100))
-	self.my.progressBar1:setSize(fullWidth * fieldPercent, nil)
-	self.my.prog2:setText(string.format("  %.0f%%", deliverPercent * 100))
-	self.my.progressBar2:setSize(fullWidth * deliverPercent, nil)
-end
-function dismiss(self)
-	-- appended to AbstractMission:dismiss()
-	if not BetterContracts.config.hardMode or not self.isServer then return end
-
-	-- deduct lease cost for a canceled mission
-	if self:hasLeasableVehicles() and self.spawnedVehicles then
-		self.mission:addMoney(-self.vehicleUseCost,self.farmId,	MoneyType.MISSIONS, true, true)
+	function updateBar(progBar, fullwidth, value)
+		local minwidth = progBar.startSize[1] * 2 / fullwidth
+		local width = math.max(value, minwidth)
+		progBar:setSize(fullwidth * math.min(width, 1), nil)
 	end
+	-- show my progress bars
+	self.frCon.progressBox:setVisible(false) -- original progress box
+	local m = contract.mission
+
+	local fullwidth = self.my.progressBarBg.size[1] - self.my.progressBar1.margin[1] * 2
+	self.my.prog1:setText(string.format("  %.0f%%", m.fieldPercentageDone * 100))
+	updateBar(self.my.progressBar1, fullwidth, m.fieldPercentageDone)
+
+	local deliverPercent = m.depositedLiters/(m.expectedLiters- (m.info.keep or 0))
+	self.my.prog2:setText(string.format("  %.0f%%", deliverPercent * 100))
+	updateBar(self.my.progressBar2, fullwidth, deliverPercent)
+end
+
+--------------------- hard mode ------------------------------------------------------------------------- 
+function AbstractMission:getPenalty()
+	-- calc penalty for canceled field mission
+	if BetterContracts.config.hardMode then
+		return self:getReward() * BetterContracts.config.hardPenalty 
+	end
+	return 0
+end
+function getFinishedDetails(self, superf)
+	-- overwrites AbstractMission:getFinishedDetails()
+	local bc = BetterContracts
+	local list = superf(self)
+	if bc.config.hardMode and self.status==MissionStatus.FINISHED 
+		and self.finishState ~= MissionFinishState.SUCCESS then  
+		-- append contract penalty
+		table.insert(list, {
+			title = g_i18n:getText("bc_penalty"),
+			value = g_i18n:formatMoney(self:getPenalty())
+		})
+	end
+	return list
+end
+function getTotalReward(self, superf)
+	-- overwrites AbstractMission:getTotalReward()
+	return superf(self) - self:getPenalty()
 end
 function startContract(frCon, superf, wantsLease)
 	-- overwrites InGameMenuContractsFrame:startContract()
@@ -392,26 +423,60 @@ function startContract(frCon, superf, wantsLease)
 		bc.vehicleSelect:init(m)
 		g_gui:showDialog("VehicleSelect")  -- if yes button, start leasing mission
 	else
-		superf(frCon, wantsLease)
+		superf(frCon, wantsLease)  		-- sends base game start evt, no vecGroup 
 	end
 end
-function startLeasing(frCon, m, ix)
-	-- called from VehicleSelect dialog on yes button
+function startFromConversation(self, superf)
+	-- overwrites ConversationActionStartSelectedMission:run()
+	local bc = BetterContracts
+	if not bc.isOn then return superf(self) end
 
-	if not m:isSpawnSpaceAvailable() then
-		InfoDialog.show(g_i18n:getText("warning_noFreeMissionSpace"), nil, nil, DialogElement.TYPE_WARNING)
-	else
-		g_messageCenter:subscribe(MissionStartEvent, frCon.onMissionStarted, frCon)
-		local event = MissionStartEvent.new(m, g_currentMission:getFarmId(), true)
-		event.vehicleGroup = ix
-		g_client:getServerConnection():sendEvent(event)
+	if g_server == nil then
+		return true
 	end
+	local npc = self.conversation:getNPC()
+	if npc == nil then
+		Logging.error("ConversationActionStartSelectedMission.run: No NPC set!")
+		return false
+	end
+	local player = npc:getInteractingPlayer()
+	if player == nil then
+		Logging.error("ConversationActionStartSelectedMission.run: No player set!")
+		return false
+	end
+	local farm = g_farmManager:getFarmByUserId(player.userId)
+	if farm == nil then
+		Logging.error("ConversationActionStartSelectedMission.run: Player has no farm!")
+		return false
+	end
+	local farmId = farm:getId()
+	if farmId == FarmManager.SPECTATOR_FARM_ID or farmId == FarmManager.INVALID_FARM_ID then
+		Logging.error("ConversationActionStartSelectedMission.run: Player has invalid farm id!")
+		return false
+	end
+	local lease = npc:getInputData(ConversationInputLeaseVehicles.NAME)
+	if lease == nil then lease = false
+	end
+	local mission = npc:getInputData(ConversationInputSelectedMission.NAME)
+	if mission == nil then
+		Logging.error("ConversationActionStartSelectedMission.run: No mission selected!")
+		return false
+	end
+
+	if lease and bc.isOn then
+	 -- show vehicle selector list:
+		bc.vehicleSelect:init(mission)
+		g_gui:showDialog("VehicleSelect")  -- if yes button, start leasing mission
+	else
+		g_client:getServerConnection():sendEvent(MissionStartEvent.new(mission, farmId, lease))
+	end
+	return true
 end
 function BetterContracts:resetJobsLeft()
 	-- recalc jobs left per farm
 	for _,farm in pairs(g_farmManager:getFarms()) do
 		if farm.farmId ~= FarmManager.SPECTATOR_FARM_ID then
-			local mlist = table.ifilter(g_missionManager:getMissionsList(farm.farmId), function(m)
+			local mlist = table.ifilter(g_missionManager:getMissionsByFarmId(farm.farmId), function(m)
 				return m.status > MissionStatus.PREPARING
 				end)
 			local count = table.size(mlist)
@@ -425,59 +490,12 @@ function BetterContracts:onPeriodChanged()
 	if self.config.hardLimit > -1 then 
 		self:resetJobsLeft()
 	end
-
 	if g_server == nil then return end 
-	
 	self.NPCAllowWork = false  	-- prevent any NPC field work at start of month
-
-	-- hard mode: cancel any active field missions
-	if self.config.hardMode and self.config.hardExpire == SC.MONTH then  
-		for _, m in ipairs(g_missionManager:getActiveMissions()) do 
-			if m:hasField() then
-				g_missionManager:cancelMission(m)
-			end
-		end
-	end
 end
-function BetterContracts:onDayChanged()
-	-- hard mode: cancel any active field missions
-	if g_server == nil or not self.config.hardMode 
-		or self.config.hardExpire ~= SC.DAY then return end
-	for _, m in ipairs(g_missionManager:getActiveMissions()) do 
-		if m:hasField() then
-			g_missionManager:cancelMission(m)
-		end
-	end
-end
-function BetterContracts:onHourChanged()
-	local env = g_currentMission.environment
-
-	-- check if NPCs can work
-	if self.config.lazyNPC and g_server ~= nil and 
-		env.currentDayInPeriod == 1 and env.currentHour == 12 then 
-		self.NPCAllowWork = true 
-	end
-
-	-- hard mode: issue warnings 6,3,1 h before active missions cancel
-	if not self.config.hardMode or self.config.hardExpire == SC.OFF or g_client == nil 
-		then return end
-	if self.config.hardExpire == SC.MONTH and 
-		env.currentDayInPeriod ~= env.daysPerPeriod then return end
-	if not table.hasElement({18,21,23}, env.currentHour) then return end 
-
-	local farmId = g_currentMission:getFarmId()
-	local count = 0 
-	for _, m in ipairs(g_missionManager:getActiveMissions()) do 
-		if m.getField and m.farmId == farmId then 
-			count = count +1
-		end
-	end
-	if count > 0 then
-		g_currentMission:addIngameNotification(FSBaseMission.INGAME_NOTIFICATION_CRITICAL, 
-			string.format(g_i18n:getText("bc_warnTimeout"), count))
-	end
-end
+-- BetterContracts:onDayChanged(),BetterContracts:onHourChanged() - see FS22
 function onButtonCancel(self, superf)
+	-- overwrites InGameMenuContractsFrame:onButtonCancel() 
 	local bc = BetterContracts
 	if not bc.config.hardMode or bc.config.hardPenalty == 0.0
 		then return superf(self) end

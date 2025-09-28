@@ -6,7 +6,8 @@
 -- Changelog:
 --  v1.1.0.0    08.01.2025  UI settings page, discount mode
 --  v1.1.1.1    04.02.2025  fix white UI page (#19, #24, #29). Fix server save/load #22, #27, #30.
--- 							fix ContractBoost compat #28
+-- 													fix ContractBoost compat #28
+--  v1.3.0.0    26.09.2025  enable hardMode
 --=======================================================================================================
 SettingsPage = {}
 local SettingsPage_mt = Class(SettingsPage, FrameElement)
@@ -129,16 +130,6 @@ function onSettingsFrameOpen(self)
 	-- our mod button should always be the last one in subCategoryPaging MTO
 	settingsMgr.modState = #g_inGameMenu.pageSettings.subCategoryPaging.texts
 	
-	-- make controls in development invisible:
-	for _, name in ipairs(ControlDevelop) do
-		settingsMgr[name]:setVisible(bc.config.debug)
-		if ControlDep[name] then 
-			for _, nam in ipairs(ControlDep[name]) do
-				settingsMgr[nam]:setVisible(bc.config.debug)
-			end
-		end
-	end
-
 	if isMultiplayer and not (g_inGameMenu.isServer or g_inGameMenu.isMasterUser) then  
 		modPage.settingsLayout:setVisible(false)
 		modPage.bcNoPermissionText:setVisible(true)
@@ -151,7 +142,7 @@ function onSettingsFrameOpen(self)
 			settingsMgr.populateAutoBindControls() 
 		end
 		-- apply initial disabled states
-		settingsMgr:updateDisabled("lazyNPC")				
+		--settingsMgr:updateDisabled("lazyNPC")				
 		settingsMgr:updateDisabled("discountMode")			
 		settingsMgr:updateDisabled("hardMode")
 
@@ -191,8 +182,8 @@ function SettingsManager:updateDisabled(controlName)
 	 end
 end
 function SettingsManager:onSettingsChange(control, newValue) 
-	-- called by the controls onClick callback. Callback has already set the corresponding
-	-- bc.config value on client who changed it
+	-- called by the controls onClick callback. Callback has already 
+	-- set the corresponding bc.config value on client who changed it
 	local bc = BetterContracts
 	 local setting = control.setting
 
@@ -207,17 +198,26 @@ function SettingsManager:onSettingsChange(control, newValue)
 		end
 		-- adjust map context farmland box:
 		bc:discountVisible(newValue)
-
-	 elseif setting.name == "hardMode" then 
+	 elseif setting.name == "hardMode" then  
 		for _, nam in ipairs(ControlDep.hardMode) do
 			self[nam].setting:updateDisabled(not newValue)
 		end
+
+	 elseif setting.name == "hardLimit" then 
+		-- set stats.jobsLeft for all farms
+		if newValue == -1 then 		-- reset to no limit
+			for _, farm in pairs(g_farmManager:getFarms()) do
+				farm.stats.jobsLeft = -1
+			end
+		else bc:resetJobsLeft() end
+
 	 elseif setting.name == "toDeliver" then 
 		HarvestMission.SUCCESS_FACTOR = newValue
 
 	 elseif setting.name:sub(1,3) == "gen" then 
 		bc:updateGeneration()
 	 end	
+
 	 if g_currentMission:getIsClient() then 
 	 	SettingsEvent.sendEvent(setting)
 	 end

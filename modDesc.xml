@@ -1,13 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="101">
 	<author>Mmtrx</author>
-	<version>1.2.0.4</version>
+	<version>1.3.0.0</version>
 	<title>
 		<en>Better Contracts</en>
 	</title>
 	<description>
 		<en>
 			<![CDATA[
+
+Changelog v1.3.0.0
+o NEW:
+- double progress bars, leased vehicles in active contract display
+- details for chaff mission
+- fruit name for sow/harvest in contracts list
+- enable hard mode
+
+o FIX:
+- leasing when BC is off #129
+- compatibility supplyTransportMission #126,
+- sort menu at 16 x 10 resolution #128
+
 Changelog v1.2.0.4
 - Leased Vehicle Selection: Esc doesn't start contract #107, #113
 - remove fertilize level on finished harvest missions
@@ -101,47 +114,6 @@ Lien GitHub : https://github.com/Mmtrx/FS25_BetterContracts
 Je prévois d'implémenter des fonctions supplémentaires dans les prochaines versions du mod.
 ]]>
 		</fr>
-		<br>
-        	<![CDATA[
-Changelog v1.2.0.4
-- Seleção de Veículo Alugado: Esc não inicia o contrato #107, #113
-- Remover nível de fertilização em missões de colheita finalizadas
-- Não definir npc como nil ao ler terras agrícolas sem npcIndex #96
-- Corrigir veículos de missão para grande fertilização #91, semeadura média #105
-
-Changelog v1.2.0.2
-- Limiares ajustáveis de tamanho de campo pequeno/médio/grande em userDefined.xml #45
-- Aumentar recompensa/ha para tipos de frutas de terra #71
-- Contar trabalhos não relacionados ao campo para desconto #80
-- Remover texto surplus "progresso" da lista #92
-- Corrigir seleção de veículos MP para colheita de vegetais #94
-- Remover aviso de veículo para missão de transporte de suprimentos #98
-
-Changelog v1.1.2.1
-- Desativar avisos sobre mods de veículos de missão ausentes #87
-- Reparar FS25_Financing #78
-- Corrigir clique nas configurações/controles #76
-- Adicionar tempo restante para contratos ativos no HUD #63
-- Adicionar informações de missão ao nome do veículo alugado #65
-- Novo: diálogo de seleção de veículo alugado
-
-Esta versão habilita as seguintes funções:
-
-- Limpar lista de contratos disponíveis
-- Gerar novos contratos
-- Ordenar lista de contratos
-- Página de configurações de UI abrangente
-- (configurável) permanecer na lista de NOVOS contratos após aceitar um contrato
-- (configurável) mostrar no HUD apenas contratos ativos com conclusão > 0
-- (configurável) permitir conclusão do trabalho de campo após o término do contrato
-- Possivelmente excluir certos tipos de contratos de serem gerados
-- Modo de desconto habilitado
-- Compatibilidade com FS25_RefreshContracts, FS25_LimeMission, FS25_ContractBoost, FS25_additionalGameSettings
-
-Link do GitHub: https://github.com/Mmtrx/FS25_BetterContracts
-Planejo implementar funções adicionais nas próximas versões do mod.
-]]>
-    </br>
 	</description>
 	<iconFilename>icon_BetterContracts.dds</iconFilename>
 	<multiplayer supported="true" />

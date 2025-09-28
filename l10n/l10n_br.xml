@@ -9,6 +9,12 @@
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.3.0.0 
+			bc_harvest: text="Harv. %.6s"
+	  		bc_hardMode_tooltip: shortened text
+	  	-->
+		<text name="bc_sow" text="Sow %.8s" />
+
 		<!-- updates v1.2.0.3 -->
 		<text name="bc_balesTotal" text="Fardos esperados:" />
 		<text name="bc_balesDone" text="Já empacotados:" />
@@ -17,8 +23,8 @@
 		<text name="bc_vehicleBox" text="Seleção de Veículo" />
 
 		<!-- updates v1.1.1.3 -->
-		<text name="bc_stayNew" text="Permanecer na lista de CONTRATOS NOVOS" />
-		<text name="bc_stayNew_tooltip" text="Não mudar para a lista de CONTRATOS ATIVOS quando um novo contrato for aceito." />
+		<text name="bc_stayNew" text="Permanecer na lista de contratos NOVOS" />
+		<text name="bc_stayNew_tooltip" text="Não mudar para a lista de contratos ATIVOS quando um novo contrato for aceito." />
 		<text name="bc_finishField" text="Completar campo do contrato" />
 		<text name="bc_finishField_tooltip" text="Permitir completar 100% de um campo após a conclusão do contrato." />
 		<text name="bc_hideMission" text="Ocultar contratos inativos" />
@@ -44,9 +50,9 @@
 		<!-- Display texts -->
 		<text name="bc_mowed" text="Cortado:" />
 		<text name="bc_tomow" text="Para cortar:" />
-		<text name="bc_chaff" text="Cortado %s" />
+		<text name="bc_chaff" text="Cortado %.6s" />
 		<text name="bc_jobType_chaff" text="Forragem" />
-		<text name="bc_harvest" text="Colheita %s" />
+		<text name="bc_harvest" text="Colheita %.6s" />
 		<text name="bc_leased" text="/ Arrendado " />
 		<text name="bc_enoughMissions" text="Sua fazenda já atingiu o número máximo de contratos." />
 		<text name="bc_jobsCompleted" text="Trabalhos completos: %d" />

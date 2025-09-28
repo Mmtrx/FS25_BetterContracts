@@ -254,22 +254,31 @@
 	</Profile>
 	<Profile name="myFilterDynamicTextInactive" extends="myFilterDynamicText" with="myFilterButtonInactive"/>
 	
-<!-- Smaller vehicles - - - - - - - - - - - - - - - - - - - - -  -->
-	<Profile name="missionVehicleText" extends="ingameMenuMapContextText" >
-		<textColor value="$preset_colorWhite" />
-	</Profile>
-	
+<!-- Progress Bars  - - - - - - - - - - - - - - - - - - - - - -  -->
 	<Profile name="myProgressLayout" extends="emptyPanel" with="anchorTopCenter" >
+		<absoluteSizeOffset value="40px 0px"/>
 		<alignmentY value="bottom"/>
 		<flowDirection value="horizontal"/>
 	</Profile>
 	
-	<Profile name="myVehiclesItem" extends="ingameMenuContractsVehiclesItem">
-		<size value="104px 104px"/>
+	<Profile name="bc_progressBars" extends="emptyPanel" with="anchorTopLeft">
+		<size value="760px 110px"/>
+	</Profile>
+	<Profile name="bc_contractsProgressBarBg" extends="fs25_contractsProgressBarBg" >
+		<size value="680px 33px"/>
+	</Profile>
+	<Profile name="bc_contractsProgressBar" extends="fs25_contractsProgressBar" >
+		<size value="672px 25px"/>
+	</Profile>
+
+<!-- Smaller vehicles - - - - - - - - - - - - - - - - - - - - -  -->
+	<Profile name="myVehiclesItem" extends="fs25_contractsVehiclesItem">
+		<size value="140px 140px"/>
 		<margin value="1px 0 2px 0"/>
 	</Profile>
-	<Profile name="myVehiclesBox" extends="ingameMenuContractsVehiclesBox">
-		<size value="856px 104px" />
+	<Profile name="myVehiclesBoxMarquee" extends="fs25_contractsVehiclesBoxMarquee">
+		<height value="140px"/>
+		<!--position value="0px 10px"/-->
 	</Profile>
 
 <!-- general table - - - - - - - - - - - - - - - - - - - - -  -->

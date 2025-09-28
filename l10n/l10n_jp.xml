@@ -2,6 +2,12 @@
 <l10n>
 	<texts>
 		<!-- updates v1.2.0.3 -->
+		<!-- updates v1.3.0.0 
+			bc_harvest: text="Harv. %.6s"
+	  		bc_hardMode_tooltip: shortened text
+	  	-->
+		<text name="bc_sow" text="Sow %.8s" />
+
 		<text name="bc_balesTotal" text="Bales expected:" />
 		<text name="bc_balesDone" text="Already baled:" />
 		<!-- updates v1.2.0.0 -->
@@ -45,7 +51,7 @@
 		<text name="bc_tomow" text="To mow:" />
 		<text name="bc_chaff" text="Cut %s" />
 		<text name="bc_jobType_chaff" text="Forage" />
-		<text name="bc_harvest" text="Harv. %s" />
+		<text name="bc_harvest" text="Harv. %.6s" />
 		<text name="bc_leased" text="/ Leased " />
 		<text name="bc_enoughMissions" text="Your farm already has the maximum number of contracts." />
 		<text name="bc_jobsCompleted" text="Jobs completed: %d" />

@@ -5,10 +5,15 @@
 	  v1.0.0.0    28.10.2024  1st port to FS25
 	  v1.1.0.0    08.01.2025  UI settings page, discount mode
 	  v1.1.1.2    09.02.2025  compatible FS25_additionalGameSettings
-	  v1.2.0.0    12.05.2025  new vehicle seleection dialog
+	  v1.2.0.0    12.05.2025  new vehicle selection dialog
+	  v1.3.0.0    26.09.2025  bc_harvest: text="Ernte %.6s"
+	  						  bc_hardMode_tooltip: shortened text	
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.3.0.0 -->
+		<text name="bc_sow" text="Säe %.8s" />
+
 		<!-- updates v1.2.0.3 -->
 		<text name="bc_balesTotal" text="Erwartete Ballen:" />
 		<text name="bc_balesDone" text="Fertige Ballen:" />
@@ -41,7 +46,7 @@
 		<text name="bc_tomow" text="Zu mähen:" />
 		<text name="bc_chaff" text="Häcksle %s" />
 		<text name="bc_jobType_chaff" text="Häckseln" />
-		<text name="bc_harvest" text="Ernte %s" />
+		<text name="bc_harvest" text="Ernte %.6s" />
 		<text name="bc_leased" text="/ Leased " />
 		<text name="bc_enoughMissions" text="Deine Farm hat bereits die maximale Zahl aktiver Lohnaufträge." />
 		<text name="bc_jobsCompleted" text="Anzahl erfolgreicher Jobs: %d" />
@@ -114,8 +119,8 @@
 		<text name="bc_debug" text="Debug Modus" />
 		<text name="bc_debug_tooltip" text="Wenn aktiviert, werden Info Meldungen in die Log-Datei geschrieben. Kann bei der Fehlersuche helfen." />
 
+		<!-- Lazy Farmers not needed any more  - - - - - - - - - - - - - - - - - - - - -
 		<text name="bc_lazyNPCTitle" text="Faule Farmer" />
-
 		<text name="bc_lazyNPC" text="Aktiviert" />
 		<text name="bc_lazyNPC_tooltip" text="Wenn aktiviert, unterlassen NPC-Farmer häufiger die Arbeit auf ihren Feldern, so dass mehr Verträge angeboten werden können." />
 		<text name="bc_npcHarvest_tooltip" text="Wenn aktiv, werden die NPC-Farmer gar nicht mehr zum Ernten fahren. Könnte also eine Menge Arbeit für dich werden." />
@@ -124,10 +129,11 @@
 		<text name="bc_npcPlowCultivate_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener selbst pflügen und grubbern." />
 		<text name="bc_npcFertilize_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener Dünge-Arbeiten selbst ausführen, und sie dafür als Lohnarbeit anbieten." />
 		<text name="bc_npcWeed_tooltip" text="Wenn aktiv, werden die NPC-Farmer seltener das Unkraut auf ihren Feldern selbst bekämpfen, sondern Jät- und Sprüh-Aufträge als Lohnarbeit anbieten." />
-
+		-->
 		<text name="bc_hardModeTitle" text="Erhöhte Schwierigkeit" />
 		<text name="bc_hardMode" text="Aktiviert" />
-		<text name="bc_hardMode_tooltip" text="Wenn aktiviert, müssen aktive Verträge bis spätestens zum Monatsende erfüllt werden. Einen laufenden Vertrag abzubrechen kostet eine Konventionalstrafe." />
+
+		<text name="bc_hardMode_tooltip" text="Wenn aktiviert, kostet es Konventionalstrafe, einen laufenden Vertrag abzubrechen." />
 		<text name="bc_hardPenalty" text="Vertragsstrafe" />
 		<text name="bc_hardPenalty_tooltip" text="Höhe der Vertragsstrafe für abgebrochene Verträge (in % vom Vertragswert)." />
 		<text name="bc_hardLease" text="Leihgeräte freigeschaltet" />

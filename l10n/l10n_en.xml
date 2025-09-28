@@ -6,9 +6,17 @@
 	  v1.1.0.0    08.01.2025  UI settings page, discount mode
 	  v1.1.1.2    09.02.2025  compatible FS25_additionalGameSettings
 	  v1.2.0.0    12.05.2025  new vehicle selection dialog
+	  v1.3.0.0    26.09.2025  bc_harvest: text="Harv. %.6s"
+	  						  bc_hardMode_tooltip: shortened text	
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.3.0.0 
+			bc_harvest: text="Harv. %.6s"
+	  		bc_hardMode_tooltip: shortened text
+	  	-->
+		<text name="bc_sow" text="Sow %.8s" />
+
 		<!-- updates v1.2.0.3 -->
 		<text name="bc_balesTotal" text="Bales expected:" />
 		<text name="bc_balesDone" text="Already baled:" />
@@ -42,7 +50,7 @@
 		<text name="bc_tomow" text="To mow:" />
 		<text name="bc_chaff" text="Cut %s" />
 		<text name="bc_jobType_chaff" text="Forage" />
-		<text name="bc_harvest" text="Harv. %s" />
+		<text name="bc_harvest" text="Harv. %.6s" />
 		<text name="bc_leased" text="/ Leased " />
 		<text name="bc_enoughMissions" text="Your farm already has the maximum number of contracts." />
 		<text name="bc_jobsCompleted" text="Jobs completed: %d" />
@@ -128,7 +136,7 @@
 
 		<text name="bc_hardModeTitle" text="Higher difficulty" />
 		<text name="bc_hardMode" text="Activated" />
-		<text name="bc_hardMode_tooltip" text="If active, all active contracts must be completed by end of month at the latest. Cancelling a contract will cost a penalty. Borrowing contract equipment is only unlocked after completing some jobs." />
+		<text name="bc_hardMode_tooltip" text="If active, cancelling a contract will cost a penalty. Borrowing contract equipment is only unlocked after completing some jobs." />
 		<text name="bc_hardPenalty" text="Penalty" />
 		<text name="bc_hardPenalty_tooltip" text="Penalty amount for cancelled contract (in % of contract reward)." />
 		<text name="bc_hardLease" text="Unlock borrowing equipment" />

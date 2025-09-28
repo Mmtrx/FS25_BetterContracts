@@ -5,33 +5,36 @@
 	Author:		Mmtrx		
 	Changelog:
 	 v1.2.0.0	18.02.2025	initial FS25
+	 v1.3.0.0 	21.09.2025	double progress bars, leased vecs in active contract display
 ======================================================================================================-->
 <GUI name="bc_progress">
-	<!-- double progress bars, parent: "contentContainer" -->
-	<GuiElement profile="fs25_contractsProgressBox" id="bcProgressBox" debugEnabled="false">
-		<Text profile="fs25_contractsContentTitle" text="$l10n_contract_progress:"/>
-		<Text profile="fs25_contractsContentExtraText" id="extraProgressText"/>
-		<Text profile="fs25_contractsContentValue" id="progressText"/>
+<!-- progress box, parent: "contentContainer" -->
+<GuiElement profile="fs25_contractsProgressBox" id="bcProgressBox" debugEnabled="false">
+ <!-- double progress bars - - - - - - - - - - - - - - -->
+ <GuiElement profile="bc_progressBars" id="bcProgressBars">
+	<!-- progr bar 1 -->
+	<Text profile="fs25_contractsContentTitle" text="$l10n_bc_progField:"/>
+	<BoxLayout profile="myProgressLayout" id="box1" size="760px 46px" position="20px -10px" debugEnabled="false">
+        <ThreePartBitmap profile="bc_contractsProgressBarBg" id="progressBarBg">
+            <ThreePartBitmap profile="bc_contractsProgressBar" id="progressBar1"/>
+        </ThreePartBitmap>
+		<Text profile="fs25_contractsContentValue" id="prog1" textAlignment="left" textAutoWidth="true" size="0 40px" />
+	</BoxLayout>
+	<!-- progr bar 2 -->
+	<Text profile="fs25_contractsContentTitle" text="$l10n_bc_progDeliver:" position="0px -70px"/>
+	<BoxLayout type="boxLayout" profile="myProgressLayout" id="box2" size="760px 46px" position="20px -80px" debugEnabled="false">
+        <ThreePartBitmap profile="bc_contractsProgressBarBg" >
+            <ThreePartBitmap profile="bc_contractsProgressBar" id="progressBar2"/>
+        </ThreePartBitmap>
+		<Text profile="fs25_contractsContentValue" id="prog2" textAlignment="left" textAutoWidth="true" size="0 40px" />
+	</BoxLayout>
+ </GuiElement>
 
-		<!-- progr bar 1 -->
-	<BoxLayout profile="myProgressLayout" id="box1" size="760px 46px" position="0px -40px" debugEnabled="false">
-		<GuiElement type="text" profile="fs25_contractsContentTitle" id="prog1Label" text="$l10n_bc_progField" textAlignment="left" textAutoWidth="true" size="100px 40px" >
-		</GuiElement>
-        <GuiElement type="bitmap" profile="fs25_contractsProgressBarBg" id="progressBarBg">
-            <GuiElement type="bitmap" profile="fs25_contractsProgressBar" id="progressBar1"/>
-        </GuiElement>
-		<GuiElement type="text" profile="fs25_contractsContentValue" id="prog1" textAlignment="left" textAutoWidth="true" size="0 40px" >
-		</GuiElement>
-	</BoxLayout>
-		<!-- progr bar 2 -->
-	<BoxLayout type="boxLayout" profile="myProgressLayout" id="box2" size="760px 46px" position="0px -90px" debugEnabled="false">
-		<GuiElement type="text" profile="fs25_contractsContentTitle" id="prog2Label" text="$l10n_bc_progDeliver" textAlignment="left" textAutoWidth="true" size="100px 40px" >
-		</GuiElement>
-        <GuiElement type="bitmap" profile="fs25_contractsProgressBarBg" >
-            <GuiElement type="bitmap" profile="fs25_contractsProgressBar" id="progressBar2"/>
-        </GuiElement>
-		<GuiElement type="text" profile="fs25_contractsContentValue" id="prog2" textAlignment="left" textAutoWidth="true" size="0 40px" >
-		</GuiElement>
-	</BoxLayout>
-	</GuiElement>
+ <!-- vehicles box -->
+ <Bitmap profile="myVehiclesItem" id="bcVehicleTemplate"/>
+ <GuiElement profile="myVehiclesBoxMarquee" >
+ 	<BoxLayout profile="fs25_contractsVehiclesBox" id="vehiclesBox"/>
+ </GuiElement>
+
+</GuiElement>
 </GUI>

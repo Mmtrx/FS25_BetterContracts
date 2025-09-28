@@ -44,6 +44,11 @@
 --							Leased Vehicle Selection: Esc doesn't start contract #107, #113
 --							userDefined.xml: fix vehicles for large fertilizing #91, 
 --							medium sowing #105
+--	v1.3.0.0 	28.09.2025	FIX: leasing when BC is off #129, compat supplyTransport #126,
+--								sort menu at 16x10 resolution #128
+--							NEW: double progress bars, leased vecs in active contract display
+--							details for chaff mission. fruit name for sow/harvest in contr list
+--							enable hardMode
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -75,8 +80,13 @@ SC = {
 	},
 	-- Gui contractBox controls:
 	CONTBOX = {
-		"detailsList", "rewardText", "prog1", "prog2",
-		"progressBarBg", "progressBar1", "progressBar2"
+		"detailsList", "rewardText"
+	},
+	-- Gui progressBox controls:
+	PROGBOX = {
+		"bcProgressBars", "prog1", "prog2",
+		"progressBarBg", "progressBar1", "progressBar2",
+		"bcVehicleTemplate", "vehiclesBox"
 	}
 }
 function debugPrint(text, ...)
@@ -251,20 +261,8 @@ function loadPrices(self)
 end
 function hookFunctions(self)
  --[[
-	-- to set missionBale for packed 240cm bales:
-	Utility.overwrittenFunction(Bale, "loadBaleAttributesFromXML", loadBaleAttributes)
-
 	-- adjust NPC activity for missions: 
 	Utility.overwrittenFunction(FieldManager, "updateNPCField", NPCHarvest)
-
-	-- hard mode:
-	Utility.overwrittenFunction(HarvestMission,"calculateStealingCost",harvestCalcStealing)
-	Utility.overwrittenFunction(InGameMenuContractsFrame, "onButtonCancel", onButtonCancel)
-	Utility.appendedFunction(InGameMenuContractsFrame, "updateDetailContents", updateDetails)
-	Utility.appendedFunction(AbstractMission, "dismiss", dismiss)
-	g_messageCenter:subscribe(MessageType.DAY_CHANGED, self.onDayChanged, self)
-	g_messageCenter:subscribe(MessageType.HOUR_CHANGED, self.onHourChanged, self)
-	g_messageCenter:subscribe(MessageType.PERIOD_CHANGED, self.onPeriodChanged, self)
 
 	-- tag mission fields in map: 
 	Utility.appendedFunction(FieldHotspot, "render", renderIcon)
@@ -272,12 +270,23 @@ function hookFunctions(self)
 	Utility.appendedFunction(TransportMission, "writeStream", BetterContracts.writeTransport)
 	Utility.appendedFunction(TransportMission, "readStream", BetterContracts.readTransport)
  ]]
+ 	-- start contract from npc conversation
+	Utility.overwrittenFunction(ConversationActionStartSelectedMission,"run",startFromConversation)
+
+	-- hard mode: 
+	Utility.overwrittenFunction(AbstractMission,"getFinishedDetails",getFinishedDetails)
+	Utility.overwrittenFunction(AbstractMission,"getTotalReward",getTotalReward)
+	Utility.overwrittenFunction(InGameMenuContractsFrame, "onButtonCancel", onButtonCancel)
+	--g_messageCenter:subscribe(MessageType.DAY_CHANGED, self.onDayChanged, self)
+	--g_messageCenter:subscribe(MessageType.HOUR_CHANGED, self.onHourChanged, self)
+
+	-- to check for max monthly missions
+	g_messageCenter:subscribe(MessageType.PERIOD_CHANGED, self.onPeriodChanged, self)
+
 	-- save our settings: 
 	Utility.prependedFunction(ItemSystem, "save", saveSavegame)
 	-- to allow MOWER / SWATHER on harvest missions:
 	Utility.overwrittenFunction(HarvestMission, "new", harvestMissionNew)
-	-- force plowing after root crop harvest mission:
-	Utility.prependedFunction(HarvestMission, "completeField", harvestCompleteField)
 
 	-- to count and save/load # of jobs per farm per NPC
 	Utility.appendedFunction(AbstractMission,"finish",finish)
@@ -309,6 +318,13 @@ function hookFunctions(self)
 	Utility.prependedFunction(HarvestMission, "writeStream", harvestWriteStream)
 	Utility.prependedFunction(HarvestMission, "readStream", harvestReadStream)
 	Utility.appendedFunction(HarvestMission, "onSavegameLoaded", onSavegameLoaded)
+	if self.additional then  
+		local chaffClass = g_missionManager:getMissionType("chaffMission").classObject
+		Utility.prependedFunction(chaffClass, "writeStream", harvestWriteStream)
+		Utility.prependedFunction(chaffClass, "readStream", harvestReadStream)
+		Utility.appendedFunction(chaffClass, "onSavegameLoaded", onSavegameLoaded)
+		Utility.overwrittenFunction(chaffClass,"getDetails",chaffGetDetails)
+	end
 	-- flexible mission limit: 
 	Utility.overwrittenFunction(MissionManager, "hasFarmReachedMissionLimit", hasFarmReachedMissionLimit)
 	-- possibly generate more than 1 mission : 
@@ -321,13 +337,13 @@ function hookFunctions(self)
 	Utility.overwrittenFunction(HarvestMission,"getDetails",harvestGetDetails)
 	Utility.overwrittenFunction(BaleWrapMission,"getDetails",wrapGetDetails)
 	Utility.overwrittenFunction(BaleMission,"getDetails",baleGetDetails)
-	-- reset spray level when finished
+
+	-- reset spray level when finished, force plowing after root crop harvest mission:
 	Utility.overwrittenFunction(HarvestMission, "getFieldFinishTask", getFieldFinishTask)
 
 	-- functions for ingame menu contracts frame:
 	Utility.appendedFunction(InGameMenuContractsFrame, "onFrameOpen", onFrameOpen)
 	Utility.prependedFunction(InGameMenuContractsFrame, "onFrameClose", onFrameClose)
-	-- only need for Details button:
 	Utility.appendedFunction(InGameMenuContractsFrame, "setButtonsForState", setButtonsForState)
 	Utility.appendedFunction(InGameMenuContractsFrame, "populateCellForItemInSection", populateCell)
 	Utility.overwrittenFunction(InGameMenuContractsFrame, "sortList", sortList)
@@ -347,7 +363,6 @@ function hookFunctions(self)
 
 	-- to load own mission vehicles:
 	Utility.overwrittenFunction(MissionManager, "loadVehicleGroups", BetterContracts.loadMissionVehicles)
-	--Utility.overwrittenFunction(AbstractMission,"start",missionStart)
 	-- allow pallets to spawn as mission vehicle:
 	Utility.prependedFunction(AbstractMission, "onSpawnedVehicle", onSpawnedVehicle)
 	-- save name tags for mission vehicle:
@@ -363,7 +378,6 @@ function hookFunctions(self)
 			SpecializationUtil.registerOverwrittenFunction(typeDef, "getName", vehicleGetName)
 		end
 	end
-
 end
 function BetterContracts:initialize()
 	debugPrint("[%s] initialize(): %s", self.name,self.initialized)
@@ -580,7 +594,8 @@ function addMission(self, mission)
 			end
 		end
 		if mission.type.name == "harvestMission" or 
-			mission.type.name == "mowbaleMission" then
+			mission.type.name == "mowbaleMission" or
+			mission.type.name == "chaffMission" then
 			if mission.expectedLiters == nil then
 				Logging.warning("[%s]:addMission(): contract '%s %s on field %s' has no expectedLiters.", 
 					bc.name, mission.type.name, bc.ft[mission.fillType].title, mission.field:getName())
@@ -598,9 +613,20 @@ function addMission(self, mission)
 end
 function getLocation(self, superf)
 	--overwrites AbstractFieldMission:getLocation()
-	if BetterContracts.isOn then
+	local bc = BetterContracts
+	if bc.isOn then
 		local fieldId = self.field:getName()
-		return string.format("F. %s - %s",fieldId, self.title)
+		-- overwrite "contract" with fruittype to harvest
+		local txt = self.title
+		if self.type.name == "harvestMission" then
+			txt = string.format(g_i18n:getText("bc_harvest"), bc.ft[self.fillTypeIndex].title)
+		--if m.type.name == "chaffMission" then 
+		--	txt = string.format(g_i18n:getText("bc_chaff"), bc.ft[m.orgFillType].title)
+		elseif self.type.name == "sowMission" then
+			local ft = g_fruitTypeManager.fruitTypeIndexToFillType[self.fruitTypeIndex]
+			txt = string.format(g_i18n:getText("bc_sow"), ft.title)
+		end
+		return string.format("F. %s - %s",fieldId, txt)
 	else
 		return superf(self)
 	end
@@ -643,6 +669,60 @@ function fieldGetDetails(self, superf)
 end
 function harvestGetDetails(self, superf)
 	--overwrites HarvestMission:getDetails()
+
+	local list = superf(self)
+	if not BetterContracts.isOn then  
+		return list
+	end
+	-- add our values to show in contract details list
+	local price = BetterContracts:getFilltypePrice(self)
+	local deliver = self.expectedLiters - self.info.keep
+	local eta = {}
+
+	if self.status == MissionStatus.RUNNING then
+		local depo = 0 		-- just as protection
+		if self.depositedLiters then depo = self.depositedLiters end
+		depo = MathUtil.round(depo / 100) * 100
+		-- don't show negative togos:
+		local togo = math.max(MathUtil.round((self.expectedLiters -self.info.keep -depo)/100)*100, 0)
+		eta = {
+			["title"] = g_i18n:getText("SC_delivered"),
+			["value"] = g_i18n:formatVolume(depo)
+		}
+		table.insert(list, eta)
+		eta = {
+			["title"] = g_i18n:getText("SC_togo"),
+			["value"] = g_i18n:formatVolume(togo)
+		}
+		table.insert(list, eta)
+	else  -- status NEW ----------------------------------------
+		local eta = {
+			["title"] = g_i18n:getText("SC_deliver"),
+			["value"] = g_i18n:formatVolume(MathUtil.round(deliver/100) *100)
+		}
+		table.insert(list, eta)
+		eta = {
+			["title"] = g_i18n:getText("SC_keep"),
+			["value"] = g_i18n:formatVolume(MathUtil.round(self.info.keep/100) *100)
+		}
+		table.insert(list, eta)
+		eta = {
+			["title"] = g_i18n:getText("SC_price"),
+			["value"] = g_i18n:formatMoney(price*1000)
+		}
+		table.insert(list, eta)
+	end
+
+	eta = {
+		["title"] = g_i18n:getText("SC_profit"),
+		["value"] = g_i18n:formatMoney(price*self.info.keep)
+	}
+	table.insert(list, eta)
+
+	return list
+end
+function chaffGetDetails(self, superf)
+	--overwrites ChaffMission:getDetails()
 
 	local list = superf(self)
 	if not BetterContracts.isOn then  
@@ -1068,18 +1148,16 @@ function harvestMissionNew(isServer, superf, isClient, customMt )
 	self.workAreaTypes[WorkAreaType.FORAGEWAGON] = true 
 	return self
 end
-function harvestCompleteField(self)
-	-- prepended to HarvestMission:completeField()
-	if not BetterContracts.config.forcePlow then return end
-	
-	local ft = g_fruitTypeManager:getFruitTypeByIndex(self.field.fruitType)
-	if string.find("MAIZE POTATO SUGARBEET", ft.name) then 
-		self.fieldPlowFactor = 0 -- force plowing after root crop harvest
-	end
-end
 function getFieldFinishTask(self, superf)
 	-- overwrites HarvestMission:getFieldFinishTask
 	local state = self.field:getFieldState()
+	local ft = g_fruitTypeManager:getFruitTypeByIndex(self.fruitTypeIndex)
+
+	if BetterContracts.config.forcePlow and
+	 string.find("MAIZE POTATO SUGARBEET", ft.name) then 
+	 	debugPrint("**set plowLevel to 0 **")
+		state.plowLevel = 0 -- force plowing after root crop harvest
+	end
 	state.sprayLevel = 0  -- remove fertilizer level
 	return superf(self)
 end

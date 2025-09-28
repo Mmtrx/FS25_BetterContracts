@@ -4,7 +4,7 @@
 -- Purpose:		UI for all settings.
 -- Author:		Mmtrx
 -- Changelog:
---  v1.0.0.0    28.10.2024  1st port to FS25 (not yet used)
+--  v1.0.0.0    28.10.2024  1st port to FS25 
 --  v1.1.0.0    03.01.2025  new UI settings page
 --=======================================================================================================
 -- Define the UI controls. For bool values, supply just the name, for ranges, supply min, max 
@@ -29,12 +29,18 @@ ControlProperties = {
     { name = "stayNew", autoBind = true },
     { name = "finishField", autoBind = true },
     { name = "debug", autoBind = true },
-    --{ special= "double", name ="fieldSize", min=0.5, max=1.5, step=0.1,autoBind=true },
 
 	{title = "bc_discountModeTitle"},
     { name = "discountMode", autoBind = true },
     { name = "discPerJob", min= .01, max= .14, step= .01, unit= "%", autoBind = true },  
     { name = "discMaxJobs", min= 1, max= 20, step= 1, autoBind = true },
+
+	{title = "bc_hardModeTitle"},
+    { name = "hardMode", autoBind = true },
+    { name = "hardPenalty", min= .0, max= .7, step= .1, unit= "%", autoBind = true },
+    { name = "hardLease", min= 0, max= 7, step= 1, autoBind = true },
+    --{ name = "hardExpire", values = {SC.OFF, SC.DAY, SC.MONTH}, autoBind = true },
+    { name = "hardLimit", min= -1, max= 10, step= 1, autoBind = true },
 
 	{title = "bc_missionGeneration"},
     { name = "generationInterval", min =1, max =18, step =1, autoBind = true },
@@ -45,13 +51,7 @@ ControlProperties = {
     { name = "genTree", autoBind = true }, 			-- tree transport
     { name = "genDead", autoBind = true },
     { name = "genRock", autoBind = true },
-
-	{title = "bc_hardModeTitle"},
-    { name = "hardMode", autoBind = true },
-    { name = "hardPenalty", min= .0, max= .7, step= .1, unit= "%", autoBind = true },
-    { name = "hardLease", min= 0, max= 7, step= 1, autoBind = true },
-    { name = "hardExpire", values = {SC.OFF, SC.DAY, SC.MONTH}, autoBind = true },
-    { name = "hardLimit", min= 0, max= 10, step= 1, nillable =true, autoBind = true },
+    --[[
 	{title = "bc_lazyNPCTitle"},
     { name = "lazyNPC", autoBind = true },
     { name = "npcHarvest", ui="contract_field_harvest_title", autoBind = true },
@@ -59,15 +59,14 @@ ControlProperties = {
     { name = "npcPlowCultivate", autoBind = true },
     { name = "npcFertilize", ui="contract_field_fertilize_title", autoBind = true },
     { name = "npcWeed", ui="contract_field_hoe_title", autoBind = true },
+    ]]
 }
 -- control dependencies
 ControlDep = {
-	lazyNPC = {"npcHarvest","npcSow","npcPlowCultivate","npcFertilize","npcWeed"},
+	--lazyNPC = {"npcHarvest","npcSow","npcPlowCultivate","npcFertilize","npcWeed"},
 	discountMode = {"discPerJob","discMaxJobs"},
-	hardMode = {"hardPenalty","hardLease","hardExpire", "hardLimit"},
+	hardMode = {"hardPenalty","hardLease", "hardLimit"},
 }
-ControlDevelop = {  -- not yet functional
-	"ferment", "forcePlow", "lazyNPC", "bc_lazyNPCTitle", "bc_hardModeTitle", "hardMode" }
 
 -- control settings class
 BCcontrol = {}
@@ -115,15 +114,3 @@ function BCcontrol:readStream(streamId, connection)
 	local ix = streamReadInt32(streamId)
 	self:setIx(ix)
 end
---[[ BC FS22 action functions, todo when needed
-	-- hardLimit
-	actionFunc = function(self,ix) 
-		-- set stats.jobsLeft for all farms
-		if ix == 1 then 		-- reset to no limit
-			for _, farm in pairs(g_farmManager:getFarms()) do
-				farm.stats.jobsLeft = -1
-			end
-		else BetterContracts:resetJobsLeft() end
-		end,
-]]
-

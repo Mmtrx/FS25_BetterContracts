@@ -8,6 +8,12 @@
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.3.0.0 
+			bc_harvest: text="Harv. %.6s"
+	  		bc_hardMode_tooltip: shortened text
+	  	-->
+		<text name="bc_sow" text="Sow %.8s" />
+
 		<!-- updates v1.2.0.3 -->
 		<text name="bc_balesTotal" text="Bales expected:" />
 		<text name="bc_balesDone" text="Already baled:" />
@@ -53,7 +59,7 @@
 		<text name="bc_tomow" text="K posekání:" />
 		<text name="bc_chaff" text="Řezání %s" />
 		<text name="bc_jobType_chaff" text="Řezanka" />
-		<text name="bc_harvest" text="Skliz. %s" />
+		<text name="bc_harvest" text="Skliz. %.6s" />
 		<text name="bc_leased" text="/ Nájem " />
 		<text name="bc_enoughMissions" text="Vaše farma již má maximální počet zakázek." />
 		<text name="bc_jobsCompleted" text="Dokončené zakázky: %d" />

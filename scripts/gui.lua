@@ -1,3 +1,4 @@
+
 --=======================================================================================================
 -- BetterContracts SCRIPT
 --
@@ -63,8 +64,8 @@ function loadGUI(self, guiPath)
 		Logging.error("[GuiLoader %s]  Required file '%s' could not be found!", self.name, fname)
 		return false
 	end
-	-- load our sortbox (and mission table) as child of contractsListBox:
-	local canLoad = loadGuiFile(self, guiPath.."BCGui.xml", self.frCon.contractsListBox, function(parent)
+	-- load our sortbox (and mission table) as child of subCategorySelector:
+	local canLoad = loadGuiFile(self, guiPath.."BCGui.xml", self.frCon.subCategorySelector, function(parent)
 		self.my.sortbox = parent:getDescendantById("sortbox")
 		fixPosition(self.my.sortbox)
 		-- adjust sort buttons:
@@ -76,17 +77,13 @@ function loadGUI(self, guiPath)
 	-- load progress bars:
 	if canLoad then 
 		canLoad = loadGuiFile(self, guiPath.."progressGui.xml", self.frCon.contentContainer, function(parent)
-		--self.my.vehicleBox = parent:getDescendantById("vehicleBox")
-		--fixPosition(self.my.vehicleBox)
-		--self.my.vehicleBox:setVisible(false)
-		--self.my.vehiclesList = parent:getDescendantById("vehiclesList")
-		--self.my.vehiclesList:onGuiSetupFinished()
-
 		for _,id in ipairs({"box1","box2","bcProgressBox"}) do
 			self.my[id] = parent:getDescendantById(id)
-			fixPosition(self.my[id], id ~= "bcProgressBox")
-			self.my[id]:setVisible(false)
+			fixPosition(self.my[id])
 		end
+			self.my.box1:invalidateLayout(true)
+			self.my.box2:invalidateLayout(true)
+			self.my.bcProgressBox:setVisible(false)
 		end)
 	end
 	-- load "settingsPage.xml"
@@ -135,10 +132,6 @@ function initGui(self)
 		text = g_i18n:getText("bc_detailsOn"),
 		callback = detailsButtonCallback
 	}
-	--[[ register action, so that our button is also activated by keystroke
-	local _, eventId = g_inputBinding:registerActionEvent("MENU_EXTRA_3", g_inGameMenu, onClickMenuExtra3, false, true, false, true)
-	self.eventExtra3 = eventId
-	]]
 	-- setup new / clear buttons for contracts page:
 	local parent = g_inGameMenu.menuButton[1].parent
 	local button = g_inGameMenu.menuButton[1]:clone(parent)
@@ -222,16 +215,22 @@ function initGui(self)
 	for _, name in pairs(SC.CONTBOX) do
 		self.my[name] = self.frCon.contractBox:getDescendantById(name)
 	end
+	-- and for progress box:
+	for _,id in ipairs(SC.PROGBOX) do
+		self.my[id] = self.my.bcProgressBox:getDescendantById(id)
+	end
+	self.my.bcVehicleTemplate:unlinkElement()
+
 	-- set callbacks for our 5 sort buttons
-	for _, name in ipairs({"sortcat", "sortrev", "sortnpc", "sortprof", "sortpmin"}) do
-		self.my[name] = self.frCon.contractsListBox:getDescendantById(name)
+	for _, name in ipairs({"sortcat", "sortrev", "sortnpc", "sortprof", "sortpmin",}) do
+		self.my[name] = self.frCon.subCategorySelector:getDescendantById(name)
 		self.my[name].onClickCallback = onClickSortButton
 		self.my[name].onHighlightCallback = onHighSortButton
 		self.my[name].onHighlightRemoveCallback = onRemoveSortButton
 		self.my[name].onFocusCallback = onHighSortButton
 		self.my[name].onLeaveCallback = onRemoveSortButton
 	end
-	self.my.helpsort = self.frCon.contractsListBox:getDescendantById("helpsort")
+	self.my.helpsort = self.frCon.subCategorySelector:getDescendantById("helpsort")
 
 	-- setupMissionFilter(self)
 	-- init other farms mission table
@@ -291,7 +290,6 @@ function onFrameClose(self)
 		}) do
 		button:setVisible(false)
 	end
-	--g_messageCenter:unsubscribe(MissionStartedEvent, bc)
 end
 function onMissionStarted(self,superf,state,lease)
 	-- overwritten to InGameMenuContractsFrame:onMissionStarted()
@@ -423,36 +421,15 @@ function populateCell(self, list, sect, index, cell)
 	local rewValue = m:getReward()
 	cell:getAttribute("reward"):setText(formatReward(rewValue)) 	-- formats values > 1k
 
-	if m.type.name == "harvestMission" or
-		m.type.name == "mowbaleMission" then 
+	if m.type.name == "harvestMission" 
+		or m.type.name == "mowbaleMission" then 
 		-- update total profit
 		_,_, profValue = bc:calcProfit(m, HarvestMission.SUCCESS_FACTOR)
-		
-		--[[ overwrite "contract" with fruittype to harvest
-		local fruit = cell:getAttribute("contract")
-		local txt = string.format(g_i18n:getText("bc_harvest"), cont.ftype)
-		if m.type.name == "chaffMission" then 
-			txt = string.format(g_i18n:getText("bc_chaff"), bc.ft[m.orgFillType].title)
-		fruit:setText(txt)
-		end
-		]]
 	end
 	if profValue ~= 0 then
 		profit:setText(formatReward(rewValue + profValue))
 	end
 	profit:setVisible(profValue ~= 0)
-
-	--[[ indicate leased equipment for active missions
-	if m.status == MissionStatus.RUNNING then
-		local indicator = cell:getAttribute("indicatorActive")
-		local txt = ""
-		if m.spawnedVehicles then
-			txt = g_i18n:getText("bc_leased")
-		end
-		indicator:setText(g_i18n:getText("fieldJob_active")..txt)
-		indicator:setVisible(true)
-	end
-	]]
 end
 function sortList(self, superfunc)
 	--[[ sort self.contracts according to sort button clicked:
@@ -673,18 +650,6 @@ function missionUpdate(self, superf)
 	-- overwrites AbstractMission:update()
 	local hide = BetterContracts.config.hideMission
 	local isActive = self.status == MissionStatus.RUNNING
-	--[[
-	if isActive and g_currentMission:getIsServer() then  
-		debugPrint("* upd %s %s: %s", self:getTitle(), self.field:getName(),
-			self.sendLeasedVecs or false)
-	end
-	if g_currentMission:getIsServer() and g_currentMission.missionDynamicInfo.isMultiplayer 
-		and isActive and self.sendLeasedVecs 
-		and not self.tryToAddMissingVehicles then 
-	-- we inform clients about active missions with leased vecs
-		LeasedVecsEvent.sendEvent(self, self.vehicles)
-		self.sendLeasedVecs = nil 
-	end]]
 
 	if isActive and --or self.status == MissionStatus.FINISHED) 
 		(g_localPlayer ~= nil and g_localPlayer.farmId == self.farmId) then

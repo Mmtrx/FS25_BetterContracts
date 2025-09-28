@@ -8,6 +8,11 @@
 --  v1.2.0.0    12.05.2025  New: leased vehicle selection dialog
 --  v1.2.0.2 	25.05.2025  added tag "fieldSize" in userDefined.xml
 --  v1.2.0.4    17.08.2025  Leased Vehicle Selection: Esc doesn't start contract
+--	v1.3.0.0 	28.09.2025	FIX: leasing when BC is off #129, 
+--							NEW: double progress bars, 
+--							 leased vecs in active contract display
+--							 fruit name for sow/harvest in contr list
+--							 enable hardMode
 --=======================================================================================================
 
 ---------------------- mission vehicle loading functions --------------------------------------------
@@ -496,17 +501,25 @@ function vehicleGetName(self, super)
 	return name
 end
 ---------------------- mission start with select lease vehicles ------------------------
-MissionStartEvent.writeStream = Utils.prependedFunction(MissionStartEvent.writeStream, 
+MissionStartEvent.writeStream = Utils.appendedFunction(MissionStartEvent.writeStream, 
 function(self, streamId, connection)
-	if connection:getIsServer() then
+	if connection:getIsServer() and self.spawnVehicles then
 		streamWriteUInt8(streamId, self.vehicleGroup or 0)
 	end	
 end)
 
-MissionStartEvent.readStream = Utils.prependedFunction(MissionStartEvent.readStream, 
-function(self, streamId, connection)
-	if not connection:getIsServer() then
-		self.vehicleGroup = streamReadUInt8(streamId)
+MissionStartEvent.readStream = Utils.overwrittenFunction(MissionStartEvent.readStream, 
+function(self, superf, streamId, connection)
+
+	if connection:getIsServer() then superf(self,streamId, connection)
+	else
+		self.mission = NetworkUtil.readNodeObject(streamId)
+		self.farmId = streamReadUIntN(streamId, FarmManager.FARM_ID_SEND_NUM_BITS)
+		self.spawnVehicles = streamReadBool(streamId)
+		if self.spawnVehicles then
+			self.vehicleGroup = streamReadUInt8(streamId)
+		end
+		self:run(connection)
 	end	
 end)
 
@@ -524,10 +537,16 @@ function(self, connection)
 			self.spawnVehicles and ", leased group" or "", self.vehicleGroup or "" ))
 		end
 	end
-	if self.spawnVehicles and not fromServer then 
+	if bc.isOn and self.spawnVehicles and not fromServer then 
 		-- set the mission vehicles on the server
 		local m = self.mission
 		local ix = self.vehicleGroup
+		Assert.isNotNil(ix, "** no vehicle group index found in start event")
+		if ix == 0 then return end
+
+		Assert.isNotNil(m.groups, "** no vehicle groups found in Mission %s",m:getTitle())
+		Assert.isNotNil(m.groups[ix], "** vehicle group %d is empty", ix)
+
 		m.vehiclesToLoad = m.groups[ix].vehicles
 		m.vehicleGroupIdentifier = m.groups[ix].identifier
 	end
@@ -556,6 +575,11 @@ function getGroups(m)
 end
 function abstractInit(self)
 	-- overwrites AbstractMission:init() to save all possible vec groups
+
+	self.vehicleGroupIdentifier = 1  -- default, if no mission vehicles
+	if self:getMissionTypeName() == "supplyTransportMission" then return true end  
+	-- supplyTransport mission has no vehicles
+	
 	self.groups = getGroups(self)
 	local g = table.getRandomElement(self.groups)
 	Assert.isNotNil(g, "** Error: no vehicle group found for %s",self.title)
@@ -614,43 +638,12 @@ function VehicleSelect:onListSelectionChanged(list, sec, index)
 	end
 end
 function VehicleSelect:updateVehicleBox(vecs)
-	local frCon = BetterContracts.frCon
 	for _, image in pairs(self.vehicleElements) do
 		image:delete()
 	end
-	self.vehicleElements = {}
 	self.marqueeTime = 0
-	local size = 0
-	for _, vec in ipairs(vecs) do
-		local item = g_storeManager:getItemByXMLFilename(vec.filename)
-		if item == nil then
-			Logging.error("Mission uses non-existent vehicle at \'%s\'", vec.filename)
-		end
-		local imageFile = item.imageFilename
-		if vec.configurations ~= nil and item.configurations ~= nil then
-			for name, _ in pairs(item.configurations) do
-				local id = vec.configurations[name]
-				local config = item.configurations[name][id]
-				if config ~= nil and (config.vehicleIcon ~= nil and config.vehicleIcon ~= "") then
-					imageFile = config.vehicleIcon
-					break
-				end
-			end
-		end
-		local image = self.vehicleTemplate:clone(self.vehiclesBox)
-		image:setImageFilename(imageFile)
-		image:setImageColor(nil, nil, nil, nil, 1)
-		size = size + image.absSize[1] + image.margin[1] + image.margin[3]
-		table.insert(self.vehicleElements, image)
-	end
-	self.vehiclesBox:setSize(size)
-	self.vehiclesBox:invalidateLayout()
-	if self.vehiclesBox.maxFlowSize > self.vehiclesBox.parent.absSize[1] and self.vehiclesBox.pivot[1] ~= 0 then
-		self.vehiclesBox:setPivot(0, 0.5)
-	elseif self.vehiclesBox.maxFlowSize <= self.vehiclesBox.parent.absSize[1] and self.vehiclesBox.pivot[1] ~= 0.5 then
-		self.vehiclesBox:setPivot(0.5, 0.5)
-	end
-	self.vehiclesBox:setPosition(0)
+	self.vehicleElements = makeMarquee(self.vehiclesBox,
+			self.vehicleTemplate, vecs)
 end
 --[[
 function VehicleSelect:onOpen()
@@ -663,10 +656,26 @@ function VehicleSelect:vehicleClickButton(button)
 	if button.id == "yesButton" then
 		_, ix = self.vehiclesList:getSelectedPath()
 		-- start leasing mission:
-		startLeasing(BetterContracts.frCon, self.mission, ix)
+		self:startLeasing(ix)
 	end
 	self:close()
 end
+function VehicleSelect:startLeasing(ix)
+	-- called from VehicleSelect dialog on yes button
+	local m = self.mission
+	if not m:isSpawnSpaceAvailable() then
+		InfoDialog.show(g_i18n:getText("warning_noFreeMissionSpace"), nil, nil, DialogElement.TYPE_WARNING)
+	else
+		local event = MissionStartEvent.new(m, g_currentMission:getFarmId(), true)
+		event.vehicleGroup = ix
+		if not g_currentMission:getIsServer() then  
+			-- change vehiclesToLoad, for marquee display on client
+			m.vehiclesToLoad = self.groups[ix].vehicles
+		end
+		g_client:getServerConnection():sendEvent(event)
+	end
+end
+
 function VehicleSelect:update(dt)
 	-- update vehicle marquee
 	InGameMenuContractsFrame.updateMarqueeAnimation(self,dt)

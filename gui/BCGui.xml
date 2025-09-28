@@ -5,10 +5,11 @@
 	Author:		Mmtrx		
 	Changelog:
 	 v.1.1.2.0	26.02.2025	initial FS25
+	 v.1.3.0.0	28.09.2025	fix sort menu at 16x10 resolution #128
 ======================================================================================================-->
 <GUI name="sortContracts">
 	<!-- Sort buttons (anchor top left) pos 0 -28 -->
-	<GuiElement id="sortbox" profile="BCSortbox" position="0px 872px" anchors="1 1 0.5 0.5" debugEnabled="false" >
+	<GuiElement id="sortbox" profile="BCSortbox" position="0px -45px" anchors="1 1 0.5 0.5" debugEnabled="false" >
 		<!-- anchors="1 1 0.5 0.5"  flowDirection="horizontal" -->
 		<BoxLayout profile="BCButtonBox" lateralFlowSize="45px" id="layout" debugEnabled="false" position="0px 7px">
 			<Button profile="BCsortCat" id="sortcat" />
