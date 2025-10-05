@@ -106,7 +106,7 @@
 		<text name="bc_refreshMP_tooltip" text="Qui peut supprimer/actualiser les contrats dans le jeu." />
 		<text name="bc_ferment" text="Fermentation instentané" />
 		<text name="bc_ferment_tooltip" text="Permet au joueurs de fermenté instentanément une bale enrubanné depuis le menu F1." />
-		<text name="bc_forcePlow" text="Root Crop Plowing Labourage des plantes racinaires" />
+		<text name="bc_forcePlow" text="Labourage des plantes racinaires" />
 		<text name="bc_forcePlow_tooltip" text="Chaque récolte de maïs / pomme de terre / betterave à sucre nécessite un labour ultérieur." />
 		<text name="bc_debug" text="Debug Mode" />
 		<text name="bc_debug_tooltip" text="Imprime les messages d'informations dans le log si actif. Peut aider à trouver des bugs." />
