@@ -264,7 +264,8 @@ function BetterContracts:validateMissionVehicles()
 	local type 
 	for _,mt in ipairs(g_missionManager.missionTypes) do
 		type = mt.name
-		if type == "supplyTransportMission" then continue end
+		if type == "supplyTransportMission" or 
+			type == "universalMission" then continue end
 		local smallOnly = type == "deadwoodMission" or type == "destructibleRockMission"
 		for _,f in ipairs({"small","medium","large"}) do
 			if smallOnly and f ~= "small" then continue end
@@ -568,8 +569,17 @@ function getGroups(m)
 			end)
 		end
 	end
-	for i=1,#groups do
-		debugPrint("%2d %s ..",groups[i].identifier, groups[i].vehicles[1].filename)
+	local seen = BetterContracts.vehicleSelect.seenGroup
+	if (not seen[typeName][size]) or (variant~=nil and not seen[typeName][size][variant]) then
+		if variant ~= nil then  
+			seen[typeName][size] = {}
+			seen[typeName][size][variant] = true
+		else
+			seen[typeName][size] = true
+		end
+		for i=1,#groups do
+			debugPrint("%2d %s ..",groups[i].identifier, groups[i].vehicles[1].filename)
+		end
 	end
 	return groups
 end
@@ -598,6 +608,10 @@ function VehicleSelect.new(target, custom_mt)
 	self.bc = BetterContracts
 	self.groups = {}  	-- mission vehicle groups for current mission
 	self.vehicleElements = {}
+	self.seenGroup = {} -- debug only: saves groups already printed to log
+	for _,type in ipairs(g_missionManager.missionTypes) do
+		self.seenGroup[type.name] = {small=false, medium=false, large=false}
+	end
 	return self
 end
 function VehicleSelect:init(m)

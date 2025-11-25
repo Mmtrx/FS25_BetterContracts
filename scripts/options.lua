@@ -285,7 +285,7 @@ function updateDetailContents(self, sect, index)
  -- toggle standard / enhanced progress bars
 	local noActive = not contract.active or not bc.isOn
 	local show = not noActive and 
-		table.hasElement({"harvestMission","mow_baleMission", "chaffMission"}, m.type.name)
+		table.hasElement(SC.DELIVERMISSION, m.type.name)
 	bc:showProgressBars(contract, show)
 	if noActive then return end 
 
@@ -352,21 +352,22 @@ end
 --------------------- hard mode ------------------------------------------------------------------------- 
 function AbstractMission:getPenalty()
 	-- calc penalty for canceled field mission
-	if BetterContracts.config.hardMode then
+	if BetterContracts.config.hardMode and self.status==MissionStatus.FINISHED 
+		and self.finishState ~= MissionFinishState.SUCCESS then
 		return self:getReward() * BetterContracts.config.hardPenalty 
 	end
 	return 0
 end
 function getFinishedDetails(self, superf)
 	-- overwrites AbstractMission:getFinishedDetails()
-	local bc = BetterContracts
 	local list = superf(self)
-	if bc.config.hardMode and self.status==MissionStatus.FINISHED 
-		and self.finishState ~= MissionFinishState.SUCCESS then  
+	local penalty = self:getPenalty()
+
+	if penalty > 0. then  
 		-- append contract penalty
 		table.insert(list, {
 			title = g_i18n:getText("bc_penalty"),
-			value = g_i18n:formatMoney(self:getPenalty())
+			value = g_i18n:formatMoney(penalty)
 		})
 	end
 	return list

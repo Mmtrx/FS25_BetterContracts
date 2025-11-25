@@ -49,6 +49,10 @@
 --							NEW: double progress bars, leased vecs in active contract display
 --							details for chaff mission. fruit name for sow/harvest in contr list
 --							enable hardMode
+--	v1.3.0.1 	18.11.2025	getGroups(): don't repeat vec groups debug print
+--							fix penalty bug: was applied even for succcessful missions #142
+--							fix hud progress bar, clash with FS25_extendedMissionInfo #136
+--							awareness for FS25_AdditionalContracts (possibly fix #146)
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -87,7 +91,11 @@ SC = {
 		"bcProgressBars", "prog1", "prog2",
 		"progressBarBg", "progressBar1", "progressBar2",
 		"bcVehicleTemplate", "vehiclesBox"
-	}
+	},
+	DELIVERMISSION = {
+		"harvestMission","mow_baleMission","chaffMission","fruitCollectMission",
+		"baleCollectMission",
+	},
 }
 function debugPrint(text, ...)
 	if BetterContracts.config and BetterContracts.config.debug then
@@ -323,7 +331,33 @@ function hookFunctions(self)
 		Utility.prependedFunction(chaffClass, "writeStream", harvestWriteStream)
 		Utility.prependedFunction(chaffClass, "readStream", harvestReadStream)
 		Utility.appendedFunction(chaffClass, "onSavegameLoaded", onSavegameLoaded)
-		Utility.overwrittenFunction(chaffClass,"getDetails",chaffGetDetails)
+		Utility.overwrittenFunction(chaffClass,"getDetails",harvestGetDetails)
+		local fruitClass = g_missionManager:getMissionType("fruitCollectMission").classObject
+		Utility.prependedFunction(fruitClass, "writeStream", harvestWriteStream)
+		Utility.prependedFunction(fruitClass, "readStream", harvestReadStream)
+		Utility.appendedFunction(fruitClass, "onSavegameLoaded", onSavegameLoaded)
+		Utility.overwrittenFunction(fruitClass,"getDetails",harvestGetDetails)
+		local baleClass = g_missionManager:getMissionType("baleCollectMission").classObject
+		Utility.prependedFunction(baleClass, "writeStream", harvestWriteStream)
+		Utility.prependedFunction(baleClass, "readStream", harvestReadStream)
+		Utility.appendedFunction(baleClass, "onSavegameLoaded", onSavegameLoaded)
+		Utility.overwrittenFunction(baleClass,"getDetails",harvestGetDetails)
+		self.chaffClass = chaffClass
+		self.fruitClass = fruitClass
+		self.baleClass = baleClass
+
+		if g_missionManager:getMissionType("universalMission") ~= nil then
+			-- only for AddtionalContracts version from 1.0.0.4 and later
+			local acTypes = gEnv.FS25_AdditionalContracts.g_additionalContractTypes
+			local bulkClass = acTypes:getTyp("supplyDeliveryBulkMission")
+			local fieldClass = acTypes:getTyp("supplyFieldGoodsMission")
+			for _,cl in ipairs({bulkClass, fieldClass}) do
+				Utility.prependedFunction(cl, "writeStream", harvestWriteStream)
+				Utility.prependedFunction(cl, "readStream", harvestReadStream)
+				Utility.appendedFunction(cl, "onSavegameLoaded", onSavegameLoaded)
+				Utility.overwrittenFunction(cl,"getDetails",univGetDetails)
+			end
+		end
 	end
 	-- flexible mission limit: 
 	Utility.overwrittenFunction(MissionManager, "hasFarmReachedMissionLimit", hasFarmReachedMissionLimit)
@@ -537,12 +571,13 @@ function onSavegameLoaded(self)
 end
 function BetterContracts:getFilltypePrice(m)
 	-- get price for harvest/ mow-bale missions
-	if  m.sellingStation == nil then
+	if  m.sellingStation == nil and m.tryToResolveSellingStation then
 		m:tryToResolveSellingStation()
 	end
 	if m.sellingStation == nil then
 		-- can happen when mission loaded from savegame xml. Selling stations are 
 		-- only added after "savegameLoaded"
+		-- or: called for a universalMission w/o sellingStation
 		--Logging.warning("[%s]:addMission(): contract '%s %s on field %s' has no sellingStation.", 
 		--	self.name, m.title, self.ft[m.fillTypeIndex].title, m.field:getName())
 		return 0
@@ -569,12 +604,15 @@ function addMission(self, mission)
 	-- appended to MissionManager:addMission(mission)
 	local bc = BetterContracts
 	local info =  mission.info 					-- store our additional info
+	info.profit = 0
+	info.usage = 0
+	info.worktime = 0
+	info.perMin = 0
+	local typeName = mission.type.name
 	if mission.field ~= nil then
 		--debugPrint("** add %s on field %s", mission.type.name, mission.field:getName())
 		local size = mission.field.getAreaHa and mission.field:getAreaHa() or 1
 		info.worktime = size * 600  	-- (sec) 10 min/ha, TODO: make better estimate
-		info.profit = 0
-		info.usage = 0
 
 		-- consumables cost estimate enableFieldworkToolFillItems
 		if not (g_currentMission.contractBoostSettings and 
@@ -593,9 +631,7 @@ function addMission(self, mission)
 				info.profit = -info.usage * bc.prices[SC.SEEDS] /1000
 			end
 		end
-		if mission.type.name == "harvestMission" or 
-			mission.type.name == "mowbaleMission" or
-			mission.type.name == "chaffMission" then
+		if table.hasElement(SC.DELIVERMISSION, typeName) then
 			if mission.expectedLiters == nil then
 				Logging.warning("[%s]:addMission(): contract '%s %s on field %s' has no expectedLiters.", 
 					bc.name, mission.type.name, bc.ft[mission.fillType].title, mission.field:getName())
@@ -604,17 +640,37 @@ function addMission(self, mission)
 			if mission.expectedLiters == 0 then  
 				mission.expectedLiters = mission:getMaxCutLiters()
 			end
-			info.keep, info.price, info.profit = bc:calcProfit(mission, HarvestMission.SUCCESS_FACTOR)
+			local factor = HarvestMission.SUCCESS_FACTOR
+			if typeName=="chaffMission" then 
+				factor = bc.chaffClass.data.ownTable.SUCCESS_FACTOR
+			elseif typeName=="fruitCollectMission" then
+				factor = bc.fruitClass.data.ownTable.SUCCESS_FACTOR
+			elseif typeName=="baleCollectMission" then
+				factor = bc.baleClass.data.ownTable.SUCCESS_FACTOR
+			end
+			info.keep, info.price, info.profit = bc:calcProfit(mission, factor)
 			info.deliver = math.ceil(mission.expectedLiters - info.keep) 	--must be delivered
 		end  	
-
 		info.perMin = (mission:getReward() + info.profit) /info.worktime *60
+
+	elseif typeName == "universalMission" then  -- mission w/o a field
+		if mission.expectedLiters ~= nil then 
+			-- supplyDeliveryBulkMission: add deliver. keep, profit are 0
+			info.keep, info.price, info.profit = bc:calcProfit(mission, 1)
+			info.deliver = math.ceil(mission.expectedLiters)
+
+		elseif mission.numFinished ~= nil then 
+			-- SupplyFieldGoodsMission: add num pallets
+
+		end
 	end
 end
 function getLocation(self, superf)
 	--overwrites AbstractFieldMission:getLocation()
 	local bc = BetterContracts
-	if bc.isOn then
+	if not bc.isOn then return superf(self) end
+
+	if self.field ~= nil then
 		local fieldId = self.field:getName()
 		-- overwrite "contract" with fruittype to harvest
 		local txt = self.title
@@ -628,8 +684,19 @@ function getLocation(self, superf)
 		end
 		return string.format("F. %s - %s",fieldId, txt)
 	else
-		return superf(self)
+		
 	end
+end
+function AbstractMission:getLocation()
+	-- to put some text in non-field missions
+	local bc = BetterContracts
+	if not bc.isOn then return "" end
+
+	if self.type.name == "universalMission" then 
+		return string.format("%s %s", self.fillTypeIndex and bc.ft[self.fillTypeIndex].title
+			or "", self.data.jobTypName)
+	end
+	return ""
 end
 function fieldGetDetails(self, superf)
 	--overwrites AbstractFieldMission:getDetails()
@@ -668,7 +735,7 @@ function fieldGetDetails(self, superf)
 	return list
 end
 function harvestGetDetails(self, superf)
-	--overwrites HarvestMission:getDetails()
+	--overwrites HarvestMission:getDetails(), also chaffMission, fruitCollectMission
 
 	local list = superf(self)
 	if not BetterContracts.isOn then  
@@ -721,24 +788,25 @@ function harvestGetDetails(self, superf)
 
 	return list
 end
-function chaffGetDetails(self, superf)
-	--overwrites ChaffMission:getDetails()
-
+function univGetDetails(self, superf)
+	--overwrites SupplyFieldGoodsMission:getDetails,SupplyDeliveryBulkMission:getDetails 
 	local list = superf(self)
 	if not BetterContracts.isOn then  
 		return list
 	end
-	-- add our values to show in contract details list
+	local isBulk = self.jobTypName == "*"..g_i18n:getText("ai_jobTitleDeliver")
 	local price = BetterContracts:getFilltypePrice(self)
-	local deliver = self.expectedLiters - self.info.keep
+	local deliver = self.expectedLiters
 	local eta = {}
 
 	if self.status == MissionStatus.RUNNING then
+	 if isBulk then
+	 	-- add delivered / togo
 		local depo = 0 		-- just as protection
 		if self.depositedLiters then depo = self.depositedLiters end
 		depo = MathUtil.round(depo / 100) * 100
 		-- don't show negative togos:
-		local togo = math.max(MathUtil.round((self.expectedLiters -self.info.keep -depo)/100)*100, 0)
+		local togo = math.max(MathUtil.round((self.expectedLiters - depo)/100)*100, 0)
 		eta = {
 			["title"] = g_i18n:getText("SC_delivered"),
 			["value"] = g_i18n:formatVolume(depo)
@@ -749,35 +817,29 @@ function chaffGetDetails(self, superf)
 			["value"] = g_i18n:formatVolume(togo)
 		}
 		table.insert(list, eta)
-	else  -- status NEW ----------------------------------------
-		local eta = {
-			["title"] = g_i18n:getText("SC_deliver"),
-			["value"] = g_i18n:formatVolume(MathUtil.round(deliver/100) *100)
-		}
-		table.insert(list, eta)
-		eta = {
-			["title"] = g_i18n:getText("SC_keep"),
-			["value"] = g_i18n:formatVolume(MathUtil.round(self.info.keep/100) *100)
-		}
-		table.insert(list, eta)
-		eta = {
-			["title"] = g_i18n:getText("SC_price"),
-			["value"] = g_i18n:formatMoney(price*1000)
-		}
-		table.insert(list, eta)
+	 else
+	 	-- add number items delivered / togo
+	 	table.insert(list, {
+	 		title = g_i18n:getText("SC_delivered"), 
+	 		value = self.numFinished
+	 	})
+	 	table.insert(list, {
+	 		title = g_i18n:getText("SC_togo"), 
+	 		value = self.numObjects - self.numFinished
+	 	})
+	 end
 	end
-
+	--[[ maybe calc profit if goods to deliver are bought
 	eta = {
 		["title"] = g_i18n:getText("SC_profit"),
 		["value"] = g_i18n:formatMoney(price*self.info.keep)
 	}
 	table.insert(list, eta)
-
+	]]
 	return list
 end
 function wrapGetDetails(self, superf)
 	--overwrites BaleWrapMission:getDetails()
-
 	local list = superf(self)
 	if not BetterContracts.isOn then  
 		return list
@@ -801,7 +863,6 @@ function wrapGetDetails(self, superf)
 end
 function baleGetDetails(self, superf)
 	--overwrites BaleWrapMission:getDetails()
-
 	local list = superf(self)
 	if not BetterContracts.isOn or
 	 #self.bales <= 0 then  

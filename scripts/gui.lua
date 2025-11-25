@@ -13,6 +13,7 @@
 --  v1.1.1.3    14.02.2025  fix generation non-field contracts #47. Prevent FS25_RefreshContracts
 --							new settings switches: hideMission, stayNew, finishField 
 --  v1.2.0.0    12.05.2025  New: leased vehicle selection dialog
+--	v1.3.0.1 	18.11.2025	fix hud progress bar clash with FS25_extendedMissionInfo #136
 --=======================================================================================================
 -- calculate real size from pixel value: 140*g_pixelSizeScaledX
 function loadIcons(self)
@@ -651,7 +652,7 @@ function missionUpdate(self, superf)
 	local hide = BetterContracts.config.hideMission
 	local isActive = self.status == MissionStatus.RUNNING
 
-	if isActive and --or self.status == MissionStatus.FINISHED) 
+	if isActive and not BetterContracts.extendedInfo and  -- avoid clash with FS25_extendedMissionInfo
 		(g_localPlayer ~= nil and g_localPlayer.farmId == self.farmId) then
 		-- customize progress bar on hud:
 		if self.progressBar == nil then

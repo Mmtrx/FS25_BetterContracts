@@ -1,29 +1,40 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--=====================================================================================================
+	BetterContracts l10n translations
+	Changelog:
+	  v1.0.0.0    28.10.2024  1st port to FS25
+	  v1.1.0.0    08.01.2025  UI settings page, discount mode
+	  v1.1.1.2    09.02.2025  compatible FS25_additionalGameSettings
+	  v1.2.0.0    12.05.2025  new vehicle selection dialog
+	  v1.3.0.0    26.09.2025  bc_harvest: text="Harv. %.6s"
+	  						  bc_hardMode_tooltip: shortened text	
+=======================================================================================================-->
 <l10n>
 	<texts>
 		<!-- updates v1.3.0.0 
 			bc_harvest: text="Harv. %.6s"
 	  		bc_hardMode_tooltip: shortened text
 	  	-->
-		<text name="bc_sow" text="Sow %.8s" />
+		<text name="bc_sow" text="Så %.8s" />
 
 		<!-- updates v1.2.0.3 -->
-		<text name="bc_balesTotal" text="Bales expected:" />
-		<text name="bc_balesDone" text="Already baled:" />
+		<text name="bc_balesTotal" text="Baller forventet:" />
+		<text name="bc_balesDone" text="Allerede presset:" />
 		<!-- updates v1.2.0.0 -->
-		<text name="bc_vehicleBox" text="Vehicle Selection" />
+		<text name="bc_vehicleBox" text="Maskine Valg" />
 		<!-- updates v1.1.1.3 -->
-		<text name="bc_stayNew" text="Stay on NEW contracts list" />
-		<text name="bc_stayNew_tooltip" text="Do not switch to ACTIVE contracts list when a new contract is accepted." />
-		<text name="bc_finishField" text="Complete contract field" />
-		<text name="bc_finishField_tooltip" text="Allow to complete 100% of a field after contract finishes." />
-		<text name="bc_hideMission" text="Hide inactive contracts" />
-		<text name="bc_hideMission_tooltip" text="Hide accepted contracts with 0% completion from right side hud." />
+		<text name="bc_stayNew" text="Bliv på NYE kontrakter liste" />
+		<text name="bc_stayNew_tooltip" text="Skifter ike til AKTIVE kontrakter liste når en ny kontrakt er accepteret." />
+		<text name="bc_finishField" text="Færdiggør kontrakt mark" />
+		<text name="bc_finishField_tooltip" text="Tillader at færdiggør 100% af en mark efter contrakt slutter." />
+		<text name="bc_hideMission" text="Skjul inaktive kontrakter" />
+		<text name="bc_hideMission_tooltip" text="Skjul accepteret kontrakter med 0% færdiggjort fra højre side hud." />
+		
 		<!-- updates v1.1.1.2 -->
-		<text name="global_bc_name" text="Better Contracts" />
-		<text name="bc_settingsNoPermission" text="You don&apos;t have the permission to change Better Contracts settings!" />
+		<text name="global_bc_name" text="Bedre Kontrakter" />
+		<text name="bc_settingsNoPermission" text="Du har ikke tilladese til at ændre Betdre Kontrakter indstilinger!" />
 		<!-- Keys -->
-		<text name = "input_MENU_EXTRA_3" text = "Better Contracts: Detaljer til/fra"/>
+		<text name = "input_MENU_EXTRA_3" text = "Bedre Kontrakter: Detaljer til/fra"/>
 		<text name = "input_BC_MTOGGLE" text = "BC: Skift visning af aktive gård kontrakter"/>
 		<text name = "bc_actionFerment" text = "Fermenter Balle"/>
 		<!-- Gui Buttons -->
@@ -35,15 +46,15 @@
 		<text name="bc_detailsOn" text="BC til" />
 
 		<!-- Display texts -->
-		<text name="bc_mowed" text="Mowed:" />
-		<text name="bc_tomow" text="To mow:" />
-		<text name="bc_chaff" text="Cut %s" />
-		<text name="bc_jobType_chaff" text="Forage" />
+		<text name="bc_mowed" text="Slået:" />
+		<text name="bc_tomow" text="At slå:" />
+		<text name="bc_chaff" text="Snit %s" />
+		<text name="bc_jobType_chaff" text="Snitte" />
 		<text name="bc_harvest" text="Høst. %.6s" />
 		<text name="bc_leased" text="/ Leaset " />
 		<text name="bc_enoughMissions" text="Din gård har allerede maximum af kontrakter." />
 		<text name="bc_jobsCompleted" text="Jobs færdige: %d" />
-		<text name="bc_monthlyLimit" text="Your farm has reached the maximum number of contracts for this month." />
+		<text name="bc_monthlyLimit" text="Din gård har nået maximum antal af kontrakter for denne måned." />
 
 		<!-- Hard mode -->
 		<text name="bc_penalty" text="Bøde" />
@@ -91,8 +102,8 @@
 		<!-- Settings Page -->
 		<text name="bc_rewardMultiplier" text="Belønning" />
 		<text name="bc_rewardMultiplier_tooltip" text="Juster belønningen for kontrakter." />
-		<text name="bc_rewardMultiplierMow" text="Mow and bale reward" />
-		<text name="bc_rewardMultiplierMow_tooltip" text="Adjust the mow and bale rewards for contracts offered." />
+		<text name="bc_rewardMultiplierMow" text="Slå og pres belønning" />
+		<text name="bc_rewardMultiplierMow_tooltip" text="Juster slå og pres belønning for kontrakter tilbudt." />
 		<text name="bc_leaseMultiplier" text="Lease Udgifter" />
 		<text name="bc_leaseMultiplier_tooltip" text="Juster udgiften for lånte maskiner til kontrakter." />
 		<text name="bc_maxActive" text="Aktuelt aktive kontrakter" />
@@ -130,6 +141,8 @@
 		<text name="bc_hardLease_tooltip" text="Antal vellykkede job for en NPC-landmand, før de låner dig deres udstyr." />
 		<text name="bc_hardExpire" text="Deadline" />
 		<text name="bc_hardExpire_tooltip" text="Ved enden af hvilen tids periode alle aktive kontrakter skal være færdige." />
+		<text name="bc_hardLimit" text="kontrakter per Måned" />
+		<text name="bc_hardLimit_tooltip" text="Max antal af kontrakter der kan accepteres på en måned. (-1: ingen grænse, 0: ingen kontrakter)" />
 
 		<text name="bc_discountModeTitle" text="Mark købs rabat" />
 		<text name="bc_discountMode" text="Aktiveret" />
@@ -138,26 +151,27 @@
 		<text name="bc_discPerJob_tooltip" text="En NPC-landmand øger deres rabat med dette beløb pr. udført job. Maksimal rabat må ikke overstige 50 %." />
 		<text name="bc_discMaxJobs" text="Antal rabat-effektive job" />
 		<text name="bc_discMaxJobs_tooltip" text="Kan reducere max rabat, f.eks. rabat pr. kontrakt = 11%, antal job = 3 -> max rabat = 33%. Forsigtig: Det nuværende antal fuldførte job vil falde med denne værdi ved køb af landbrugsjord." />
-		<text name="bc_fieldCompletion" text="Fieldwork complete" />
-		<text name="bc_fieldCompletion_tooltip" text="Min percentage of field area worked, to count as fieldwork complete." />
+		<text name="bc_fieldCompletion" text="Markarbejde færdig" />
+		<text name="bc_fieldCompletion_tooltip" text="Min procent af mark areal arbejdet, at tælle som markarbejde færdig." />
 			
 		<text name="bc_missionGeneration" text="Kontrakt generering" />
+		
 		<text name="bc_generationInterval" text="Generation Interval" />
-		<text name="bc_generationInterval_tooltip" text="Amount of in-game 6-minute intervals to wait before generating new contracts." />
+		<text name="bc_generationInterval_tooltip" text="Antal af in-game 6-minutter intervaller at vente før generering af nye kontrakter." />
 
-		<text name="bc_genGrain" text="Grain harvest" />
-		<text name="bc_genGrain_tooltip" text="Generate grain harvest contracts (possibly including maize, cotton)" />
-		<text name="bc_genVegetable" text="Vegetable harvest" />
-		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, and parsnip" />
-		<text name="bc_genGreen" text="Green crop harvest" />
-		<text name="bc_genGreen_tooltip" text="Generate harvest contracts for peas, beans, and spinach" />
-		<text name="bc_genRoot" text="Root crop harvest" />
-		<text name="bc_genRoot_tooltip" text="Generate harvest contracts for potatoes, sugarbeet" />
-		<text name="bc_genTree" text="Tree transport contracts" />
-		<text name="bc_genTree_tooltip" text="Generate tree transport contracts" />
-		<text name="bc_genDead" text="Deadwood contracts" />
-		<text name="bc_genDead_tooltip" text="Generate deadwood contracts" />
-		<text name="bc_genRock" text="Rock destruction contracts" />
-		<text name="bc_genRock_tooltip" text="Generate rock destruction contracts" />
+		<text name="bc_genGrain" text="Korn høst" />
+		<text name="bc_genGrain_tooltip" text="Lav korn høst kontrakter (muligvis inklusiv majs, bomuld)" />
+		<text name="bc_genVegetable" text="Grøntsags høst" />
+		<text name="bc_genVegetable_tooltip" text="Lav høst kontrakter for gulerødder, rødbeder, og pastinak" />
+		<text name="bc_genGreen" text="Grøn afgrøde høst" />
+		<text name="bc_genGreen_tooltip" text="Lav høst kontrakter for ærter, bønner, og spinat" />
+		<text name="bc_genRoot" text="Rod afgrøde høst" />
+		<text name="bc_genRoot_tooltip" text="Lav høst kontrakter for kartofler, sukerroer" />
+		<text name="bc_genTree" text="Træ transport kontrakter" />
+		<text name="bc_genTree_tooltip" text="Lav træ transport kontrakter" />
+		<text name="bc_genDead" text="Død træ kontrakter" />
+		<text name="bc_genDead_tooltip" text="Lav død træ kontrakter" />
+		<text name="bc_genRock" text="Sten knusnings kontrakter" />
+		<text name="bc_genRock_tooltip" text="Lav sten knusning kontrakter" />
 	</texts>
 </l10n>
