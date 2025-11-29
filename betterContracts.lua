@@ -53,6 +53,7 @@
 --							fix penalty bug: was applied even for succcessful missions #142
 --							fix hud progress bar, clash with FS25_extendedMissionInfo #136
 --							awareness for FS25_AdditionalContracts (possibly fix #146)
+--	v1.3.0.2 	29.11.2025	fix mowBaleMIssion #154
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -93,7 +94,7 @@ SC = {
 		"bcVehicleTemplate", "vehiclesBox"
 	},
 	DELIVERMISSION = {
-		"harvestMission","mow_baleMission","chaffMission","fruitCollectMission",
+		"harvestMission","mowbaleMission","chaffMission","fruitCollectMission",
 		"baleCollectMission",
 	},
 }

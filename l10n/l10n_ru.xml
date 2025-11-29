@@ -5,7 +5,7 @@
 			bc_harvest: text="Harv. %.6s"
 	  		bc_hardMode_tooltip: shortened text
 	  	-->
-		<text name="bc_sow" text="Sow %.8s" />
+		<text name="bc_sow" text="Посеять %.8s" />
 
 		<!-- updates v1.2.0.3 -->
 		<text name="bc_balesTotal" text="Общее количество тюков:" />
