@@ -504,8 +504,13 @@ end
 ---------------------- mission start with select lease vehicles ------------------------
 MissionStartEvent.writeStream = Utils.appendedFunction(MissionStartEvent.writeStream, 
 function(self, streamId, connection)
-	if connection:getIsServer() and self.spawnVehicles then
+	if not connection:getIsServer() then return end
+
+	if self.spawnVehicles then
 		streamWriteUInt8(streamId, self.vehicleGroup or 0)
+	end	
+	if BetterContracts.config.hardMode then
+		streamWriteInt8(streamId, self.jobsLeft or -1)
 	end	
 end)
 
@@ -520,36 +525,53 @@ function(self, superf, streamId, connection)
 		if self.spawnVehicles then
 			self.vehicleGroup = streamReadUInt8(streamId)
 		end
+		if BetterContracts.config.hardMode then
+			self.jobsLeft = streamReadInt8(streamId)
+		end
 		self:run(connection)
 	end	
 end)
 
 -- augment mission start event sent from server to client accepting the mission
-MissionStartEvent.run = Utils.prependedFunction(MissionStartEvent.run, 
-function(self, connection)
+MissionStartEvent.run = Utils.overwrittenFunction(MissionStartEvent.run, 
+function(self, superf, connection)
 	local bc = BetterContracts
 	local fromServer = connection:getIsServer()
-	if bc.config.debug then
-		if fromServer then
-			print(string.format("[BC] MissionStartEvent.run on client, startState %s", 
-				self.startState))
+	if fromServer then
+		debugPrint("[BC] MissionStartEvent.run on client, startState %s", 
+				self.startState)
+		g_messageCenter:publish(MissionStartEvent, self.startState, self.spawnVehicles)
+	else
+		debugPrint("[BC] MissionStartEvent.run on server, %s %s, jobsLeft: %s", 
+			self.spawnVehicles and "leased group" or "no leasing", self.vehicleGroup or "",
+			self.jobsLeft)
+		local userId = g_currentMission.userManager:getUserIdByConnection(connection)
+		if g_currentMission:getHasPlayerPermission("manageContracts", connection, g_farmManager:getFarmByUserId(userId).farmId) then
+			local startState = g_missionManager:startMission(self.mission, self.farmId, self.spawnVehicles)
+			
+			-- inserted by BC: -----------------------------------------------------------------
+			if self.jobsLeft and self.jobsLeft > -1 then
+				g_farmManager:getFarmById(self.farmId).stats.jobsLeft = self.jobsLeft
+				-- inform all clients of updated jobsLeft value. Send to self only if single player
+				g_server:broadcastEvent(ChangeJobsEvent.new(self.farmId, self.jobsLeft),
+						not g_currentMission.missionDynamicInfo.isMultiplayer)
+			end
+			if bc.isOn and self.spawnVehicles then 
+				-- set the mission vehicles on the server
+				local m = self.mission
+				local ix = self.vehicleGroup
+				Assert.isNotNil(ix, "** no vehicle group index found in start event")
+				if ix == 0 then return end
+				Assert.isNotNil(m.groups, "** no vehicle groups found in Mission %s",m:getTitle())
+				Assert.isNotNil(m.groups[ix], "** vehicle group %d is empty", ix)
+				m.vehiclesToLoad = m.groups[ix].vehicles
+				m.vehicleGroupIdentifier = m.groups[ix].identifier
+			end
+			-- end inserted by BC --------------------------------------------------------------
+			connection:sendEvent(MissionStartEvent.newServerToClient(startState, self.spawnVehicles))
 		else
-			print(string.format("[BC] MissionStartEvent.run on server%s %s", 
-			self.spawnVehicles and ", leased group" or "", self.vehicleGroup or "" ))
+			connection:sendEvent(MissionStartEvent.newServerToClient(MissionStartState.NO_PERMISSION, self.spawnVehicles))
 		end
-	end
-	if bc.isOn and self.spawnVehicles and not fromServer then 
-		-- set the mission vehicles on the server
-		local m = self.mission
-		local ix = self.vehicleGroup
-		Assert.isNotNil(ix, "** no vehicle group index found in start event")
-		if ix == 0 then return end
-
-		Assert.isNotNil(m.groups, "** no vehicle groups found in Mission %s",m:getTitle())
-		Assert.isNotNil(m.groups[ix], "** vehicle group %d is empty", ix)
-
-		m.vehiclesToLoad = m.groups[ix].vehicles
-		m.vehicleGroupIdentifier = m.groups[ix].identifier
 	end
 end)
 
@@ -680,16 +702,27 @@ function VehicleSelect:startLeasing(ix)
 	if not m:isSpawnSpaceAvailable() then
 		InfoDialog.show(g_i18n:getText("warning_noFreeMissionSpace"), nil, nil, DialogElement.TYPE_WARNING)
 	else
-		local event = MissionStartEvent.new(m, g_currentMission:getFarmId(), true)
-		event.vehicleGroup = ix
+		local jobsLeft
+		if BetterContracts.config.hardMode then 
+			local farm = g_farmManager:getFarmById(g_currentMission:getFarmId())
+			jobsLeft = farm.stats.jobsLeft -- can be nil
+		end
+		sendMissionStart(m, ix, jobsLeft, true)
+		
 		if not g_currentMission:getIsServer() then  
 			-- change vehiclesToLoad, for marquee display on client
 			m.vehiclesToLoad = self.groups[ix].vehicles
 		end
-		g_client:getServerConnection():sendEvent(event)
 	end
 end
-
+function sendMissionStart(m, vehicleGroup, jobsLeft, hasLeasing)
+	-- send augmented mission start event to server
+		local farmId = g_currentMission:getFarmId()
+		local event = MissionStartEvent.new(m, farmId, hasLeasing)
+		event.vehicleGroup = vehicleGroup
+		event.jobsLeft = jobsLeft 
+		g_client:getServerConnection():sendEvent(event)
+end
 function VehicleSelect:update(dt)
 	-- update vehicle marquee
 	InGameMenuContractsFrame.updateMarqueeAnimation(self,dt)

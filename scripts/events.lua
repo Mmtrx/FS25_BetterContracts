@@ -120,8 +120,11 @@ function SettingsEvent:readStream(streamId, connection)
 	self:run(connection, setting)
 end
 function SettingsEvent:run(connection, setting)
-	--- If we received this from a client, forward to other clients
-	if not connection:getIsServer() then
+	if connection:getIsServer() then
+		-- another client changed the setting. Our setting action was already done 
+		--  on setting:readStream() 
+	else
+		-- If we received this from a client, forward to other clients
 		-- ignore self (connection)
 		g_server:broadcastEvent(SettingsEvent.new(setting), nil, connection, nil)
 	end
@@ -135,58 +138,48 @@ function SettingsEvent.sendEvent(setting)
 	end
 end
 
---------------------- Change Vehicles Event ------------------------------------------------------------- 
---[[
-ChangeVecEvent = {}
-ChangeVecEvent_mt = Class(ChangeVecEvent, Event)
-InitEventClass(ChangeVecEvent, "ChangeVecEvent")
+--------------------- Change JobsLeft Event ------------------------------------------------------------- 
+-- MP only: inform clients when a jobsLeft value for a farm changed
+ChangeJobsEvent = {}
+ChangeJobsEvent_mt = Class(ChangeJobsEvent, Event)
+InitEventClass(ChangeJobsEvent, "ChangeJobsEvent")
 
-function ChangeVecEvent.emptyNew()
-	return Event.new(ChangeVecEvent_mt)
+function ChangeJobsEvent.emptyNew()
+	return Event.new(ChangeJobsEvent_mt)
 end
-function ChangeVecEvent.new(mission, groupId)
-	local o = ChangeVecEvent.emptyNew()
-	o.mission = mission
-	o.groupId = groupId
+function ChangeJobsEvent.new(farmId, jobsLeft)
+	local o = ChangeJobsEvent.emptyNew()
+	o.farmId = farmId
+	o.jobsLeft = jobsLeft
 	return o
 end
-function ChangeVecEvent:writeStream(streamId, connection)
-	NetworkUtil.writeNodeObject(streamId, self.mission)
-	streamWriteUInt8(streamId, self.groupId)
+function ChangeJobsEvent:writeStream(streamId, connection)
+	streamWriteUInt8(streamId, self.farmId)
+	streamWriteUInt8(streamId, self.jobsLeft)
 end
-function ChangeVecEvent:readStream(streamId, connection)
-	self.mission = NetworkUtil.readNodeObject(streamId)
-	self.groupId = streamReadUInt8(streamId)
+function ChangeJobsEvent:readStream(streamId, connection)
+	self.farmId = streamReadUInt8(streamId)
+	self.jobsLeft = streamReadUInt8(streamId)
 	self:run(connection)
 end
-function ChangeVecEvent:run(connection)
-	-- will update mission vecs on server, event came from client
-	local isServer = g_currentMission:getIsServer()
-	assert(isServer, "BetterContracts: ChangeVecEvent:run() is a server-only function")
-	assert(not connection:getIsServer(), "BetterContracts: ChangeVecEvent should only come from clients")
-	-- set the missions vehicles
-	local m = self.mission
-	local ix = self.groupId
-	local vecSelect = BetterContracts.vehicleSelect 
-	vecSelect:getGroups(m)
-	m.vehiclesToLoad = vecSelect.groups[ix].vehicles
-	m.vehicleGroupIdentifier = vecSelect.groups[ix].identifier
-	m:prepare(true)  	-- spawns mission vehicles
-	debugPrint("** ChangeVecEvent.run() spawned new mission vecs **")
-
-	m:raiseActive()
-	-- inform client about mission start ok. No need to inform other clients, since this mission was just taken
-	connection:sendEvent(MissionStartEvent.newServerToClient(MissionStartState.OK,true))
-end
-function ChangeVecEvent.sendEvent(m, groupId)
-	--debugPrint("** send event: %s %s", m.getTitle and m:getTitle(), groupId)
-	local event = ChangeVecEvent.new(m, groupId)
-	if g_client ~= nil then
-		-- only clients send to server
-		g_client:getServerConnection():sendEvent(event)
+function ChangeJobsEvent:run(connection)
+	-- will update jobsLeft on client, event came from server
+	assert(connection:getIsServer(), "BetterContracts: ChangeJobsEvent should only come from server")
+	-- set new jobsLeft for farm
+	local farm = g_farmManager:getFarmById(self.farmId)
+	if farm then 
+		farm.stats.jobsLeft = self.jobsLeft
 	end
 end
-]]
+--[[function ChangeJobsEvent.sendEvent(farmId, jobsLeft)
+	debugPrint("** send ChangeJobsEvent: %s %s", farmId, jobsLeft)
+	local event = ChangeJobsEvent.new(farmId, jobsLeft)
+	if g_server ~= nil then
+		-- only server sends to clients
+		g_server:getServerConnection():sendEvent(event)
+	end
+end]]
+
 --------------------- LeasedVecsEvent ------------------------------------------------------------------------- 
 -- MP only: inform client about leased mission vehicles, when a new mission starts,
 -- or an active mission with spawned vehicles was loaded from savegame

@@ -44,6 +44,7 @@ ControlProperties = {
 
 	{title = "bc_missionGeneration"},
     { name = "generationInterval", min =1, max =18, step =1, autoBind = true },
+    { name = "genSingle", autoBind = true }, 		-- inc mission type after 1 mission
     { name = "genGrain", autoBind = true },
     { name = "genRoot", autoBind = true },  		-- potato, sugarbeet
     { name = "genVegetable", autoBind = true },  	-- parsnip, carrot
@@ -94,7 +95,8 @@ function BCcontrol:updateDisabled(disable)
 	self.guiElement.elements[2]:setDisabled(disable)  -- the title
 end
 function BCcontrol:setIx(ix)   
--- update the BetterContracts.config value MP only, on Server
+-- update the BetterContracts.config value MP only, on Server 
+--  and other than originating clients
 	-- set it to values[ix]
 	local conf = BetterContracts.config
 	local settingsMgr = BetterContracts.settingsMgr

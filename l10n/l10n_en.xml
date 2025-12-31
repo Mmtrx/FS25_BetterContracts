@@ -11,10 +11,10 @@
 =======================================================================================================-->
 <l10n>
 	<texts>
-		<!-- updates v1.3.0.0 
-			bc_harvest: text="Harv. %.6s"
-	  		bc_hardMode_tooltip: shortened text
-	  	-->
+		<!-- updates v1.3.0.3 -->
+		<text name="bc_genSingle" text="Single Generation" />
+		<text name="bc_genSingle_tooltip" text="Generate only max 1 mission per interval and mission type." />
+
 		<text name="bc_sow" text="Sow %.8s" />
 
 		<!-- updates v1.2.0.3 -->

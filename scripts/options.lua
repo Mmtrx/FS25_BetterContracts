@@ -204,6 +204,7 @@ function finish(self, success )
 					string.format(g_i18n:getText("bc_maxJobs"), npc.title))
 			end
 		end
+
 	elseif BetterContracts.config.hardMode then
 		-- reduce # valid jobs for this npc:
 		if jobs[npcIndex] == nil then 
@@ -380,6 +381,8 @@ function startContract(frCon, superf, wantsLease)
 	-- overwrites InGameMenuContractsFrame:startContract()
 	local bc = BetterContracts
 	local farmId = g_currentMission:getFarmId()
+	local farm = g_farmManager:getFarmById(farmId)
+	local jobsChanged = false
 
 	-- overwrite dialog info box
 	if g_missionManager:hasFarmReachedMissionLimit(farmId) 
@@ -389,7 +392,6 @@ function startContract(frCon, superf, wantsLease)
 	end
 	-- (hardMode) --
 	if bc.config.hardMode then 
-		local farm = g_farmManager:getFarmById(farmId)
 		if wantsLease then 
 		-- check if enough jobs complete to allow lease
 			local contract = frCon:getSelectedContract()
@@ -414,15 +416,21 @@ function startContract(frCon, superf, wantsLease)
 				return
 			else
 				farm.stats.jobsLeft = farm.stats.jobsLeft -1
+				-- need to sync this to server, in mission start event 
+				jobsChanged = true
 			end
 		end
 	end
+	local m = frCon:getSelectedContract().mission
+
 	-- lease vehicle selection
 	if wantsLease and bc.isOn then
 	 -- show vehicle selector list:
-		local m = frCon:getSelectedContract().mission
 		bc.vehicleSelect:init(m)
 		g_gui:showDialog("VehicleSelect")  -- if yes button, start leasing mission
+		
+	elseif jobsChanged then
+		sendMissionStart(m,nil,farm.stats.jobsLeft,wantsLease)
 	else
 		superf(frCon, wantsLease)  		-- sends base game start evt, no vecGroup 
 	end
@@ -476,9 +484,12 @@ end
 function BetterContracts:resetJobsLeft()
 	-- recalc jobs left per farm
 	for _,farm in pairs(g_farmManager:getFarms()) do
-		if farm.farmId ~= FarmManager.SPECTATOR_FARM_ID then
+		if farm.farmId ~= FarmManager.SPECTATOR_FARM_ID and 
+		   farm.farmId ~= FarmManager.GUIDED_TOUR_FARM_ID then
 			local mlist = table.ifilter(g_missionManager:getMissionsByFarmId(farm.farmId), function(m)
-				return m.status > MissionStatus.PREPARING
+				-- don't count expired missions
+				if m:isTimedOut() and m.status == MissionStatus.RUNNING then return false end
+				return m.status > MissionStatus.PREPARING and m.finishState ~= MissionFinishState.TIMED_OUT
 				end)
 			local count = table.size(mlist)
 			farm.stats.jobsLeft =  math.max(self.config.hardLimit - count, 0)

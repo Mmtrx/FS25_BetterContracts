@@ -54,6 +54,10 @@
 --							fix hud progress bar, clash with FS25_extendedMissionInfo #136
 --							awareness for FS25_AdditionalContracts (possibly fix #146)
 --	v1.3.0.2 	29.11.2025	fix mowBaleMIssion #154
+--	v1.3.0.3 	29.11.2025	fix hard mode #156, compat FS25_ActiveMissionsTime #137,
+--							fix (possibly) incompat AdditionalContracts #155
+--							adjust mission generation: new config.genSingle #159
+--	v1.3.0.4 	28.12.2025	fix leased vehicle selection ignoring selected at startLeasing
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -128,6 +132,7 @@ function checkOtherMods(self)
 		FS25_SupplyTransportContracts = "supply",
 		FS25_extendedMissionInfo = "extendedInfo",
 		FS25_AdditionalContracts = "additional",
+		FS25_ActiveMissionsTime = "activeMissionsTime",
 		}
 	for mod, switch in pairs(mods) do
 		if g_modIsLoaded[mod] then
@@ -179,6 +184,7 @@ function registerXML(self)
 	local key = self.baseXmlKey..".generation"
 	self.xmlSchema:register(XMLValueType.INT, 	key.."#interval")
 	self.xmlSchema:register(XMLValueType.BOOL, key.."#genGrain")
+	self.xmlSchema:register(XMLValueType.BOOL, key.."#genSingle")
 	self.xmlSchema:register(XMLValueType.BOOL, key.."#genGreen")
 	self.xmlSchema:register(XMLValueType.BOOL, key.."#genVegetable")
 	self.xmlSchema:register(XMLValueType.BOOL, key.."#genRoot")
@@ -236,6 +242,7 @@ function readconfig(self)
 		end
 		key = self.baseXmlKey..".generation"
 		self.config.generationInterval = xmlFile:getValue(key.."#interval", 1)
+		self.config.genSingle = xmlFile:getValue(key.."#genSingle", false)
 		self.config.genGrain = xmlFile:getValue(key.."#genGrain", true)
 		self.config.genRoot = xmlFile:getValue(key.."#genRoot", true)
 		self.config.genVegetable = xmlFile:getValue(key.."#genVegetable", true)
@@ -327,26 +334,21 @@ function hookFunctions(self)
 	Utility.prependedFunction(HarvestMission, "writeStream", harvestWriteStream)
 	Utility.prependedFunction(HarvestMission, "readStream", harvestReadStream)
 	Utility.appendedFunction(HarvestMission, "onSavegameLoaded", onSavegameLoaded)
-	if self.additional then  
-		local chaffClass = g_missionManager:getMissionType("chaffMission").classObject
-		Utility.prependedFunction(chaffClass, "writeStream", harvestWriteStream)
-		Utility.prependedFunction(chaffClass, "readStream", harvestReadStream)
-		Utility.appendedFunction(chaffClass, "onSavegameLoaded", onSavegameLoaded)
-		Utility.overwrittenFunction(chaffClass,"getDetails",harvestGetDetails)
-		local fruitClass = g_missionManager:getMissionType("fruitCollectMission").classObject
-		Utility.prependedFunction(fruitClass, "writeStream", harvestWriteStream)
-		Utility.prependedFunction(fruitClass, "readStream", harvestReadStream)
-		Utility.appendedFunction(fruitClass, "onSavegameLoaded", onSavegameLoaded)
-		Utility.overwrittenFunction(fruitClass,"getDetails",harvestGetDetails)
-		local baleClass = g_missionManager:getMissionType("baleCollectMission").classObject
-		Utility.prependedFunction(baleClass, "writeStream", harvestWriteStream)
-		Utility.prependedFunction(baleClass, "readStream", harvestReadStream)
-		Utility.appendedFunction(baleClass, "onSavegameLoaded", onSavegameLoaded)
-		Utility.overwrittenFunction(baleClass,"getDetails",harvestGetDetails)
-		self.chaffClass = chaffClass
-		self.fruitClass = fruitClass
-		self.baleClass = baleClass
 
+	local function append(classObject)
+		Utility.prependedFunction(classObject, "writeStream", harvestWriteStream)
+		Utility.prependedFunction(classObject, "readStream", harvestReadStream)
+		Utility.appendedFunction(classObject, "onSavegameLoaded", onSavegameLoaded)
+		Utility.overwrittenFunction(classObject,"getDetails",harvestGetDetails)
+	end
+	if self.additional then  
+		for _, name in ipairs({"chaffMission","fruitCollectMission","baleCollectMission"}) do
+			local type = g_missionManager:getMissionType(name)
+			if type ~= nil then 
+				append(type.classObject) 
+				self[name] = type.classObject
+			end
+		end
 		if g_missionManager:getMissionType("universalMission") ~= nil then
 			-- only for AddtionalContracts version from 1.0.0.4 and later
 			local acTypes = gEnv.FS25_AdditionalContracts.g_additionalContractTypes
@@ -434,6 +436,7 @@ function BetterContracts:initialize()
 		fieldCompletion = 0.95,		-- AbstractMission.SUCCESS_FACTOR
 		fieldSize = 0.5,			-- threshold from "small" to "med" size field
 		generationInterval = 1, 	-- MissionManager.MISSION_GENERATION_INTERVAL
+			genSingle = false,  	-- inc mission type after 1 mission generated
 			genGrain = true,  		-- grain harvest missions allowed
 			genRoot = true,  		-- 
 			genVegetable = true,  	-- 
@@ -552,7 +555,7 @@ function generateMission(self, superf)
 		mission = missionType.classObject.tryGenerateMission()
 		if mission ~= nil then
 		 self:registerMission(mission, missionType)
-		 increment = false
+		 increment = bc.config.genSingle
 		end 
    end
    if increment then 
@@ -643,11 +646,11 @@ function addMission(self, mission)
 			end
 			local factor = HarvestMission.SUCCESS_FACTOR
 			if typeName=="chaffMission" then 
-				factor = bc.chaffClass.data.ownTable.SUCCESS_FACTOR
+				factor = bc.chaffMission.data.ownTable.SUCCESS_FACTOR
 			elseif typeName=="fruitCollectMission" then
-				factor = bc.fruitClass.data.ownTable.SUCCESS_FACTOR
+				factor = bc.fruitCollectMission.data.ownTable.SUCCESS_FACTOR
 			elseif typeName=="baleCollectMission" then
-				factor = bc.baleClass.data.ownTable.SUCCESS_FACTOR
+				factor = bc.baleCollectMission.data.ownTable.SUCCESS_FACTOR
 			end
 			info.keep, info.price, info.profit = bc:calcProfit(mission, factor)
 			info.deliver = math.ceil(mission.expectedLiters - info.keep) 	--must be delivered
@@ -1043,6 +1046,7 @@ end
 function BetterContracts:updateGeneration()
 	-- set Mission generation rate (std is 6 min)
 	MissionManager.MISSION_GENERATION_INTERVAL = self.config.generationInterval * 360000
+
 	-- update excluded contracts
 	self.genContracts.treeTransportMission = self.config.genTree 
 	self.genContracts.deadwoodMission = self.config.genDead 
@@ -1130,6 +1134,7 @@ function saveSavegame()
 	end
 	key = self.baseXmlKey .. ".generation"
 	xmlFile:setInt	( key.."#interval",   conf.generationInterval)
+		xmlFile:setBool (key.."#genSingle", 	conf.genSingle)
 		xmlFile:setBool (key.."#genGrain", 		conf.genGrain)
 		xmlFile:setBool (key.."#genRoot", 		conf.genRoot)
 		xmlFile:setBool (key.."#genGreen", 		conf.genGreen)

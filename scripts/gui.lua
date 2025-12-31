@@ -649,10 +649,11 @@ function onRemoveSortButton(frCon, button)
 end
 function missionUpdate(self, superf)
 	-- overwrites AbstractMission:update()
-	local hide = BetterContracts.config.hideMission
+	local bc = BetterContracts
+	local hide = bc.config.hideMission
 	local isActive = self.status == MissionStatus.RUNNING
 
-	if isActive and not BetterContracts.extendedInfo and  -- avoid clash with FS25_extendedMissionInfo
+	if isActive and not bc.extendedInfo and  -- avoid clash with FS25_extendedMissionInfo
 		(g_localPlayer ~= nil and g_localPlayer.farmId == self.farmId) then
 		-- customize progress bar on hud:
 		if self.progressBar == nil then
@@ -660,7 +661,10 @@ function missionUpdate(self, superf)
 				g_i18n:getText("contract_title"), self.progressTitle, self.completion)
 		end
 		-- add time left to progress title:
-		local time = g_i18n:formatMinutes(self:getMinutesLeft())
+		local time = ""
+		if not bc.activeMissionsTime then 
+			time = g_i18n:formatMinutes(self:getMinutesLeft())
+		end
 		self.progressBar.progress = self.completion
 		self.progressBar.text = string.format("%s  /  %s", self.progressTitle, time)
 

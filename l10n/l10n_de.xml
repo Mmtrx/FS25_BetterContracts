@@ -11,6 +11,10 @@
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.3.0.3 -->
+		<text name="bc_genSingle" text="Einzelgenerierung" />
+		<text name="bc_genSingle_tooltip" text="Soll pro Interval und Missionstyp nur max eine Mission erzeugt werden?" />
+
 		<!-- updates v1.3.0.0 -->
 		<text name="bc_sow" text="Säe %.8s" />
 
