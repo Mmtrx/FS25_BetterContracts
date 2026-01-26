@@ -2,20 +2,20 @@
 <l10n>
 	<texts>
 		<!-- updates v1.3.0.3 -->
-		<text name="bc_genSingle" text="Single Generation" />
-		<text name="bc_genSingle_tooltip" text="Generate only max 1 mission per interval and mission type." />
+		<text name="bc_genSingle" text="Génération unique" />
+		<text name="bc_genSingle_tooltip" text="Génère au maximum une mission par intervalle et par type de mission." />
 
 		<!-- updates v1.3.0.0 
-			bc_harvest: text="Harv. %.6s"
+			bc_harvest: text="Récolté %.6s"
 	  		bc_hardMode_tooltip: shortened text
 	  	-->
-		<text name="bc_sow" text="Sow %.8s" />
+		<text name="bc_sow" text="Semé %.8s" />
 
 		<!-- updates v1.2.0.3 -->
 		<text name="bc_balesTotal" text="Balles attendues:" />
 		<text name="bc_balesDone" text="Déjà pressé:" />
 		<!-- updates v1.2.0.0 -->
-		<text name="bc_vehicleBox" text="Vehicle Selection" />
+		<text name="bc_vehicleBox" text="Choisir les véhicules" />
 		<!-- updates v1.1.1.3 -->
 		<text name="bc_stayNew" text="Restez sur la liste des nouveaux contrats" />
 		<text name="bc_stayNew_tooltip" text="Ne passez pas à la liste des contrats actifs lorsqu'un nouveau contrat est accepté." />
@@ -52,10 +52,10 @@
 		<text name="bc_owner" text="Propriétaire:" />
 
 		<!-- Display texts -->
-		<text name="bc_mowed" text="Mowed:" />
-		<text name="bc_tomow" text="To mow:" />
-		<text name="bc_chaff" text="Hachez %s" />
-		<text name="bc_jobType_chaff" text="Hacheuse" />
+		<text name="bc_mowed" text="Fauché:" />
+		<text name="bc_tomow" text="À faucher:" />
+		<text name="bc_chaff" text="Ensilé %s" />
+		<text name="bc_jobType_chaff" text="Ensilage" />
 		<text name="bc_harvest" text="Récolté %.6s" />
 		<text name="bc_leased" text="/ Loué " />
 		<text name="bc_enoughMissions" text="Votre ferme a déjà le maximum de contrats actifs." />
@@ -121,7 +121,7 @@
 		<text name="bc_npcHarvest_tooltip" text="Si actif, les PNJ agriculteurs ne récolteront pas tout. Vous pourriez avoir plus de contrats." />
 		<text name="bc_npcSow_tooltip" text="Si actif, les PNJ agriculteurs effectuent des travaux de semis plus rarement et le proposent à la place comme contrats." />
 		<text name="bc_npcPlowCultivate" text="Labourer et cultiver" />
-		<text name="bc_npcPlowCultivate_tooltip" text="If active, NPC farmers less often plow or cultivate on their own." />
+		<text name="bc_npcPlowCultivate_tooltip" text="Si actif, les PNJ agriculteurs cultive ou labourent leurs champs plus rarement et le proposent à la place comme contrats." />
 		<text name="bc_npcFertilize_tooltip" text="Si actif, les PNJ agriculteurs effectuent des travaux fertilisants plus rarement et le proposent à la place comme contrats." />
 		<text name="bc_npcWeed_tooltip" text="Si actif, les PNJ agriculteurs combattent les mauvaises herbes sur leurs champs plus rarement et offrent plutôt des contrats de pulvérisation et de désherbage." />
 
