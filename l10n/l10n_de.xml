@@ -11,6 +11,10 @@
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.3.0.5 
+		- add onions to text:
+		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, parsnip, and onions" />
+		-->
 		<!-- updates v1.3.0.3 -->
 		<text name="bc_genSingle" text="Einzelgenerierung" />
 		<text name="bc_genSingle_tooltip" text="Soll pro Interval und Missionstyp nur max eine Mission erzeugt werden?" />
@@ -162,7 +166,7 @@
 		<text name="bc_genGrain" text="Getreide-Ernte" />
 		<text name="bc_genGrain_tooltip" text="Erzeugt Ernte-Aufträge für Getreide (inkl. Mais, Baumwolle)" />
 		<text name="bc_genVegetable" text="Gemüse-Ernte" />
-		<text name="bc_genVegetable_tooltip" text="Erzeugt Ernte-Aufträge für Karotten, Rote Beete und Pastinaken" />
+		<text name="bc_genVegetable_tooltip" text="Erzeugt Ernte-Aufträge für Karotten, Rote Beete, Zwiebeln und Pastinaken" />
 		<text name="bc_genGreen" text="Grünzeug-Ernte" />
 		<text name="bc_genGreen_tooltip" text="Erzeugt Ernte-Aufträge für Bohnen, Erbsen und Spinat" />
 		<text name="bc_genRoot" text="Wurzelfrucht-Ernte" />

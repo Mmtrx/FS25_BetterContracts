@@ -14,14 +14,14 @@
 -- For each control, a on_<name>_changed callback will be called on change
 ControlProperties = {
 	--{title = "bc_baseSettings"},
-    { name = "rewardMultiplier", min = 0.1, max = 1.5, step = 0.1, unit= "%", autoBind = true },
-    { name = "rewardMultiplierMow", min = 0.1, max = 1.5, step = 0.1, unit= "%", autoBind = true },
-    { name = "leaseMultiplier", min = 0.8, max = 1.5, step = 0.1, unit= "%", autoBind = true },
+    { name = "rewardMultiplier", min = 0.1, max = 1.55, step = 0.1, unit= "%", autoBind = true },
+    { name = "rewardMultiplierMow", min = 0.1, max = 1.55, step = 0.1, unit= "%", autoBind = true },
+    { name = "leaseMultiplier", min = 0.8, max = 1.55, step = 0.1, unit= "%", autoBind = true },
     { name = "maxActive", min = 0, max = 10, step = 1, autoBind = true },
     -- basegame: AbstractMission.SUCCESS_FACTOR = 0.98
-    { name = "fieldCompletion", min = 0.8, max = 0.98, step = 0.03, unit= "%", autoBind = true },
+    { name = "fieldCompletion", min = 0.8, max = 0.985, step = 0.03, unit= "%", autoBind = true },
     -- basegame: HarvestMission.SUCCESS_FACTOR = 0.93
-    { name = "toDeliver", min = 0.7, max = 0.94, step = 0.03, unit= "%", autoBind = true },
+    { name = "toDeliver", min = 0.7, max = 0.945, step = 0.03, unit= "%", autoBind = true },
     { name = "refreshMP", values = {"ui_admin","ui_farmManager","ui_players"}, autoBind = true },
     { name = "ferment", autoBind = true },
     { name = "forcePlow", autoBind = true },

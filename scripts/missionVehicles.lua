@@ -13,6 +13,7 @@
 --							 leased vecs in active contract display
 --							 fruit name for sow/harvest in contr list
 --							 enable hardMode
+--  v1.3.0.5 	07.01.2026	hotfix MissionStartEvent.run() set vec group before m:start()
 --=======================================================================================================
 
 ---------------------- mission vehicle loading functions --------------------------------------------
@@ -507,7 +508,7 @@ function(self, streamId, connection)
 	if not connection:getIsServer() then return end
 
 	if self.spawnVehicles then
-		streamWriteUInt8(streamId, self.vehicleGroup or 0)
+		streamWriteUInt8(streamId, self.vehicleGroup or self.mission.vehicleGroupIdentifier)
 	end	
 	if BetterContracts.config.hardMode then
 		streamWriteInt8(streamId, self.jobsLeft or -1)
@@ -547,7 +548,6 @@ function(self, superf, connection)
 			self.jobsLeft)
 		local userId = g_currentMission.userManager:getUserIdByConnection(connection)
 		if g_currentMission:getHasPlayerPermission("manageContracts", connection, g_farmManager:getFarmByUserId(userId).farmId) then
-			local startState = g_missionManager:startMission(self.mission, self.farmId, self.spawnVehicles)
 			
 			-- inserted by BC: -----------------------------------------------------------------
 			if self.jobsLeft and self.jobsLeft > -1 then
@@ -568,6 +568,7 @@ function(self, superf, connection)
 				m.vehicleGroupIdentifier = m.groups[ix].identifier
 			end
 			-- end inserted by BC --------------------------------------------------------------
+			local startState = g_missionManager:startMission(self.mission, self.farmId, self.spawnVehicles)
 			connection:sendEvent(MissionStartEvent.newServerToClient(startState, self.spawnVehicles))
 		else
 			connection:sendEvent(MissionStartEvent.newServerToClient(MissionStartState.NO_PERMISSION, self.spawnVehicles))
@@ -609,11 +610,12 @@ function abstractInit(self)
 	-- overwrites AbstractMission:init() to save all possible vec groups
 
 	self.vehicleGroupIdentifier = 1  -- default, if no mission vehicles
-	if self:getMissionTypeName() == "supplyTransportMission" then return true end  
-	-- supplyTransport mission has no vehicles
+	local g, _ = self:getVehicleGroup()
+
+	if g == nil then return true end  -- mission has no vehicles
 	
 	self.groups = getGroups(self)
-	local g = table.getRandomElement(self.groups)
+	g = table.getRandomElement(self.groups)
 	Assert.isNotNil(g, "** Error: no vehicle group found for %s",self.title)
 	self.vehiclesToLoad = g.vehicles
 	self.vehicleGroupIdentifier = g.identifier

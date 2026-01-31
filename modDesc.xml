@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="101">
 	<author>Mmtrx</author>
-	<version>1.3.0.4</version>
+	<version>1.3.0.5</version>
 	<title>
 		<en>Better Contracts</en>
 	</title>
@@ -9,7 +9,9 @@
 		<en>
 			<![CDATA[
 
-Changelog v1.3.0.4
+Changelog v1.3.0.5
+- allow onion harvest #165
+- allow missions w/o leasing vehicles
 - fix leased vehicle selection ignoring selected at startLeasing
 - fix hard mode in MP #156
 - fix mowBaleMission #154

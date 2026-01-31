@@ -8,6 +8,10 @@
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.3.0.5 
+		- add onions to text:
+		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, parsnip, and onions" />
+		-->
 		<!-- updates v1.3.0.3 -->
 		<text name="bc_genSingle" text="Single Generation" />
 		<text name="bc_genSingle_tooltip" text="Generate only max 1 mission per interval and mission type." />

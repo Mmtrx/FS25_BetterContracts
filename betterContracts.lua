@@ -57,7 +57,11 @@
 --	v1.3.0.3 	29.11.2025	fix hard mode #156, compat FS25_ActiveMissionsTime #137,
 --							fix (possibly) incompat AdditionalContracts #155
 --							adjust mission generation: new config.genSingle #159
---	v1.3.0.4 	28.12.2025	fix leased vehicle selection ignoring selected at startLeasing
+--	v1.3.0.4 	28.12.2025	fix leased vehicle selection ignoring selected at startLeasing #163
+--  v1.3.0.5 	26.01.2026	hotfix MissionStartEvent.run() set vec group before m:start()
+--							allow onion harvest #165. update Ru, Da translation
+--							handle missions w/o leasing vehicles in abstractInit()
+--							fix leasing when BC details is off
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -527,7 +531,8 @@ function BetterContracts:allowHarvest()
 		SPINACH = "GREEN",
 		GREENBEAN = "GREEN",
 		VEGETABLES ="VEGETABLES",
-		GRAIN = "GRAIN"
+		GRAIN = "GRAIN",
+		ONION = "VEGETABLES",
 	}
 	local field = g_fieldManager:getFieldForMission()
 	if field == nil then 

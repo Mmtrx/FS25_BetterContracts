@@ -11,14 +11,14 @@
 =======================================================================================================-->
 <l10n>
 	<texts>
+		<!-- updates v1.3.0.5 
+		- add onions to text:
+		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, parsnip, and onions" />
+		-->
 		<!-- updates v1.3.0.3 -->
-		<text name="bc_genSingle" text="Single Generation" />
-		<text name="bc_genSingle_tooltip" text="Generate only max 1 mission per interval and mission type." />
+		<text name="bc_genSingle" text="Enkelt Generering" />
+		<text name="bc_genSingle_tooltip" text="Generer kun max 1 kontrakt per interval og kontrakt type." />
 
-		<!-- updates v1.3.0.0 
-			bc_harvest: text="Harv. %.6s"
-	  		bc_hardMode_tooltip: shortened text
-	  	-->
 		<text name="bc_sow" text="Så %.8s" />
 
 		<!-- updates v1.2.0.3 -->
@@ -28,7 +28,7 @@
 		<text name="bc_vehicleBox" text="Maskine Valg" />
 		<!-- updates v1.1.1.3 -->
 		<text name="bc_stayNew" text="Bliv på NYE kontrakter liste" />
-		<text name="bc_stayNew_tooltip" text="Skifter ike til AKTIVE kontrakter liste når en ny kontrakt er accepteret." />
+		<text name="bc_stayNew_tooltip" text="Skifter ikke til AKTIVE kontrakter liste når en ny kontrakt er accepteret." />
 		<text name="bc_finishField" text="Færdiggør kontrakt mark" />
 		<text name="bc_finishField_tooltip" text="Tillader at færdiggør 100% af en mark efter contrakt slutter." />
 		<text name="bc_hideMission" text="Skjul inaktive kontrakter" />
