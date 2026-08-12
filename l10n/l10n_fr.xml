@@ -2,24 +2,13 @@
 <l10n>
 	<texts>
 		<!-- updates v1.3.0.8 -->
-		<text name="bc_vecSelect" text="Vehicle Selection" />
-		<text name="bc_vecSelect_tooltip" text="Use vehicle selection dialog when borrowing equipment for a contract." />
-		<!-- updates v1.3.0.8 -->
-		<text name="bc_vecSelect" text="Vehicle Selection" />
-		<text name="bc_vecSelect_tooltip" text="Use vehicle selection dialog when borrowing equipment for a contract." />
+		<text name="bc_vecSelect" text="Sélection du véhicule" />
+		<text name="bc_vecSelect_tooltip" text="Utiliser le menu de sélection de véhicules lors de l'emprunt d'équipement pour un contrat." />
 
-		<!-- updates v1.3.0.5 
-		- add onions to text:
-		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, parsnip, and onions" />
-		-->
 		<!-- updates v1.3.0.3 -->
 		<text name="bc_genSingle" text="Génération unique" />
 		<text name="bc_genSingle_tooltip" text="Génère au maximum une mission par intervalle et par type de mission." />
 
-		<!-- updates v1.3.0.0 
-			bc_harvest: text="Récolté %.6s"
-	  		bc_hardMode_tooltip: shortened text
-	  	-->
 		<text name="bc_sow" text="Semé %.8s" />
 
 		<!-- updates v1.2.0.3 -->
@@ -51,7 +40,7 @@
 
 		<!-- Hard mode -->
 		<text name="bc_penalty" text="Pénalité" />
-		<text name="bc_warnTimeout" text="Veuillez complété votre contract(s) %d dans l'heure suivante, pour éviter les pénalités de contrat." />
+		<text name="bc_warnTimeout" text="Veuillez compléter votre contract(s) %d avant minuit, pour éviter les pénalités de contrat." />
 		<text name="bc_warnCancel" text=" La pénalité de contrat sera de " />
 		<text name="bc_leaseNotEnough" text="Vous devez compléter %d plus de contrats pour %s avec son propre équipement, avant de pouvoir emprunter des machines." />
 
@@ -117,10 +106,10 @@
 		<text name="bc_toDeliverBale_tooltip" text="Pourcentage du rendement total estimé que vous devez livrer pour terminer un contrat de bottes." />
 		<text name="bc_fieldCompletion" text="Travail du champ complété" />
 		<text name="bc_fieldCompletion_tooltip" text="Pourcentage minimum du champ à travailler pour complété le contrat." />
-		<text name="bc_refreshMP" text="Permission contracts list" />
+		<text name="bc_refreshMP" text="Permission liste de contrats" />
 		<text name="bc_refreshMP_tooltip" text="Qui peut supprimer/actualiser les contrats dans le jeu." />
-		<text name="bc_ferment" text="Fermentation instentané" />
-		<text name="bc_ferment_tooltip" text="Permet au joueurs de fermenté instentanément une bale enrubanné depuis le menu F1." />
+		<text name="bc_ferment" text="Fermentation instantanée" />
+		<text name="bc_ferment_tooltip" text="Permet au joueurs de fermenter instantanément une botte enrubannée depuis le menu F1." />
 		<text name="bc_forcePlow" text="Labourage des plantes racinaires" />
 		<text name="bc_forcePlow_tooltip" text="Chaque récolte de maïs / pomme de terre / betterave à sucre nécessite un labour ultérieur." />
 		<text name="bc_debug" text="Debug Mode" />
@@ -138,13 +127,15 @@
 
 		<text name="bc_hardModeTitle" text="Difficulté plus élevée" />
 		<text name="bc_hardMode" text="Activé" />
-		<text name="bc_hardMode_tooltip" text="Si actif, Tous les contrats actifs doivent être achevés d'ici la fin du mois au plus tard. L'annulation d'un contrat coûtera une pénalité. L'emprunt de l'équipement contractuel n'est débloqué qu'après avoir terminé certains emplois." />
+		<text name="bc_hardMode_tooltip" text="Si actif, l'annulation d'un contrat entraîne une pénalité. L'emprunt d'équipement de contrat n'est débloqué qu'après avoir terminé plusieurs travaux." />
 		<text name="bc_hardPenalty" text="Penalité" />
 		<text name="bc_hardPenalty_tooltip" text="Montant de pénalité pour un contrat annulé (en % de la récompense du contrat)." />
 		<text name="bc_hardLease" text="Dévérouiller l'emprunt d'équipements" />
 		<text name="bc_hardLease_tooltip" text="Nombre de contrats réussis pour un agriculteur PNJ, avant de vous prêter leur équipement. " />
 		<text name="bc_hardExpire" text="Deadline" />
-		<text name="bc_hardExpire_tooltip" text="À la fin de la période, tous les contrats actifs doivent être terminés." />
+		<text name="bc_hardExpire_tooltip" text="Détermine à la fin de quelle période tous les contrats actifs doivent être terminés." />
+		<text name="bc_hardLimit" text="Contrats par mois" />
+		<text name="bc_hardLimit_tooltip" text="Nombre maximum de contrats pouvant être acceptés en un mois. (-1 : pas de limite, 0 : pas de contrat)" />
 
 		<text name="bc_discountModeTitle" text="Remise d'achat sur le terrain" />
 		<text name="bc_discountMode" text="Activé" />
@@ -159,18 +150,18 @@
 		<text name="bc_generationInterval_tooltip" text="Nombre d'intervale de 6 minutes à attendre dans le jeu avant de générer de nouveaux contrats." />
 
 		<text name="bc_genGrain" text="Moisson de Grain" />
-		<text name="bc_genGrain_tooltip" text="Généré des missions de moisson de grain (incluant le maïs et le cotton)" />
+		<text name="bc_genGrain_tooltip" text="Générer des missions de moisson de grain (incluant le maïs et le coton)" />
 		<text name="bc_genVegetable" text="Récolte de cultures Racinaires" />
-		<text name="bc_genVegetable_tooltip" text="Généré des missions de récolte pour les carottes, betteraves et panais" />
+		<text name="bc_genVegetable_tooltip" text="Générer des missions de récolte pour les carottes, betteraves, panais et oignons" />
 		<text name="bc_genGreen" text="Récolte de cultures Maraichères" />
-		<text name="bc_genGreen_tooltip" text="Généré des missions de récolte pour les haricots, épinards et pois" />
+		<text name="bc_genGreen_tooltip" text="Générer des missions de récolte pour les haricots, épinards et pois" />
 		<text name="bc_genRoot" text="Récolte de cultures Racinaires" />
-		<text name="bc_genRoot_tooltip" text="Généré des missions de récolte pour les pommes de terres (patates), et betteraves à sucre" />
+		<text name="bc_genRoot_tooltip" text="Générer des missions de récolte pour les pommes de terres (patates), et betteraves à sucre" />
 		<text name="bc_genTree" text="Mission de transport de bois" />
-		<text name="bc_genTree_tooltip" text="Généré des missions de transport de bois" />
+		<text name="bc_genTree_tooltip" text="Générer des missions de transport de bois" />
 		<text name="bc_genDead" text="Mission de bois Mort" />
-		<text name="bc_genDead_tooltip" text="Généré des missions de bois mort" />
-		<text name="bc_genRock" text="Mission de destruction de rochets" />
-		<text name="bc_genRock_tooltip" text="Généré des missions de destruction des pierres" />
+		<text name="bc_genDead_tooltip" text="Générer des missions de bois mort" />
+		<text name="bc_genRock" text="Mission de destruction de rochers" />
+		<text name="bc_genRock_tooltip" text="Générer des missions de destruction des pierres" />
 	</texts>
 </l10n>
