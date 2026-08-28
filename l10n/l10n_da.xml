@@ -47,10 +47,10 @@
 		<!-- Gui Buttons -->
 		<text name="bc_hidden" text="Skjulte: %d" />
 		<text name="bc_other" text="Andre" />
-		<text name="bc_new_contracts" text="Nye Kontrakter" />
+		<text name="bc_new_contracts" text="Forny Kontrakter" />
 		<text name="bc_clear_contracts" text="Ryd Kontrakter" />
-		<text name="bc_detailsOff" text="BC fra" />
-		<text name="bc_detailsOn" text="BC til" />
+		<text name="bc_detailsOff" text="Deaktiver Detaljer" />
+		<text name="bc_detailsOn" text="Aktiver Detaljer" />
 
 		<!-- Display texts -->
 		<text name="bc_mowed" text="Slået:" />
@@ -60,26 +60,26 @@
 		<text name="bc_harvest" text="Høst. %.6s" />
 		<text name="bc_leased" text="/ Leaset " />
 		<text name="bc_enoughMissions" text="Din gård har allerede maximum af kontrakter." />
-		<text name="bc_jobsCompleted" text="Jobs færdige: %d" />
+		<text name="bc_jobsCompleted" text="Færdige kontrakter: %d" />
 		<text name="bc_monthlyLimit" text="Din gård har nået maximum antal af kontrakter for denne måned." />
 
 		<!-- Hard mode -->
 		<text name="bc_penalty" text="Bøde" />
-		<text name="bc_warnTimeout" text="Venligst færdiggør din %d kontrakt(er) indenfor en time, for at undgå bøder på kontrakt." />
+		<text name="bc_warnTimeout" text="Færdiggør venligst din %d kontrakt(er) indenfor en time, for at undgå bøder på kontrakt." />
 		<text name="bc_warnCancel" text=" Bøde på kontrakt vil mindst være " />
 		<text name="bc_leaseNotEnough" text="Du er nødt til at færdiggøre %d flere jobs for %s med egne maskiner, før du kan låne maskiner." />
 
 		<!-- discount mode -->
 		<text name="bc_maxJobs" text="Du har opnået maximum rabat for %s." />
 		<text name="bc_discount" text="rabat" />
-		<text name="bc_discValue" text="%s giver dig %d %% rabat for fremtidige jord køb." />
+		<text name="bc_discValue" text="%s giver dig %d %% rabat for fremtidige jordkøb." />
 		<text name="bc_owner" text="Ejer:" />
 
 		<!-- npc details box -->
-		<text name="SC_widhei" text="Max bredde/ øjde:" />
+		<text name="SC_widhei" text="Max bredde/højde:" />
 		<text name="SC_worktim" text="Beregnet tid:" />
 		<text name="SC_price" text="Pris:" />
-		<text name="SC_profpmin" text="Profit/min:" />
+		<text name="SC_profpmin" text="Profit pr. minut:" />
 		<text name="SC_sort" text="Type" />
 
 		<text name="SC_field" text="Mark %d / %s" />
@@ -104,17 +104,17 @@
 		<text name="SC_sortRev" text="værdi" />
 		<text name="SC_sortNpc" text="farmer" />
 		<text name="SC_sortProf" text="netto profit" />
-		<text name="SC_sortpMin" text="profit per minut" />
+		<text name="SC_sortpMin" text="profit pr. minut" />
 
 		<!-- Settings Page -->
 		<text name="bc_rewardMultiplier" text="Belønning" />
 		<text name="bc_rewardMultiplier_tooltip" text="Juster belønningen for kontrakter." />
 		<text name="bc_rewardMultiplierMow" text="Slå og pres belønning" />
 		<text name="bc_rewardMultiplierMow_tooltip" text="Juster slå og pres belønning for kontrakter tilbudt." />
-		<text name="bc_leaseMultiplier" text="Lease Udgifter" />
+		<text name="bc_leaseMultiplier" text="Leasing Uudgifter" />
 		<text name="bc_leaseMultiplier_tooltip" text="Juster udgiften for lånte maskiner til kontrakter." />
 		<text name="bc_maxActive" text="Aktuelt aktive kontrakter" />
-		<text name="bc_maxActive_tooltip" text="Max antal af aktuel aktive kontrakter." />
+		<text name="bc_maxActive_tooltip" text="Max antal af aktuelt aktive kontrakter." />
 		<text name="bc_toDeliver" text="Levering ved kontrakter" />
 		<text name="bc_toDeliver_tooltip" text="Procent af den beregnet total udbytte du skal levere for at færdiggøre en høst kontrakt." />
 		<text name="bc_toDeliverBale" text="Levering ved balle kontrakter" />
@@ -131,31 +131,31 @@
 		<text name="bc_lazyNPCTitle" text="Dovne bønder" />
 
 		<text name="bc_lazyNPC" text="Aktiveret" />
-		<text name="bc_lazyNPC_tooltip" text="Hvis aktiv, springer NPC-landmænd oftere over arbejdet på deres marker. Så flere kontrakter kan tilbydes." />
+		<text name="bc_lazyNPC_tooltip" text="Hvis aktiv, springer NPC-landmænd oftere over arbejdet på deres marker, så flere kontrakter kan tilbydes." />
 		<text name="bc_npcHarvest_tooltip" text="Hvis aktiv, høster NPC-landmænd slet ikke. Kan resultere i en masse arbejde for dig." />
-		<text name="bc_npcSow_tooltip" text="Hvis aktiv, udfører NPC-landmænd sjældnere så arbejde og tilbyder det i stedet som kontrakter." />
-		<text name="bc_npcPlowCultivate" text="Plov og Harve" />
+		<text name="bc_npcSow_tooltip" text="Hvis aktiv, udfører NPC-landmænd sjældnere såningsarbejde og tilbyder det i stedet som kontrakter." />
+		<text name="bc_npcPlowCultivate" text="Pløjning og Dyrkning" />
 		<text name="bc_npcPlowCultivate_tooltip" text="Hvis aktiv, pløjer eller dyrker NPC-landmænd sjældnere på egen hånd." />
-		<text name="bc_npcFertilize_tooltip" text="Hvis aktiv, udfører NPC-landmanden mere sjældent gødningsarbejde og tilbyder det i stedet som kontrakter." />
-		<text name="bc_npcWeed_tooltip" text="Hvis aktiv, bekæmper NPC-landmænd sjældnere ukrudt på deres marker og tilbyder i stedet sprøjte- og lugekontrakter." />
+		<text name="bc_npcFertilize_tooltip" text="Hvis aktiv, udfører NPC-landmanden mere sjældent gødningsarbejde, og tilbyder det i stedet som kontrakter." />
+		<text name="bc_npcWeed_tooltip" text="Hvis aktiv, bekæmper NPC-landmænd sjældnere ukrudt på deres marker, og tilbyder i stedet sprøjte- og lugekontrakter." />
 
 		<text name="bc_hardModeTitle" text="Højere sværhedsgrad" />
 		<text name="bc_hardMode" text="Aktiveret" />
-		<text name="bc_hardMode_tooltip" text="Hvis aktiv, alle aktive kontrakter skal være færdige inden månedens udgang. Annulering af kontrakt vil koste en bøde. Lån af kontrakt udstyr er kun oplåst efter færdiggøring af nogle jobs." />
+		<text name="bc_hardMode_tooltip" text="Hvis aktiv, skal alle aktive kontrakter være færdige inden månedens udgang. Annullering af en kontrakt vil koste en bøde. Lån af udstyr til kontrakter er kun oplåst efter færdiggøring af nogle kontrakter." />
 		<text name="bc_hardPenalty" text="Bøder" />
-		<text name="bc_hardPenalty_tooltip" text="Straffebeløb for annulleret kontrakt (i % af kontraktbelønning)." />
+		<text name="bc_hardPenalty_tooltip" text="Bødetakst for annulleret kontrakt (i % af kontraktbelønning)." />
 		<text name="bc_hardLease" text="Lås op for lånt udstyr" />
-		<text name="bc_hardLease_tooltip" text="Antal vellykkede job for en NPC-landmand, før de låner dig deres udstyr." />
+		<text name="bc_hardLease_tooltip" text="Antal vellykkede kontrakter for en NPC-landmand, før de låner dig deres udstyr." />
 		<text name="bc_hardExpire" text="Deadline" />
-		<text name="bc_hardExpire_tooltip" text="Ved enden af hvilen tids periode alle aktive kontrakter skal være færdige." />
-		<text name="bc_hardLimit" text="kontrakter per Måned" />
+		<text name="bc_hardExpire_tooltip" text="Ved enden af hvilken tidsperiode alle aktive kontrakter skal være færdige." />
+		<text name="bc_hardLimit" text="Kontrakter pr. måned" />
 		<text name="bc_hardLimit_tooltip" text="Max antal af kontrakter der kan accepteres på en måned. (-1: ingen grænse, 0: ingen kontrakter)" />
 
-		<text name="bc_discountModeTitle" text="Mark købs rabat" />
+		<text name="bc_discountModeTitle" text="Markkøbs rabat" />
 		<text name="bc_discountMode" text="Aktiveret" />
 		<text name="bc_discountMode_tooltip" text="Hvis aktiv, giver en NPC-landmand rabat på køb af landbrugsjord. Rabatten stiger med antallet af konkurrerede job for denne landmand." />
-		<text name="bc_discPerJob" text="Rabat per færdiggjort kontrakt" />
-		<text name="bc_discPerJob_tooltip" text="En NPC-landmand øger deres rabat med dette beløb pr. udført job. Maksimal rabat må ikke overstige 50 %." />
+		<text name="bc_discPerJob" text="Rabat pr. færdiggjort kontrakt" />
+		<text name="bc_discPerJob_tooltip" text="En NPC-landmand øger deres rabat med dette beløb pr. udført job. Maksimal rabat må ikke overstige 50%." />
 		<text name="bc_discMaxJobs" text="Antal rabat-effektive job" />
 		<text name="bc_discMaxJobs_tooltip" text="Kan reducere max rabat, f.eks. rabat pr. kontrakt = 11%, antal job = 3 -> max rabat = 33%. Forsigtig: Det nuværende antal fuldførte job vil falde med denne værdi ved køb af landbrugsjord." />
 		<text name="bc_fieldCompletion" text="Markarbejde færdig" />
@@ -163,22 +163,22 @@
 			
 		<text name="bc_missionGeneration" text="Kontrakt generering" />
 		
-		<text name="bc_generationInterval" text="Generation Interval" />
+		<text name="bc_generationInterval" text="Genererings interval" />
 		<text name="bc_generationInterval_tooltip" text="Antal af in-game 6-minutter intervaller at vente før generering af nye kontrakter." />
 
 		<text name="bc_genGrain" text="Korn høst" />
-		<text name="bc_genGrain_tooltip" text="Lav korn høst kontrakter (muligvis inklusiv majs, bomuld)" />
+		<text name="bc_genGrain_tooltip" text="Lav korn høst kontrakter (inkluderer også majs og bomuld)" />
 		<text name="bc_genVegetable" text="Grøntsags høst" />
 		<text name="bc_genVegetable_tooltip" text="Lav høst kontrakter for gulerødder, rødbeder, og pastinak" />
 		<text name="bc_genGreen" text="Grøn afgrøde høst" />
 		<text name="bc_genGreen_tooltip" text="Lav høst kontrakter for ærter, bønner, og spinat" />
 		<text name="bc_genRoot" text="Rod afgrøde høst" />
-		<text name="bc_genRoot_tooltip" text="Lav høst kontrakter for kartofler, sukerroer" />
-		<text name="bc_genTree" text="Træ transport kontrakter" />
-		<text name="bc_genTree_tooltip" text="Lav træ transport kontrakter" />
-		<text name="bc_genDead" text="Død træ kontrakter" />
-		<text name="bc_genDead_tooltip" text="Lav død træ kontrakter" />
-		<text name="bc_genRock" text="Sten knusnings kontrakter" />
-		<text name="bc_genRock_tooltip" text="Lav sten knusning kontrakter" />
+		<text name="bc_genRoot_tooltip" text="Lav høstkontrakter for kartofler og sukkerroer" />
+		<text name="bc_genTree" text="Trætransport kontrakter" />
+		<text name="bc_genTree_tooltip" text="Lav trætransport kontrakter" />
+		<text name="bc_genDead" text="Dødt træ kontrakter" />
+		<text name="bc_genDead_tooltip" text="Lav dødt træ kontrakter" />
+		<text name="bc_genRock" text="Stenknusnings kontrakter" />
+		<text name="bc_genRock_tooltip" text="Lav stenknusning kontrakter" />
 	</texts>
 </l10n>
