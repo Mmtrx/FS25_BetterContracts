@@ -9,25 +9,25 @@
 <l10n>
 	<texts>
 		<!-- updates v1.3.0.8 -->
-		<text name="bc_vecSelect" text="Vehicle Selection" />
-		<text name="bc_vecSelect_tooltip" text="Use vehicle selection dialog when borrowing equipment for a contract." />
+		<text name="bc_vecSelect" text="Výběr vozidla" />
+        <text name="bc_vecSelect_tooltip" text="Použít dialogové okno výběru vozidla při zapůjčení vybavení pro zakázku." />
 		<!-- updates v1.3.0.5 
 		- add onions to text:
 		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, parsnip, and onions" />
 		-->
 		<!-- updates v1.3.0.3 -->
-		<text name="bc_genSingle" text="Single Generation" />
-		<text name="bc_genSingle_tooltip" text="Generate only max 1 mission per interval and mission type." />
+		<text name="bc_genSingle" text="Jednotlivé generování" />
+        <text name="bc_genSingle_tooltip" text="Vygenerovat maximálně 1 misi za interval a typ mise." />
 
 		<!-- updates v1.3.0.0 
 			bc_harvest: text="Harv. %.6s"
 	  		bc_hardMode_tooltip: shortened text
 	  	-->
-		<text name="bc_sow" text="Sow %.8s" />
+		<text name="bc_sow" text="Setí %.8s" />
 
 		<!-- updates v1.2.0.3 -->
-		<text name="bc_balesTotal" text="Bales expected:" />
-		<text name="bc_balesDone" text="Already baled:" />
+		<text name="bc_balesTotal" text="Očekávané balíky:" />
+        <text name="bc_balesDone" text="Již zabaleno:" />
 		<!-- updates v1.2.0.0 -->
 		<text name="bc_vehicleBox" text="Výběr vozidla" />
 		<!-- updates v1.1.1.3 -->
