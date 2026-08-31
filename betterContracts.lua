@@ -636,7 +636,7 @@ function addMission(self, mission)
 	if mission.field ~= nil then
 		--debugPrint("** add %s on field %s", mission.type.name, mission.field:getName())
 		local size = mission.field.getAreaHa and mission.field:getAreaHa() or 1
-		info.worktime = size * 600  	-- (sec) 10 min/ha, TODO: make better estimate
+		info.worktime = bc:estimateMissionWorktime(mission, size) -- improved estimate from mission vehicle specs
 
 		-- consumables cost estimate enableFieldworkToolFillItems
 		if not (g_currentMission.contractBoostSettings and 

@@ -286,6 +286,165 @@ function BetterContracts:estWorktime(wid, hei, wwid, speed)
 	return netT, netT + nlanes * self.turnTime -- assume 5 sec per u-turn
 end
 
+
+-------------------- improved mission worktime estimate -------------------------------------------
+-- Estimate field work from actual mission vehicle working width/speed where possible.
+-- Falls back to conservative defaults if a mission vehicle does not expose usable specs.
+
+local BC_WORKTIME_DEFAULTS = {
+    fertilizeMission = {width=42.0, speed=15.0, factor=1.15, cat=SC.SPREAD},
+    herbicideMission = {width=24.0, speed=12.0, factor=1.15, cat=SC.SPREAD},
+    limeMission      = {width=18.0, speed=18.0, factor=1.15, cat=SC.SPREAD},
+    sowMission       = {width= 6.0, speed=15.0, factor=1.20, cat=SC.SPREAD},
+    plowMission      = {width= 4.9, speed=12.0, factor=1.25, cat=SC.SIMPLE},
+    cultivateMission = {width= 6.0, speed=15.0, factor=1.20, cat=SC.SIMPLE},
+    weedMission      = {width=12.0, speed=15.0, factor=1.20, cat=SC.SIMPLE},
+    mowbaleMission   = {width= 9.0, speed=20.0, factor=1.30, cat=SC.BALING},
+    harvestMission   = {width= 9.0, speed=10.0, factor=1.30, cat=SC.HARVEST},
+    chaffMission     = {width= 9.0, speed=10.0, factor=1.35, cat=SC.HARVEST},
+    fruitCollectMission = {width=3.5, speed=10.0, factor=1.35, cat=SC.HARVEST},
+}
+
+function BetterContracts:getMissionFillTypeName(m)
+    if m == nil or self.ft == nil then return nil end
+
+    local ix = m.fillTypeIndex or m.fillType
+    if ix ~= nil and self.ft[ix] ~= nil then
+        return string.upper(self.ft[ix].name or "")
+    end
+    return nil
+end
+
+function BetterContracts:getGenericVehicleWorkData(m)
+    -- Generic fallback for newer/special FS25 machines whose store category is not
+    -- covered by getFromVehicle() yet (e.g. some vegetable harvesters).
+    if m == nil or m.vehiclesToLoad == nil then return nil, nil, nil end
+
+    local bestWidth, bestSpeed, bestName = nil, nil, nil
+
+    for _, v in ipairs(m.vehiclesToLoad) do
+        if v ~= nil and v.filename ~= nil then
+            local item = g_storeManager.xmlFilenameToItem[string.lower(v.filename)]
+            if item ~= nil then
+                StoreItemUtil.loadSpecsFromXML(item)
+
+                local width = item.specs and tonumber(item.specs.workingWidth) or nil
+                if width == nil and item.specs and item.specs.workingWidthConfig ~= nil then
+                    width = Vehicle.getSpecValueWorkingWidthConfig(item, nil, v.configurations, nil, true)
+                    width = tonumber(width)
+                end
+
+                local speed = item.specs and tonumber(item.specs.speedLimit) or nil
+
+                if width ~= nil and width > 0 and (bestWidth == nil or width > bestWidth) then
+                    bestWidth = width
+                    bestSpeed = speed
+                    bestName = item.name or v.filename
+                end
+            end
+        end
+    end
+
+    return bestWidth, bestSpeed, bestName
+end
+
+function BetterContracts:getMissionWorkDefaults(m, typeName)
+    local d = BC_WORKTIME_DEFAULTS[typeName]
+    if d == nil then return nil end
+
+    local result = {
+        width = d.width,
+        speed = d.speed,
+        factor = d.factor,
+        cat = d.cat,
+    }
+
+    if typeName == "harvestMission" or typeName == "fruitCollectMission" then
+        local fruitName = self:getMissionFillTypeName(m)
+
+        if fruitName == "SPINACH" then
+            -- OXBO MKB-4TR fallback. Actual mission vehicle specs still take precedence.
+            result.width = 3.5
+            result.speed = 10.0
+            result.factor = 1.35
+        elseif fruitName == "GREENBEAN" or fruitName == "GREEN_BEAN" then
+            result.width = 3.3
+            result.speed = 10.0
+            result.factor = 1.35
+        elseif fruitName == "PEA" then
+            result.width = 3.8
+            result.speed = 10.0
+            result.factor = 1.35
+        elseif fruitName == "POTATO" then
+            result.width = 3.3
+            result.speed = 10.0
+            result.factor = 1.40
+        elseif fruitName == "SUGARBEET" or fruitName == "SUGAR_BEET" then
+            result.width = 3.0
+            result.speed = 10.0
+            result.factor = 1.40
+        end
+    end
+
+    return result
+end
+
+function BetterContracts:estimateMissionWorktime(m, size)
+    local fallback = (tonumber(size) or 1) * 600
+    if m == nil or size == nil or size <= 0 or m.type == nil then return fallback end
+
+    local typeName = m.type.name
+    local d = self:getMissionWorkDefaults(m, typeName)
+    if d == nil then return fallback end
+
+    local width, speed = d.width, d.speed
+    local source = "default"
+
+    -- Prefer a generic scan of the actual selected mission vehicles. This also
+    -- catches newer/special FS25 machines whose store category BC does not know yet.
+    local genericWidth, genericSpeed, genericName = self:getGenericVehicleWorkData(m)
+    if genericWidth ~= nil and genericWidth > 0 then
+        width = genericWidth
+        if genericSpeed ~= nil and genericSpeed > 0 then speed = genericSpeed end
+        source = genericName or "missionVehicleGeneric"
+    else
+        -- Fall back to BC's existing category-aware lookup, which contains a few
+        -- special cases for base-game machines.
+        local ok, vehicleWidth, vehicleSpeed, _, vehicleName = self:getFromVehicle(d.cat, m)
+        if ok and vehicleWidth ~= nil and vehicleWidth > 0 then
+            width = vehicleWidth
+            if vehicleSpeed ~= nil and vehicleSpeed > 0 then speed = vehicleSpeed end
+            source = vehicleName or "missionVehicle"
+        end
+    end
+
+    width = tonumber(width)
+    speed = tonumber(speed)
+    if width == nil or speed == nil or width <= 0 or speed <= 0 then return fallback end
+
+    -- ha/h = working width [m] * speed [km/h] / 10
+    local hectaresPerHour = width * speed / 10
+    if hectaresPerHour <= 0 then return fallback end
+
+    local seconds = size / hectaresPerHour * 3600 * d.factor
+
+    -- Avoid pathological values from malformed mod vehicle specs.
+    if seconds ~= seconds or seconds <= 0 or seconds > 86400 then return fallback end
+
+    debugPrint("[%s] worktime %s field %s: %.2f ha, %.2f m, %.1f km/h, factor %.2f => %.1f min (%s)",
+        self.name,
+        typeName,
+        m.field and m.field.fieldId or "?",
+        size,
+        width,
+        speed,
+        d.factor,
+        seconds / 60,
+        tostring(source))
+
+    return seconds
+end
+
 -------------------- bale fermenting functions ---------------------------------------------------
 BC_Action = {
 	BC_CUT = 1,
