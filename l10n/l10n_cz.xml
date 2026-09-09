@@ -7,27 +7,28 @@
 	  v1.1.1.2    09.02.2025  compatible FS25_additionalGameSettings
 =======================================================================================================-->
 <l10n>
+	<translationContributors>Updated from v1.2.0.0 to v1.3.1.0 by Zipac</translationContributors>
 	<texts>
 		<!-- updates v1.3.0.8 -->
-		<text name="bc_vecSelect" text="Vehicle Selection" />
-		<text name="bc_vecSelect_tooltip" text="Use vehicle selection dialog when borrowing equipment for a contract." />
+		<text name="bc_vecSelect" text="Výběr techniky" />
+		<text name="bc_vecSelect_tooltip" text="Při půjčování vybavení pro zakázku se zobrazí dialogové okno pro výběr techniky." />
 		<!-- updates v1.3.0.5 
 		- add onions to text:
-		<text name="bc_genVegetable_tooltip" text="Generate harvest contracts for carrots, beetroot, parsnip, and onions" />
+		<text name="bc_genVegetable_tooltip" text="Vygeneruje mise na sklizeň mrkve, červené řepy, pastiňáku a cibule." />
 		-->
 		<!-- updates v1.3.0.3 -->
-		<text name="bc_genSingle" text="Single Generation" />
-		<text name="bc_genSingle_tooltip" text="Generate only max 1 mission per interval and mission type." />
+		<text name="bc_genSingle" text="Pouze jednu misi" />
+		<text name="bc_genSingle_tooltip" text="Vygeneruje maximálně jednu misi v nastaveném intervalu a typu mise." />
 
 		<!-- updates v1.3.0.0 
-			bc_harvest: text="Harv. %.6s"
+			bc_harvest: text="Sklizeno %.6s"
 	  		bc_hardMode_tooltip: shortened text
 	  	-->
-		<text name="bc_sow" text="Sow %.8s" />
+		<text name="bc_sow" text="Zaseto %.8s" />
 
 		<!-- updates v1.2.0.3 -->
-		<text name="bc_balesTotal" text="Bales expected:" />
-		<text name="bc_balesDone" text="Already baled:" />
+		<text name="bc_balesTotal" text="Celkem slisováno balíků:" />
+		<text name="bc_balesDone" text="Aktuálně slisováno balíků:" />
 		<!-- updates v1.2.0.0 -->
 		<text name="bc_vehicleBox" text="Výběr vozidla" />
 		<!-- updates v1.1.1.3 -->
