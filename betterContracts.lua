@@ -76,6 +76,9 @@
 -- 							reduce maxNumInstances for non-field missions
 --  v1.3.1.0 	27.07.2026	fix contract exclusion #208. fix log msg getFilltypePrice #207
 -- 							apply canceled mission penalty in hard mode #198
+--  v1.3.1.1	09.09.2026	don't assume all std fruitTypes #213. 
+-- 							Merge PR #215 est mision worktime. PR #210 french, #211 Cz
+-- 							check for NPC contract giver (FS25_ExtendedJobsLivestock)
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -501,8 +504,8 @@ function BetterContracts:initialize()
 	self.events = {}
 	--  Amazon ZA-TS3200,   Hardi Mega, TerraC6F, Lemken Az9,  mission,grain potat Titan18       
 	--  default:spreader,   sprayer,    sower,    planter,     empty,  harv, harv, plow, mow,lime
-	self.SPEEDLIMS = {15,   12,         15,        15,         0,      10,   10,   12,   20, 18}
-	self.WORKWIDTH = {42,   24,          6,         6,         0,       9,   3.3,  4.9,   9, 18} 
+	--self.SPEEDLIMS = {15,   12,         15,        15,         0,      10,   10,   12,   20, 18}
+	--self.WORKWIDTH = {42,   24,          6,         6,         0,       9,   3.3,  4.9,   9, 18} 
 	self.catHarvest = "BEETHARVESTING BEETVEHICLES CORNHEADERS COTTONVEHICLES CUTTERS POTATOHARVESTING POTATOVEHICLES SUGARCANEHARVESTING SUGARCANEVEHICLES"
 	self.catSpread = "fertilizerspreaders seeders planters sprayers sprayervehicles slurrytanks manurespreaders"
 	self.catSimple = "CULTIVATORS DISCHARROWS PLOWS POWERHARROWS SUBSOILERS WEEDERS ROLLERS"
@@ -636,7 +639,8 @@ function addMission(self, mission)
 	if mission.field ~= nil then
 		--debugPrint("** add %s on field %s", mission.type.name, mission.field:getName())
 		local size = mission.field.getAreaHa and mission.field:getAreaHa() or 1
-		info.worktime = bc:estimateMissionWorktime(mission, size) -- improved estimate from mission vehicle specs
+		-- improved estimate from mission vehicle specs:
+		info.worktime = bc:estimateMissionWorktime(mission, size) 
 
 		-- consumables cost estimate enableFieldworkToolFillItems
 		if not (g_currentMission.contractBoostSettings and 
@@ -729,10 +733,20 @@ function fieldGetDetails(self, superf)
 	if not BetterContracts.isOn then  
 		return list
 	end
+	function formatSeconds(sec)
+	if sec ~= nil then
+		local mins = math.floor(sec / 60)
+		local secs = MathUtil.round(sec - mins * 60)
+		return string.format("%02d:%02d %s", mins,secs,g_i18n:getText("unit_minutesShort"))
+	else
+		return self:getText("ui_hours_none")
+	end
+	end
 	-- insert following for both new and active missions
+	local wtime = self.info.worktime
 	table.insert(list, {
 		title = g_i18n:getText("SC_worktim"),
-		value = g_i18n:formatMinutes(self.info.worktime /60)
+		value = wtime > 2400 and g_i18n:formatMinutes(wtime/60) or formatSeconds(wtime)
 	})
 	table.insert(list, {
 		title = g_i18n:getText("SC_profpmin"),
@@ -988,17 +1002,17 @@ function BetterContracts:onStartMission()
 	-- set up fruit specific rewards/ha for harvest:
 	local data = g_missionManager:getMissionTypeDataByName(HarvestMission.NAME)
 	data.rewardPerFruitHa = {
-		[FruitType.POTATO] = 		3200,
-		[FruitType.SUGARBEET] = 	3200,
-		[FruitType.RICE] = 			3600,
-		[FruitType.RICELONGGRAIN] = 3600,
+		[FruitType.POTATO or 0] = 		3200,
+		[FruitType.SUGARBEET or 0] = 	3200,
+		[FruitType.RICE or 0] = 		3600,
+		[FruitType.RICELONGGRAIN or 0]= 3600,
 
-		[FruitType.BEETROOT] = 		3400,
-		[FruitType.CARROT] = 		3400,
-		[FruitType.PARSNIP] = 		3400,
-		[FruitType.GREENBEAN] = 	3400,
-		[FruitType.PEA] = 			3400,
-		[FruitType.SPINACH] = 		3400,
+		[FruitType.BEETROOT or 0] = 	3400,
+		[FruitType.CARROT or 0] = 		3400,
+		[FruitType.PARSNIP or 0] = 		3400,
+		[FruitType.GREENBEAN or 0] = 	3400,
+		[FruitType.PEA or 0] = 			3400,
+		[FruitType.SPINACH or 0] = 		3400,
 	}
 	-- init mission generation settings
 	local types = g_missionManager.missionTypes -- mod types should be registered by now

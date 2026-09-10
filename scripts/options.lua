@@ -12,6 +12,7 @@
 -- 				26.03.2026	fix edge: mission limit = 3 dialog swallowed by lease vec selection
 --  v1.3.0.8 	30.04.2026	make vehicle select optional #190. 
 --	v1.3.1.0 	27.07.2026	apply canceled mission penalty in hard mode #198
+-- 	v1.3.1.1	09.09.2026	check for NPC contract giver (FS25_ExtendedJobsLivestock)
 --=======================================================================================================
 
 --------------------- lazyNPC --------------------------------------------------------------------------- 
@@ -291,7 +292,10 @@ function finish(self, success )
 		farm.stats.npcJobs = {}
 	end
 	local jobs = farm.stats.npcJobs
-	local npcIndex = self:getNPC().index
+
+	local npc = self:getNPC()
+	if npc == nil then return end -- some mod missions don't set a NPC job giver
+	local npcIndex = npc.index
 
 	if success == MissionFinishState.SUCCESS then
 		-- (always) count as valid job for this npc:
@@ -513,7 +517,6 @@ function BetterContracts:onPeriodChanged()
 	if g_server == nil then return end 
 	self.NPCAllowWork = false  	-- prevent any NPC field work at start of month
 end
--- BetterContracts:onDayChanged(),BetterContracts:onHourChanged() - see FS22
 function onButtonCancel(self, superf)
 	-- overwrites InGameMenuContractsFrame:onButtonCancel() 
 	local bc = BetterContracts
@@ -728,8 +731,8 @@ function renderIcon(self, x, y, rot)
 	local mission = bc.fieldToMission[self.field.fieldId]
 	if mission ~= nil then 
 		local typeName = mission.type.name 
-		-- only show if Details on and mission type not filtered off
-		if not bc.isOn or not bc.filterState[typeName] then return end 
+		-- only show if Details on 
+		if not bc.isOn then return end 
 
 		-- select icon:
 		local icon = bc.missionIcons[typeName]

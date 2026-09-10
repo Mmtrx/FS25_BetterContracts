@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="107">
 	<author>Mmtrx</author>
-	<version>1.3.1.0</version>
+	<version>1.3.1.1</version>
 	<title>
 		<en>Better Contracts</en>
 	</title>
@@ -9,7 +9,9 @@
 		<en>
 			<![CDATA[
 
-Changelog v1.3.1.0
+Changelog v1.3.1.1
+- don't assume all std fruitTypes #213 
+- mision worktime better estimate #215 
 - apply canceled mission penalty in hard mode #198
 - fix contract exclusion #208. 
 - fix log msg getFilltypePrice #207
