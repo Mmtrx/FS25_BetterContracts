@@ -79,8 +79,9 @@ function BetterContracts:getFromVehicle(cat, m)
 
 	--- if grass mission, scan for mower with largest workwidth
 		if cat == SC.BALING then
-			if self:isMower(vtype) and tonumber(vec.specs.workingWidth) > wwidth then
-				wwidth = tonumber(vec.specs.workingWidth)
+			if self:isMower(vtype) and vec.specs.workingWidth.width and 
+				tonumber(vec.specs.workingWidth.width) > wwidth then
+				wwidth = tonumber(vec.specs.workingWidth.width)
 				speed = vec.specs.speedLimit
 			end
 		elseif cat == SC.SPREAD and vtype == "SLURRYTANKS" 
@@ -98,7 +99,7 @@ function BetterContracts:getFromVehicle(cat, m)
 				or cat == SC.SPREAD and self:isSpreader(vtype) 
 				or cat == SC.SIMPLE and self:isSimple(vtype) then
 			speed = vec.specs.speedLimit
-			wwidth = vec.specs.workingWidth
+			wwidth = vec.specs.workingWidth.width
 			if wwidth == nil then
 				if vec.specs.workingWidthConfig ~= nil then 
 					wwidth = Vehicle.getSpecValueWorkingWidthConfig(vec, nil, con, nil, true)

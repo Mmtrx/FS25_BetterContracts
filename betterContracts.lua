@@ -79,6 +79,7 @@
 --  v1.3.1.1	09.09.2026	don't assume all std fruitTypes #213. 
 -- 							Merge PR #215 est mision worktime. PR #210 french, #211 Cz
 -- 							check for NPC contract giver (FS25_ExtendedJobsLivestock)
+--  v1.3.1.2	18.09.2026	prefer mowbale mission generation if present #218. 
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -398,6 +399,10 @@ function hookFunctions(self)
 	Utility.overwrittenFunction(MissionManager, "generateMission", generateMission)
 	-- set estimated work time for Field Mission: 
 	Utility.appendedFunction(MissionManager, "addMission", addMission)
+	-- start mission generation with mowbale, if present: 
+	if self.mowbaleMission then
+		Utility.appendedFunction(MissionManager, "startMissionGeneration", startGeneration)
+	end
 	-- set more details:
 	Utility.overwrittenFunction(AbstractFieldMission,"getLocation",getLocation)
 	Utility.overwrittenFunction(AbstractFieldMission,"getDetails",fieldGetDetails)
@@ -560,6 +565,12 @@ function BetterContracts:allowHarvest()
 	local type = variantToType[variant]
 	return self.canHarvest[type]  or false
 end
+function startGeneration(self)
+	-- appended to MissionManager:startMissionGeneration() to always try mowbale first
+	local type = self:getMissionType("mowbaleMission")
+	self.currentMissionTypeIndex = type.typeId
+	self.startMissionTypeIndex = self.currentMissionTypeIndex
+end
 function generateMission(self, superf)
 	-- overwritten, to not finish after 1st mission generated
 	local bc = BetterContracts
@@ -631,6 +642,7 @@ function addMission(self, mission)
 	-- appended to MissionManager:addMission(mission)
 	local bc = BetterContracts
 	local info =  mission.info 					-- store our additional info
+	info.keep = 0
 	info.profit = 0
 	info.usage = 0
 	info.worktime = 0
@@ -737,7 +749,7 @@ function fieldGetDetails(self, superf)
 	if sec ~= nil then
 		local mins = math.floor(sec / 60)
 		local secs = MathUtil.round(sec - mins * 60)
-		return string.format("%02d:%02d %s", mins,secs,g_i18n:getText("unit_minutesShort"))
+		return string.format("%2d:%02d %s", mins,secs,g_i18n:getText("unit_minutesShort"))
 	else
 		return self:getText("ui_hours_none")
 	end
