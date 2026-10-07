@@ -288,6 +288,10 @@ function finish(self, success )
 		self.field and "on field ".. self.field:getName() or "")
 
 	local farm =  g_farmManager:getFarmById(self.farmId)
+	if farm == nil then
+		-- mission ended without belonging to a farm (never accepted): nothing to count
+		return
+	end
 	if farm.stats.npcJobs == nil then 
 		farm.stats.npcJobs = {}
 	end
