@@ -21,7 +21,7 @@ end
 function SettingsPage:onClickBC()
 	-- callback for mod page tabs button: set the multitext to corresponding state
   local bc = BetterContracts
-	local modState = bc.settingsMgr.modState
+	local modState = bc.settingsMgr:findModState() or bc.settingsMgr.modState
 	if modState == nil then 
 		Logging.error("onClick BetterContracts: modState is nil")
 		return
@@ -127,8 +127,9 @@ function onSettingsFrameOpen(self)
 	local settingsMgr = bc.settingsMgr
 	local isMultiplayer = g_currentMission.missionDynamicInfo.isMultiplayer
 
-	-- our mod button should always be the last one in subCategoryPaging MTO
-	settingsMgr.modState = #g_inGameMenu.pageSettings.subCategoryPaging.texts
+	-- find our state in subCategoryPaging MTO. Other mods (e.g. Mud System) may add
+	-- tabs after ours, so we can't assume it's the last one
+	settingsMgr.modState = settingsMgr:findModState()
 	
 	if isMultiplayer and not (g_inGameMenu.isServer or g_inGameMenu.isMasterUser) then  
 		modPage.settingsLayout:setVisible(false)
@@ -173,6 +174,16 @@ function updateSubCategoryPages(self, superf, state)
 			layout:findFirstFocusable(true))
 	end
 	return retValue
+end
+function SettingsManager:findModState()
+	-- return the subCategoryPaging state that maps to our settings page
+	local texts = g_inGameMenu.pageSettings.subCategoryPaging.texts
+	for state, val in ipairs(texts) do
+		if tonumber(val) == self.modPageNr then
+			return state
+		end
+	end
+	return nil
 end
 function SettingsManager:updateDisabled(controlName)
 	-- set disabled states for dependent controls

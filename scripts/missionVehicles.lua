@@ -439,6 +439,19 @@ function BetterContracts:vehicleTag(m, vehicleIds)
 		} 
 	table.insert(self.tagMissions, m) -- we need to tag vecs for this mission
 end
+function fixVehicleGroup(m)
+	-- a saved, not yet started mission may have a vehicle group that is no longer valid
+	-- (e.g. clover harvest saved with GRAIN vehicles). Pick a valid one instead
+	if m.status ~= MissionStatus.CREATED or m.groups == nil or #m.groups == 0 then return end
+	for _, g in ipairs(m.groups) do
+		if g.identifier == m.vehicleGroupIdentifier then return end
+	end
+	local g = table.getRandomElement(m.groups)
+	debugPrint("* %s: vehicle group %s invalid, replaced by %s", m:getTitle(),
+		m.vehicleGroupIdentifier, g.identifier)
+	m.vehiclesToLoad = g.vehicles
+	m.vehicleGroupIdentifier = g.identifier
+end
 function missionManagerLoadFromXMLFile(self,xmlFilename)
 	-- appended to MissionManager:loadFromXMLFile()
 	-- MP only: 
@@ -446,10 +459,12 @@ function missionManagerLoadFromXMLFile(self,xmlFilename)
 		"BetterContracts.missionManagerLoadFromXMLFile should run on Server only")
 	local isMP = g_currentMission.missionDynamicInfo.isMultiplayer
 	debugPrint("* missionManagerLoadFromXMLFile, MP %s", isMP)
+	debugPrint("[BC] missionManagerLoadFromXMLFile: %d missions", #self.missions)
 
 	for _, m in ipairs(self.missions) do
 		-- append possible vehicle groups to mission
 		m.groups = getGroups(m)
+		fixVehicleGroup(m)
 
 		-- we inform clients about active missions with leased vecs
 		if m.activeMissionId ~= nil and m.spawnedVehicles then 
@@ -679,6 +694,13 @@ function VehicleSelect:init(m)
 			self.vehiclesList:setSelectedItem(1, i)
 			self.originalGroup = i
 		end
+	end
+	if self.originalGroup == 0 and #self.groups > 0 then
+		-- mission's group is not in current list (e.g. vehicle definitions changed): don't crash
+		Logging.warning("[BetterContracts] %s: vehicle group %s not found, using first group",
+			m:getTitle(), m.vehicleGroupIdentifier)
+		self.vehiclesList:setSelectedItem(1, 1)
+		self.originalGroup = 1
 	end
 	assert(self.originalGroup > 0,
 		"BetterContracts: Non-matching vehicle groups.")

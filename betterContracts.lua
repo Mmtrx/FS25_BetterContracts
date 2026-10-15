@@ -674,7 +674,8 @@ function addMission(self, mission)
 		if table.hasElement(SC.DELIVERMISSION, typeName) then
 			if mission.expectedLiters == nil then
 				Logging.warning("[%s]:addMission(): contract '%s %s on field %s' has no expectedLiters.", 
-					bc.name, mission.type.name, bc.ft[mission.fillType].title, mission.field:getName())
+					bc.name, mission.type.name, bc.ft[mission.fillTypeIndex] and bc.ft[mission.fillTypeIndex].title,
+					mission.field:getName())
 				mission.expectedLiters = 0 
 			end 
 			if mission.expectedLiters == 0 then  
@@ -1113,7 +1114,7 @@ function BetterContracts:updateGeneration()
 	self.canHarvest.GRAIN = self.config.genGrain
 	self.canHarvest.GREEN = self.config.genGreen
 	self.canHarvest.VEGETABLES = self.config.genVegetable
-	self.canHarvest.ROOT = self.config.genRoot
+	self.canHarvest.ROOTCROP = self.config.genRoot
 end
 function saveSavegame()
 	-- save our settings
