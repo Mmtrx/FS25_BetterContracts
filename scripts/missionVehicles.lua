@@ -127,8 +127,8 @@ function BetterContracts:checkExtraMissionVehicles(xmlFilename, baseDir)
 			Logging.error("[check %s]: Duplicate id \'%s\' for mod - \'%s\'", fnam, id, name)
 			ok = false
 		elseif not g_modIsLoaded[name] then 
-			debugPrint("[check %s]: Mod %s \'%s\' is not loaded", fnam, id, name)
-			ok = false
+			-- not fatal: vehicle sets that need this mod are skipped, the rest still load
+			Logging.info("[check %s]: required mod %s \'%s\' is not loaded, its vehicle sets will be skipped", fnam, id, name)
 		else
 			self.modVehicles[id] = name
 			debugPrint("[check %s] modVehicles[%d] set to %s", fnam, id,name)
@@ -146,24 +146,26 @@ function BetterContracts:checkExtraMissionVehicles(xmlFilename, baseDir)
 					if self.modVehicles[index] then
 						dir = g_modNameToDirectory[self.modVehicles[index]]
 					else
+						-- mod not loaded: not fatal, the group is skipped when loading
 						debugPrint("[check %s] required Mod Index %s not found, ignoring mission vehicle %s",
 						fnam, index, filename)
 						ignore = true
-						ok = false
 					end
 				end
 				if not ignore then  
 					local vecFilename = Utils.getFilename(filename, dir)
+					local vecOk = true
 					if vecFilename == nil then
 						Logging.error("[check %s] Missing \'filename\' attribute for vehicle %q", fnam, vec)
 						ok = false
-					end
+						vecOk = false
 					-- try to load from store item
-					if g_storeManager:getItemByXMLFilename(vecFilename) == nil then
-						Logging.xmlError(xmlFile, "Unable to load store item for xmlfilename \'%q at %q", vecFilename, vec)
-						ok = false
+					elseif g_storeManager:getItemByXMLFilename(vecFilename) == nil then
+						-- not fatal: the group containing this vehicle is skipped when loading
+						Logging.warning("[check %s] vehicle not found in store, its vehicle set will be skipped: %s", fnam, vecFilename)
+						vecOk = false
 					end
-					if not ok and index ~= nil then  -- the mod could not be loaded
+					if not vecOk and index ~= nil then  -- the mod could not be loaded
 						self.modVehicles[index] = nil 
 					end
 				end
