@@ -675,6 +675,7 @@ function addMission(self, mission)
 		if table.hasElement(SC.DELIVERMISSION, typeName) then
 			if mission.expectedLiters == nil then
 				Logging.warning("[%s]:addMission(): contract '%s %s on field %s' has no expectedLiters.", 
+					bc.name, mission.type.name, bc.ft[mission.fillType].title, mission.field:getName())
 				mission.expectedLiters = 0 
 			end 
 			if mission.expectedLiters == 0 then  
