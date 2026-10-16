@@ -1,85 +1,89 @@
 --=======================================================================================================
 -- BetterContracts SCRIPT
---
--- Purpose:     Enhance ingame contracts menu.
--- Author:      Mmtrx
--- Copyright:	Mmtrx
--- License:		GNU GPL v3.0
--- Changelog:
---  v1.0.0.0    28.10.2024  1st port to FS25
---  v1.0.1.0    10.12.2024  some details, sort list
---  v1.0.1.1    20.12.2024  fix details button, enlarge contract details list
---  v1.1.0.0    08.01.2025  UI settings page, discount mode
---  v1.1.1.0    03.02.2025  fix npc jobs for cancelled mission (#17), compat lime, boost
---							stay on NEW contracts list when accepting a contract
---							only show on hud active cntr with completion > 0
---  v1.1.1.1    04.02.2025  fix white UI page (#19, #24, #29), fix ContractBoost compat #28
---  v1.1.1.2    05.02.2025  fix server save/load #22, #27, #30.
--- 							compatible with FS25_additionalGameSettings #31, #33, #35
---  v1.1.1.3    14.02.2025  fix generation non-field contracts #47, fix #38 
---							new settings switches: hideMission #44, stayNew, finishField #48
---							Prevent FS25_RefreshContracts
---  v1.1.1.4    22.02.2025  MP fixes: generation non-field contracts #47,
--- 							no progress in fieldwork / deposited liters #40 
---  v1.1.2.0    28.02.2025  extra mission vehicles. Update l10n_pl _cz _fr
---							compat FS25_RefreshContracts #72
---  v1.2.0.0    12.05.2025  repair FS25_Financing #78. Fix click on settings/controls #76.
--- 							add time left for active contracts on hud #63
--- 							add mission info to leased vehicle name #65
---							New: leased vehicle selection dialog
---  v1.2.0.1    18.05.2025  disable warnings for missing mods in missionVehicles\baseGame.xml
---  v1.2.0.2    23.05.2025  count non-field jobs for discount #80
---							adjustable small/med/large field size thresholds #45
---							increase reward/ha for earth fruit types #71
---							remove surplus "progress" text from list #92
---							fix MP vehicle select for vegetable harvest #94
---							remove vehicle warn for supplyTransportMission #98
---  v1.2.0.3    30.05.2025  remove fertilize level on finished harvest missions
---							read NPC field owners from savegame #96
---							compatible patch for KommunalServices
---							details for bale, balewrap missions
---  v1.2.0.4    10.09.2025  farmlandManagerLoadFromXMLFile: don't set npc to nil when 
---							reading farmlands w/o npcIndex #96
---							adjust backgd box for farmland info. Allow max 2 wood transp missions
---							Leased Vehicle Selection: Esc doesn't start contract #107, #113
---							userDefined.xml: fix vehicles for large fertilizing #91, 
---							medium sowing #105
---	v1.3.0.0 	28.09.2025	FIX: leasing when BC is off #129, compat supplyTransport #126,
---								sort menu at 16x10 resolution #128
---							NEW: double progress bars, leased vecs in active contract display
---							details for chaff mission. fruit name for sow/harvest in contr list
---							enable hardMode
---	v1.3.0.1 	18.11.2025	getGroups(): don't repeat vec groups debug print
---							fix penalty bug: was applied even for succcessful missions #142
---							fix hud progress bar, clash with FS25_extendedMissionInfo #136
---							awareness for FS25_AdditionalContracts (possibly fix #146)
---	v1.3.0.2 	29.11.2025	fix mowBaleMIssion #154
---	v1.3.0.3 	29.11.2025	fix hard mode #156, compat FS25_ActiveMissionsTime #137,
---							fix (possibly) incompat AdditionalContracts #155
---							adjust mission generation: new config.genSingle #159
---	v1.3.0.4 	28.12.2025	fix leased vehicle selection ignoring selected at startLeasing #163
---  v1.3.0.5 	26.01.2026	hotfix MissionStartEvent.run() set vec group before m:start()
---							allow onion harvest #165. update Ru, Da translation
---							handle missions w/o leasing vehicles in abstractInit()
---							fix leasing when BC details is off
---  v1.3.0.6 	22.02.2026	add getFarmlandDiscount() public API #172
---							fix getGroups for late registered mod mission types #174
---  v1.3.0.7 	23.03.2026	prevent indexing nil class from AdditionalContracts #175
---							modHub: fix nil error after sorting contracts with an empty Active list #39
--- 									start with debug/ stayNew/ finishField all off
--- 				26.03.2026			fix edge mission limit = 3 dialog swallowed by lease vec selection
--- 									don't check Vredo DLC wildlife missions for vecs
---  v1.3.0.8 	30.04.2026	make vehicle select optional #190 
--- 							Remove invalidateLayout from UIHelper.registerFocusControls #188
--- 							check for empty vec group in abstractInit() #194
---  v1.3.0.9 	22.07.2026	updt PL, RU l10n #196, 199. Fix potential prob pr #205.
--- 							reduce maxNumInstances for non-field missions
---  v1.3.1.0 	27.07.2026	fix contract exclusion #208. fix log msg getFilltypePrice #207
--- 							apply canceled mission penalty in hard mode #198
---  v1.3.1.1	09.09.2026	don't assume all std fruitTypes #213. 
--- 							Merge PR #215 est mision worktime. PR #210 french, #211 Cz
--- 							check for NPC contract giver (FS25_ExtendedJobsLivestock)
---  v1.3.1.2	18.09.2026	prefer mowbale mission generation if present #218. 
+--[[
+Purpose:     Enhance ingame contracts menu.
+Author:      Mmtrx
+Copyright:		Mmtrx
+License:		GNU GPL v3.0
+Changelog:
+ v1.0.0.0    28.10.2024  1st port to FS25
+ v1.0.1.0    10.12.2024  some details, sort list
+ v1.0.1.1    20.12.2024  fix details button, enlarge contract details list
+ v1.1.0.0    08.01.2025  UI settings page, discount mode
+ v1.1.1.0    03.02.2025  fix npc jobs for cancelled mission (#17), compat lime, boost
+						stay on NEW contracts list when accepting a contract
+						only show on hud active cntr with completion > 0
+ v1.1.1.1    04.02.2025  fix white UI page (#19, #24, #29), fix ContractBoost compat #28
+ v1.1.1.2    05.02.2025  fix server save/load #22, #27, #30.
+							compatible with FS25_additionalGameSettings #31, #33, #35
+ v1.1.1.3    14.02.2025  fix generation non-field contracts #47, fix #38 
+						new settings switches: hideMission #44, stayNew, finishField #48
+						Prevent FS25_RefreshContracts
+ v1.1.1.4    22.02.2025  MP fixes: generation non-field contracts #47,
+							no progress in fieldwork / deposited liters #40 
+ v1.1.2.0    28.02.2025  extra mission vehicles. Update l10n_pl _cz _fr
+						compat FS25_RefreshContracts #72
+ v1.2.0.0    12.05.2025  repair FS25_Financing #78. Fix click on settings/controls #76.
+							add time left for active contracts on hud #63
+							add mission info to leased vehicle name #65
+						New: leased vehicle selection dialog
+ v1.2.0.1    18.05.2025  disable warnings for missing mods in missionVehicles\baseGame.xml
+ v1.2.0.2    23.05.2025  count non-field jobs for discount #80
+						adjustable small/med/large field size thresholds #45
+						increase reward/ha for earth fruit types #71
+						remove surplus "progress" text from list #92
+						fix MP vehicle select for vegetable harvest #94
+						remove vehicle warn for supplyTransportMission #98
+ v1.2.0.3    30.05.2025  remove fertilize level on finished harvest missions
+						read NPC field owners from savegame #96
+						compatible patch for KommunalServices
+						details for bale, balewrap missions
+ v1.2.0.4    10.09.2025  farmlandManagerLoadFromXMLFile: don't set npc to nil when 
+						reading farmlands w/o npcIndex #96
+						adjust backgd box for farmland info. Allow max 2 wood transp missions
+						Leased Vehicle Selection: Esc doesn't start contract #107, #113
+						userDefined.xml: fix vehicles for large fertilizing #91, 
+						medium sowing #105
+ v1.3.0.0 	28.09.2025	FIX: leasing when BC is off #129, compat supplyTransport #126,
+							sort menu at 16x10 resolution #128
+						NEW: double progress bars, leased vecs in active contract display
+						details for chaff mission. fruit name for sow/harvest in contr list
+						enable hardMode
+ v1.3.0.1 	18.11.2025	getGroups(): don't repeat vec groups debug print
+						fix penalty bug: was applied even for succcessful missions #142
+						fix hud progress bar, clash with FS25_extendedMissionInfo #136
+						awareness for FS25_AdditionalContracts (possibly fix #146)
+ v1.3.0.2 	29.11.2025	fix mowBaleMIssion #154
+ v1.3.0.3 	29.11.2025	fix hard mode #156, compat FS25_ActiveMissionsTime #137,
+						fix (possibly) incompat AdditionalContracts #155
+						adjust mission generation: new config.genSingle #159
+ v1.3.0.4 	28.12.2025	fix leased vehicle selection ignoring selected at startLeasing #163
+ v1.3.0.5 	26.01.2026	hotfix MissionStartEvent.run() set vec group before m:start()
+						allow onion harvest #165. update Ru, Da translation
+						handle missions w/o leasing vehicles in abstractInit()
+						fix leasing when BC details is off
+ v1.3.0.6 	22.02.2026	add getFarmlandDiscount() public API #172
+						fix getGroups for late registered mod mission types #174
+ v1.3.0.7 	23.03.2026	prevent indexing nil class from AdditionalContracts #175
+						modHub: fix nil error after sorting contracts with an empty Active list #39
+						start with debug/ stayNew/ finishField all off
+			26.03.2026	fix edge mission limit = 3 dialog swallowed by lease vec selection
+							don't check Vredo DLC wildlife missions for vecs
+ v1.3.0.8 	30.04.2026	make vehicle select optional #190 
+							Remove invalidateLayout from UIHelper.registerFocusControls #188
+							check for empty vec group in abstractInit() #194
+ v1.3.0.9 	22.07.2026	updt PL, RU l10n #196, 199. Fix potential prob pr #205.
+							reduce maxNumInstances for non-field missions
+ v1.3.1.0 	27.07.2026	fix contract exclusion #208. fix log msg getFilltypePrice #207
+							apply canceled mission penalty in hard mode #198
+ v1.3.1.1	09.09.2026	don't assume all std fruitTypes #213. 
+							Merge PR #215 est mision worktime. PR #210 french, #211 Cz
+							check for NPC contract giver (FS25_ExtendedJobsLivestock)
+v1.3.1.2	18.09.2026	prefer mowbale mission generation if present #218. 
+v1.3.2.0	15.10.2026	pr227: don't ignore userdefined.xml, if single vehicles missing
+						pr228: settings page tab, vehicle group crashes
+ 						rootcrop harvests never generated: ROOTCROP -> root, VEGETABLES -> vegetable. 
+]]
 --=======================================================================================================
 SC = {
 	FERTILIZER = 1, -- prices index
@@ -511,9 +515,6 @@ function BetterContracts:initialize()
 	--  default:spreader,   sprayer,    sower,    planter,     empty,  harv, harv, plow, mow,lime
 	--self.SPEEDLIMS = {15,   12,         15,        15,         0,      10,   10,   12,   20, 18}
 	--self.WORKWIDTH = {42,   24,          6,         6,         0,       9,   3.3,  4.9,   9, 18} 
-	self.catHarvest = "BEETHARVESTING BEETVEHICLES CORNHEADERS COTTONVEHICLES CUTTERS POTATOHARVESTING POTATOVEHICLES SUGARCANEHARVESTING SUGARCANEVEHICLES"
-	self.catSpread = "fertilizerspreaders seeders planters sprayers sprayervehicles slurrytanks manurespreaders"
-	self.catSimple = "CULTIVATORS DISCHARROWS PLOWS POWERHARROWS SUBSOILERS WEEDERS ROLLERS"
 	self.isOn = true  	-- start with our add-ons
 	self.numCont = 0 	-- # of contracts in our tables
 	self.numHidden = 0 	-- # of hidden (filtered) contracts 
@@ -544,16 +545,16 @@ function BetterContracts:allowHarvest()
 	-- check if fruit on current field is exluded from harvest contracts
 	local variantToType = {
 		MAIZE = "GRAIN",
-		SUGARBEET = "ROOTCROP",
-		POTATO = "ROOTCROP",
+		SUGARBEET = "ROOT",
+		POTATO = "ROOT",
 		COTTON = "GRAIN",
 		SUGARCANE = "GRAIN",
 		PEA = "GREEN",
 		SPINACH = "GREEN",
 		GREENBEAN = "GREEN",
-		VEGETABLES ="VEGETABLES",
+		VEGETABLES ="VEGETABLE",
 		GRAIN = "GRAIN",
-		ONION = "VEGETABLES",
+		ONION = "VEGETABLE",
 	}
 	local field = g_fieldManager:getFieldForMission()
 	if field == nil then 
@@ -674,8 +675,7 @@ function addMission(self, mission)
 		if table.hasElement(SC.DELIVERMISSION, typeName) then
 			if mission.expectedLiters == nil then
 				Logging.warning("[%s]:addMission(): contract '%s %s on field %s' has no expectedLiters.", 
-					bc.name, mission.type.name, bc.ft[mission.fillTypeIndex] and bc.ft[mission.fillTypeIndex].title,
-					mission.field:getName())
+					bc.name, mission.type.name, bc.ft[mission.fillTypeIndex] and bc.ft[mission.fillTypeIndex].title, mission.field:getName())
 				mission.expectedLiters = 0 
 			end 
 			if mission.expectedLiters == 0 then  
@@ -969,8 +969,8 @@ function BetterContracts:onPostLoadMap(mapNode, mapFile)
 	self.genContracts = {}  	-- avoid generation if genContracts[type] is false
 	self.canHarvest = {			-- allow generation if canHarvest[variant] is true
 		GRAIN = true,
-		ROOTCROP = true,
-		VEGETABLES = true,
+		ROOT = true,
+		VEGETABLE = true,
 		GREEN = true,
 	}  		
 	-- adjust max missions
@@ -1113,8 +1113,8 @@ function BetterContracts:updateGeneration()
 	-- update excluded harvest contracts
 	self.canHarvest.GRAIN = self.config.genGrain
 	self.canHarvest.GREEN = self.config.genGreen
-	self.canHarvest.VEGETABLES = self.config.genVegetable
-	self.canHarvest.ROOTCROP = self.config.genRoot
+	self.canHarvest.VEGETABLE = self.config.genVegetable
+	self.canHarvest.ROOT = self.config.genRoot
 end
 function saveSavegame()
 	-- save our settings

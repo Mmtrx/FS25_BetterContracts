@@ -7,6 +7,9 @@
 --  v1.0.0.0    28.10.2024  1st port to FS25 (not used yet)
 
 -- 	v1.3.1.1 	09.09.2026	Merge PR #215 est mision worktime, by TrigomorphDE 
+-- 	v1.3.2.0 	15.10.2026	add various harvesters to catHarvest, to prevent 
+-- 							"could not find appropriate" warning.
+-- 							cleaned finding workwidth from specs #229
 --=======================================================================================================
 
 -------------------- mission analysis functions ---------------------------------------------------
@@ -14,14 +17,33 @@ warnText = {
 	"**[%s] - contract '%s field %s' has no vehicles",
 	"**[%s] - could not get store item for '%s'",
 	"**[%s]:getFromVehicle() - could not get workingWidth for '%s'",
-	"**[%s]:getFromVehicle() could not find appropriate vehicle in mission %s on field %s",
+	"**[%s]:getFromVehicle() could not find appropriate vehicle in %s mission on field %s",
 	"[%s]:addMission(): problem with vehicles for contract '%s field %s'."
 }
 warnings = { {},{},{},{},{}, }
+catHarvest = {
+	BEETHARVESTERS = true,
+	BEETVEHICLES  = true,
+	BEETHARVESTERCUTTERS  = true,
+	CORNHEADERS  = true,
+	COTTONVHARVESTERS  = true,
+	CUTTERS  = true,
+	SPECIALHEADERS  = true,
+	FORAGEHARVESTERS  = true, 		-- because of Lacotec
+	FORAGEHARVESTERCUTTERS  = true,
+	POTATOHARVESTING  = true,
+	SUGARCANEHARVESTERS  = true,
+	SPINACHHARVESTERS  = true,
+	GREENBEANHARVESTERS  = true,
+	PEAHARVESTERS  = true,
+	VEGETABLEHARVESTERS = true,
+}
+catSpread = "fertilizerspreaders seeders planters sprayers sprayervehicles slurrytanks manurespreaders"
+catSimple = "CULTIVATORS DISCHARROWS PLOWS POWERHARROWS SUBSOILERS WEEDERS ROLLERS"
+
 function BetterContracts:isHarvester(vcat)
 	-- check if vcat store category fits harvest missions
-	local x, _ = string.find(self.catHarvest, string.upper(vcat))
-	return x ~= nil
+	return catHarvest[vcat:upper()] or false
 end
 function BetterContracts:isMower(vcat)
 	-- check if vcat store category fits grass missions
@@ -30,12 +52,12 @@ function BetterContracts:isMower(vcat)
 end
 function BetterContracts:isSpreader(vcat)
 	-- check if vcat store category fits fertilize/spray/seed missions
-	local x, _ = string.find(self.catSpread, string.lower(vcat))
+	local x, _ = string.find(catSpread, string.lower(vcat))
 	return x ~= nil
 end
 function BetterContracts:isSimple(vcat)
 	-- check if vcat store category fits simple missions
-	local x, _ = string.find(self.catSimple, string.upper(vcat))
+	local x, _ = string.find(catSimple, string.upper(vcat))
 	return x ~= nil
 end
 function BetterContracts:isFruitPlanter(ft)
@@ -50,6 +72,20 @@ function BetterContracts:warning(id, p1, p2)
 	if count >= 1 then return end 
 	Logging.warning(warnText[id],self.name,p1,p2)
 	warnings[id][p1..p2] = count +1
+end
+function getWidth(vec, con)
+	-- return working width from vec config
+	if vec.specs.workingWidth == nil then return 0 end
+
+	local width = vec.specs.workingWidth
+	if type(width) == "table" then width = width.width end
+	if width ~= nil then 
+		return tonumber(width)
+	end
+	if vec.specs.workingWidthConfig ~= nil then 
+		width = Vehicle.getSpecValueWorkingWidthConfig(vec, nil, con, nil, true)
+	end
+	return 0
 end
 function BetterContracts:getFromVehicle(cat, m)
 	-- return workwidth, speedLimit for the appropriate mission vehicle:
@@ -77,40 +113,32 @@ function BetterContracts:getFromVehicle(cat, m)
 		vtype = vec.categoryName
 		spr = string.sub(vec.xmlFilename, 15)
 
-	--- if grass mission, scan for mower with largest workwidth
+		--- if grass mission, scan for mower with largest workwidth
 		if cat == SC.BALING then
-			if self:isMower(vtype) and vec.specs.workingWidth.width and 
-				tonumber(vec.specs.workingWidth.width) > wwidth then
-				wwidth = tonumber(vec.specs.workingWidth.width)
+			if self:isMower(vtype) then	
+				local width = getWidth(vec, con)
+				wwidth = math.max(width, wwidth)
 				speed = vec.specs.speedLimit
 			end
+			-- continue loop to possibly find another mower
+			
 		elseif cat == SC.SPREAD and vtype == "SLURRYTANKS" 
 			and vec.functions[1] == g_i18n:getText("function_slurrySpreaderWithoutTool")
 			then  -- skip this, it's a slurry barrel w/o spreader
+			continue
 
-		elseif cat == SC.HARVEST and vtype == "BEETVEHICLES" then  
-			if string.find(vec.name, "Rexor 6300 Platinum") then 
-				wwidth, speed = 2.8, 10.
-				break 
-			end
-			-- else skip this, it's a beet harvester that needs a header
+		elseif cat == SC.HARVEST and getWidth(vec,con) == 0 then  
+			-- skip this, it's a harvester that needs a header
+			continue
 
 		elseif cat == SC.HARVEST and self:isHarvester(vtype) 
 				or cat == SC.SPREAD and self:isSpreader(vtype) 
 				or cat == SC.SIMPLE and self:isSimple(vtype) then
 			speed = vec.specs.speedLimit
-			wwidth = vec.specs.workingWidth.width
-			if wwidth == nil then
-				if vec.specs.workingWidthConfig ~= nil then 
-					wwidth = Vehicle.getSpecValueWorkingWidthConfig(vec, nil, con, nil, true)
-				end
-				if wwidth == nil then
-					if string.find(vec.name, "Ventor 4150") then wwidth = 3.3 end
-				end
-				if wwidth == nil then
-					self:warning(3, spr)
-					--DebugUtil.printTableRecursively(vec," ",0,0)
-				end
+			wwidth = getWidth(vec, con)
+			if wwidth == 0 then
+				self:warning(3, spr)
+				--DebugUtil.printTableRecursively(vec," ",0,0)
 			end
 			break
 		end
@@ -120,7 +148,7 @@ function BetterContracts:getFromVehicle(cat, m)
 	if wwidth == nil then
 		speed, wwidth = 0, 0
 		if cat ~= SC.SPREAD and self.debug then
-			self:warning(4, m.id, m.field:getId())
+			self:warning(4, m.type.name, m.field:getId())
 		end
 	end
 	--debugPrint("%s %s - speed %.1f, width %.1f", vtype, spr,speed,wwidth)
